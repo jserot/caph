@@ -1,0 +1,29 @@
+-- This example show how to define type and value constructors
+-- 2015-09-07, JS
+
+type ($a,$b) data =
+  Single of $a
+| Pair of $a * $b
+;
+
+-- A value of type [(t1,t2) data] is either a single item of type [t1] or a pair of items, of type [t1] and [t2] resp.
+-- The [unzip] actor produces destructurates a stream of type [(t1,t2) data], producing two streams, of type [t1] and [t2] resp.
+ 
+actor unzip
+  in (e:($t1,$t2) data)
+ out (s1:$t1, s2:$t2)
+rules
+| e:Single x -> (s1:x, s2:_)
+| e:Pair(x,y) -> (s1:x, s2:y)
+; 
+
+stream i1:(unsigned<4>,bool) data from "sample1.txt";
+stream o11:unsigned<4> to "result11.txt";
+stream o12:bool to "result12.txt";
+stream i2:(unsigned<2>,signed<8>) data from "sample2.txt";
+stream o21:unsigned<2> to "result21.txt";
+stream o22:signed<8> to "result22.txt";
+
+net (o11,o12) = unzip i1;
+net (o21,o22) = unzip i2;
+

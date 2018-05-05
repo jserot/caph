@@ -1,0 +1,3 @@
+factors.bin: factors.txt
+	$(TXT2BIN) -eventf uint 10 factors.txt > factors.bin
+

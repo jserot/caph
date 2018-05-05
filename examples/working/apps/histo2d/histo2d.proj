@@ -1,0 +1,15 @@
+DOT_OPTS = -I $(CAPHLIB) 
+SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 1200  -sc_abbrev_dc_ctors 
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_default_fifo_capacity 32
+GHDL_RUN_OPTS = --stop-time=1200ns   --wave=histo2d_tb.ghw
+
+sample.bin: sample.txt
+	$(TXT2BIN) -dc -abbrev uint 8 sample.txt > sample.bin
+
+show:
+	@if [ ! -e "result.txt" ]; then \
+		$(BIN2TXT) -dc -abbrev uint 3 result.bin > result.txt; \
+	fi
+	@/bin/echo -n "Result: "; cat result.txt
+	@echo ""

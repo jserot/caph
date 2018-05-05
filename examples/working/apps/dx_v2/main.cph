@@ -1,0 +1,24 @@
+-- Computes the horizontal derivative on images a line 
+-- This version uses a standalone actor 
+
+#include "dc.cph"
+
+type pixel == signed<8> dc;
+
+stream i:pixel from "sample.txt";
+stream o:pixel to "result.txt";
+
+actor dx (v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2} = S0
+var z : $t
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<) -> (s:S2, c:'<, z:v)
+| (s:S2, a:'p) -> (s:S2, c:'(p-z), z:p)
+| (s:S2, a:'>) -> (s:S1, c:'>)
+;
+
+net o = dx 0 i;

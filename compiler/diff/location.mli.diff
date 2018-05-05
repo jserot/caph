@@ -1,0 +1,42 @@
+0a1,13
+> (************************************************************************************)
+> (*                                                                                  *)
+> (*                                     CAPH                                         *)
+> (*                            http://caph.univ-bpclermont.fr                        *)
+> (*                                                                                  *)
+> (*                                  Jocelyn SEROT                                   *)
+> (*                         Jocelyn.Serot@univ-bpclermont.fr                         *)
+> (*                                                                                  *)
+> (*         Copyright 2011-2015 Jocelyn SEROT.  All rights reserved.                 *)
+> (*  This file is distributed under the terms of the Q Public License version 1.0.   *)
+> (*                                                                                  *)
+> (************************************************************************************)
+> 
+2c15,16
+<     Loc of int     (* Position of the first character *)
+---
+>     Loc of string  (* Filename *)
+>          * int     (* Position of the first character *)
+4d17
+< ;;
+6,11c19,23
+< value get_current_location : unit -> location
+<   and no_location : location
+<   and input_name : string ref
+<   and input_chan : in_channel ref
+<   and input_lexbuf : lexing__lexbuf ref
+< ;;
+---
+> val get_current_location : unit -> location
+> val no_location : location
+> val input_name : string ref
+> val input_chan : in_channel ref
+> val input_lexbuf : Lexing.lexbuf ref
+13,15c25,27
+< value output_location: out_channel -> location -> unit
+< and output_input_name: out_channel -> unit
+< ;;
+---
+> val output_location: out_channel -> location -> unit
+> val output_input_name: out_channel -> unit
+> val string_of_location: location -> string

@@ -1,0 +1,22 @@
+-- suml
+-- SUML:<x1,x2,...,xn> = x1+x2+...+xn
+-- Recursive wiring version (see ../suml for a non-recursive version)
+-- Dec 25, 2012 - JS
+
+#include "dc.cph"
+
+actor suml 
+  in (a:signed<8> dc, s:signed<16>)
+ out (c:signed<16>, ss:signed<16>)
+rules
+| (a:'<     ) -> ss:0
+| (a:'>, s:s) -> c:s
+| (a:'v, s:s) -> ss:s+(v:signed<16>)
+;
+
+stream i : signed<8> dc from "sample.txt";
+stream o : signed<16> to "result.txt";
+
+net o = 
+  let rec (y,z) = suml (i,z) in
+  y;

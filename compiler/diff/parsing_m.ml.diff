@@ -1,0 +1,18 @@
+14c14,16
+< (* $Id: parsing.ml 9163 2009-01-13 15:17:51Z doligez $ *)
+---
+> (* $Id: parsing.ml 9270 2009-05-20 11:52:42Z doligez $ *)
+> 
+> (* Modified 2014-11-03 by jserot (jocelyn.serot@univ-bpclermont.fr) to support dynamic lexing buffers *)
+129,131c131,133
+<         let t = Obj.repr(lexer lexbuf) in
+<         env.symb_start <- lexbuf.lex_start_p;
+<         env.symb_end <- lexbuf.lex_curr_p;
+---
+>         let t = Obj.repr(lexer !lexbuf) in
+>         env.symb_start <- !lexbuf.lex_start_p;
+>         env.symb_end <- !lexbuf.lex_curr_p;
+157c159
+<   env.symb_end <- lexbuf.lex_curr_p;
+---
+>   env.symb_end <- !lexbuf.lex_curr_p;

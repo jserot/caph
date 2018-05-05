@@ -1,0 +1,14 @@
+actor mux
+  in (e1:$t, e2:$t, c:bool)
+  out (s:$t)
+rules 
+| (e1:x,c:true) -> s:x
+| (e2:x,c:false) -> s:x
+;
+
+stream i1:signed<8> from "sample1.txt";
+stream i2:signed<8> from "sample2.txt";
+stream i3:bool from "sample3.txt";
+stream o1:signed<8> to "result1.txt";
+
+net o1 = mux (i1,i2,i3) ;

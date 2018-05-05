@@ -1,0 +1,19 @@
+-- Parameterized comparator
+-- CMP[k] : < .. xi ... > = < ... f(xi) ... > where f(x)=true if x=k, false otherwise
+-- Shows the use of the [bool] type
+
+#include "dc.cph"
+
+actor cmp (k:$t)
+  in (a:$t dc)
+  out (c:bool dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'p -> '(p=k)
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:bool dc to "result.txt";
+
+net o = cmp 10 i;

@@ -1,0 +1,189 @@
+-- -- ========================================================================================================
+-- -- 1D and 2D NEIGHBOURHOOD EXTRACTION WIRING FUNCTIONS
+-- -- Generic name : neigh<d><k>
+-- -- where
+-- --   <d> is the signal dimension ("1" or "2") 
+-- --   <k> is the neighbourhood dimension ("13", "33", ...)
+-- -- Multi-actor implementations (mono actor implementations can be generated with the [tools/mkconv] utility
+-- -- Updated for vers 2.7.2
+-- -- ========================================================================================================
+
+#include "list_ops.cph"
+#include "img_ops.cph"
+
+--------------------------------------------------------------
+-- neighborhood extraction on 1D signals 
+-- NEIGH1<w>(v) : < x1 x2 x3 ... xn >) = (y1,y2,...,yw)
+-- where y1 = < x1 x2 ... xn >
+--       y2 = < v x1 x2 ... x_{n-1} >
+--       ...
+--       yw = < v v ... v x1 x2 .. x_{n-w+1} > 
+--              \---v---/
+--                w times
+--------------------------------------------------------------
+--
+--               +---+                 +---+      
+--   x -----+--->|dl |---+-- ... --+---|dl |----+
+--          |    +---+   |             +---+    |
+--          |            |                      |
+--          |            |                      |            
+--          |            |                      +-----------> yw
+--         ...          ...                    ...           ....
+--          |            +----------------------------------> y2
+--          +-----------------------------------------------> y1
+
+net neigh12 v x =
+  let y2 = dl v x in
+  (x, y2)
+;
+
+net neigh13 v x =
+  let y2 = dl v x in
+  let y3 = dl v y2 in
+  (x, y2, y3)
+;
+
+net neigh14 v x =
+  let y2 = dl v x in
+  let y3 = dl v y2 in
+  let y4 = dl v y3 in
+  (x, y2, y3, y4)
+;
+
+net neigh15 v x =
+  let y2 = dl v x in
+  let y3 = dl v y2 in
+  let y4 = dl v y3 in
+  let y5 = dl v y4 in
+  (x, y2, y3, y4, y5)
+;
+
+--------------------------------------------------------------------------------------------------------
+-- 2Dn eighborhood extraction on images 
+-- NEIGH2<h><w>(v) : < < x11 .. x1n > ... < xm1 ... xmn > >) = (y11,...,y1w,y21,...,y2w,...,yh1,...,yhw)
+-- where y11 = < < x11 .. x1n > < x21 ... x2n > ... < xm1 ... xmn > >
+--       y1j = < < v ... v x11 .. x{1,n-j+1} > ... < v ... v xm1 .. x{m,n-j+1} > >
+--                 \--v--/
+--                 j times
+--       y21 = < < v ... v > < x21 ... x2n > ... < xm1 ... xmn > >
+--                 \--v--/   
+--                 n times  
+--       y2j = < < v ... v > < v ... v  x21 ... x{2,n-j+1} > ... < v ... v xm1 ... x{m,n-j+1} > >
+--                 \--v--/     \--v--/
+--                 n times     j times
+--       ...
+--       ym1 = < < v ... v > < v ... v > ... < xh1 ... xhn > ... < x{m-h+1,1} ... x{m-h+1,n} > >
+--                 \--v--/   
+--                 n times  
+--                \---------v----------/
+--                        h lines 
+--       ymj = < < v ... v > < v ... v > ... < v ... v xh1 ... x{h,n-j+1} > ... < v ... v x{m-h+1,1} ... x{m-h+1,n-j+1} > >
+--                 \--v--/                     \--v--/
+--                 n times                      j times
+--                \---------v----------/
+--                        h lines 
+--------------------------------------------------------------------------------------------------------
+--
+--               +---+                 +---+      
+--   x -----+--->|d1p|---+-- ... --+---|d1p|----+
+--      |   |    +---+   |             +---+    |
+--      |   |            |                      +----------> y1w
+--      |   .            .                      .             . 
+--      |   .            .                      .             . 
+--      |   |            +---------------------------------> y12
+--      |   +----------------------------------------------> y11
+--      v
+--    +-----+
+--    | d1lr|
+--    +-----+
+--      |        +---+                 +---+      
+--      +---+--->|d1p|---+-- ... --+---|d1p|----+
+--      |   |    +---+   |             +---+    |
+--      |   |            |                      +----------> y2w
+--      |   .            .                      .             . 
+--      |   .            .                      .             . 
+--      |   |            +---------------------------------> y22
+--      |   +----------------------------------------------> y21
+--      .                                                    .
+--      .                                                    .
+--      .                                                    .
+--      |
+--      v
+--    +-----+
+--    | d1lr|
+--    +-----+
+--      |        +---+                 +---+      
+--      +---+--->|d1p|---+-- ... --+---|d1p|----+
+--          |    +---+   |             +---+    |
+--          |            |                      +----------> yhw
+--          .            .                      .             . 
+--          .            .                      .             . 
+--          |            +---------------------------------> yh2
+--          +----------------------------------------------> yh1
+
+net neigh212 v x =
+  let y2 = d1p v x in
+  (x, y2)
+;
+
+net neigh213 v x =
+  let y2 = d1p v x in
+  let y3 = d1p v y2 in
+  (x, y2, y3)
+;
+
+
+net neigh214 v x =
+  let y2 = d1p v x in
+  let y3 = d1p v y2 in
+  let y4 = d1p v y3 in
+  (x, y2, y3, y4)
+;
+
+net neigh215 v x =
+  let y2 = d1p v x in
+  let y3 = d1p v y2 in
+  let y4 = d1p v y3 in
+  let y5 = d1p v y4 in
+  (x, y2, y3, y4, y5)
+;
+
+net neigh222 z x =   
+  let xz = d1l z x in
+  let (y11,y12) = neigh212 z x in
+  let (y21,y22) = neigh212 z xz in
+  y11,y12,y21,y22
+;
+
+net neigh233 z x =   
+  let xz = d1l z x in
+  let xzz = d1l z xz in
+  let (y11,y12,y13) = neigh213 z x in
+  let (y21,y22,y23) = neigh213 z xz in
+  let (y31,y32,y33) = neigh213 z xzz in
+  y11,y12,y13,y21,y22,y23,y31,y32,y33
+;
+
+net neigh244 z x =   
+  let xz = d1l z x in
+  let xzz = d1l z xz in
+  let xzzz = d1l z xzz in
+  let (y11,y12,y13,y14) = neigh214 z x in
+  let (y21,y22,y23,y24) = neigh214 z xz in
+  let (y31,y32,y33,y34) = neigh214 z xzz in
+  let (y41,y42,y43,y44) = neigh214 z xzzz in
+  y11,y12,y13,y14,y21,y22,y23,y24,y31,y32,y33,y34,y41,y42,y43,y44
+;
+
+net neigh255 z x =   
+  let xz = d1l z x in
+  let xzz = d1l z xz in
+  let xzzz = d1l z xzz in
+  let xzzzz = d1l z xzzz in
+  let (y11,y12,y13,y14,y15) = neigh215 z x in
+  let (y21,y22,y23,y24,y25) = neigh215 z xz in
+  let (y31,y32,y33,y34,y35) = neigh215 z xzz in
+  let (y41,y42,y43,y44,y45) = neigh215 z xzzz in
+  let (y51,y52,y53,y54,y55) = neigh215 z xzzzz in
+  y11,y12,y13,y14,y15,y21,y22,y23,y24,y25,y31,y32,y33,y34,y35,y41,y42,y43,y44,y45,y51,y52,y53,y54,y55
+;

@@ -1,0 +1,31 @@
+-- 1x2 Finite Impulse Response filter
+-- FIR:<L1,L2,...,Ln> = <f:L1,...,f:Lm>
+-- where
+--   Li=<Pi1,...,Pin>
+--   f:Li=<0,k1*Pi1+k2*Pi2,k1*Pi2+k2*Pi3,...>
+-- Jul 11, 2011 - JS
+
+
+#include "dc.cph" 
+
+actor fir (k:signed<8> array[2])
+  in (a:signed<8> dc)
+  out (c:signed<8> dc)
+var s : {S0,S1,S2,S3} = S0
+var z : signed<8>
+rules
+  (s,   a) -> (s,  c,  z)
+| (S0, '<) -> (S1, '<, _)
+| (S1, '>) -> (S0, '>, _)
+| (S1, '<) -> (S2, '<, _)
+| (S2, 'p) -> (S3, '0, p)
+| (S3, 'p) -> (S3, '(z*k[0]+p*k[1]), p)
+| (S3, 'p) -> (S3, 'z, p)
+| (S3, '>) -> (S1, '>, _)
+;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+net o = fir [1,2] i;
+

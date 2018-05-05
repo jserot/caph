@@ -1,0 +1,761 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Static semantics}
+\label{chap:static}
+
+%\newcommand{\sy}[1]{\mathbf{#1}}
+%\newcommand{\sem}[1]{\mathsf{#1}}
+%\newcommand{\tm}[1]{\mathtt{#1}}
+%\newcommand{\ut}[1]{\emph{#1}}
+%\newcommand{\cat}[1]{\text{#1}}
+ \newcommand{\semwild}{.}
+
+
+The static semantics of \caph programs is in the form of a set of \emph{boxes} interconnected by
+\emph{wires}. Boxes result from the instanciation of actors and wires from the data
+dependencies expressed in the definition section.
+
+\medskip
+The static semantics is built upon the semantic domain \emph{SemVal} given below.
+
+In the semantic rules, tuples will be denoted $\langle x_1, \ldots, x_n \rangle$.  The size of a
+tuple $t$ will be denoted $|t|$.  
+The notation $D^*$ is used to define the domain of all tuples of $D$:
+$\langle\rangle,~ \langle D\rangle,~ \langle D,D \rangle,~ \ldots$
+The notation $D^+$ is used to define the domain of all non-empty tuples of $D$:
+$\langle D\rangle,~ \langle D,D \rangle,~ \ldots$
+A single value and a tuple of size one will be considered as semantically equivalent (this
+simplifies the description of the rule dealing with the instanciation of actors).
+We will use the notation $.$ to denote the "\emph{dont care}" (wildcard)
+value in rules (in order to avoid confusion with the "\emph{dont care}" value at the syntactical level (\_).
+
+If $E$ is an environment, and $f$ a function, then we denote by $\Pi_f(E)$ the environment obtained by
+applying $f$ to each element of $\text{codom}(E)$ : $\Pi_f(E) = \lbrace x \mapsto f(E(x)), x \in
+dom(E) \rbrace$. If $F$ is a set $\lbrace f_1, \ldots, f_n \rbrace$ of functions, then we abbreviate
+$\Pi_F(E)$ the successive applications $\Pi_{f_1}(\Pi_{f_2}(\ldots \Pi_{f_n}(E)\ldots))$.
+
+\begin{equation*}
+  \renewcommand{\arraystretch}{1}
+  \begin{array}[t]{c|c|l|l}
+    \textbf{Variable}  & \textbf{Set ranged over}  &  \textbf{Definition} & \textbf{Meaning} \\\hline 
+    \text{v}           & \sem{EVal}  & \sem{Int} + \sem{Bool} + \sem{ETuple} & \\
+    &             & + \sem{ECon} + \sem{EPrim} & \\
+    &             & + \sem{EFun} + \sem{Unknown} & \text{Expression-level semantic value} \\
+    \iota              & \sem{Int}   & \lbrace \ldots, -2, -1, 0, 1, \ldots \rbrace & \\
+    \beta              & \sem{Bool}  & \lbrace \text{true}, \text{false} \rbrace    & \text{Builtin constant} \\
+    \text{c}           & \sem{ECon}  & \txt{id}~\sem{EVal}^* & \text{Constructed value} \\
+    \text{vs}          & \sem{ETuple} & \sem{EVal}^{+} & \text{Expression-level Tuple} \\
+    \EE                & \sem{EEnv}   & \lbrace \txt{id} \mapsto \sem{EVal} \rbrace & \text{Expression-level environment} \\
+    \rho               & \sem{NVal} & \sem{Loc} + \sem{Act} + \sem{Clos} + \sem{Tuple} & \\
+    &                 & + \sem{Box} + \sem{Wire} + \sem{NEVal} &  \text{Network-level semantic value} \\
+    \NE                & \sem{NEnv}   & \lbrace \txt{id} \mapsto \sem{NVal} \rbrace & \text{Network-level environment} \\
+    \rho s             & \sem{NTuple}  & \sem{NVal}^{+} & \text{Network-level tuples} \\
+    \text{cl}          & \sem{Clos}   & \tttuple{\emtxt{n\_pattern}}{\emtxt{n\_expr}}{\sem{NEnv}} & \text{Network-level closure} \\
+    \text{a}           & \sem{Act} & \langle \sem{id},~\sem{id}^*, ~\sem{id}^*,~\sem{id}^*, ~\lbrace
+    \txt{id} \mapsto \emtxt{expr}
+    \rbrace, ~\emtxt{rules}\rangle & \text{Static actor description} \\
+    \ell             & \sem{Loc} & \ttuple{\sem{bid}}{\sem{sel}} & \text{Location} \\
+    \text{b}           & \sem{Box} & \langle \sem{id}, ~\sem{btag},~ \{\sem{id}\mapsto\sem{EVal}\},~ \{\sem{id}\mapsto\sem{EVal}\} & \text{Box} \\
+    &           &         \{\sem{id}\mapsto\sem{wid}\},~\{\sem{id}\mapsto\sem{wid}\},~\emtxt{rules}) & \\
+    \text{t}          & \sem{btag} & \sem{BBox} + \sem{BIn} + \sem{BOut} + \sem{BDummy} & \text{Box tag} \\
+    \text{w}          & \sem{Wire} & \langle\langle\sem{bid},\sem{sel}\rangle,\langle\sem{bid},\sem{sel}\rangle\rangle & \text{Wire} \\
+    \rho'             & \sem{NEVal}  & \sem{Int} + \sem{Bool} & \\
+    \BB               &              & \lbrace \sem{bid} \mapsto \sem{Box} \rbrace & \text{Box environment} \\
+    \WW               &              & \lbrace \sem{wid} \mapsto \sem{Wire} \rbrace & \text{Wire environment} \\
+    \text{l},\text{l'} & \sem{bid} & \lbrace 1, 2, \ldots \rbrace & \text{Box id} \\
+    \text{k},\text{k'} & \sem{wid} & \lbrace 1, 2, \ldots \rbrace & \text{Wire id} \\
+    \text{s},\text{s'} & \sem{sel} & \lbrace 1, 2, \ldots \rbrace & \text{Slot indexes} \\
+\end{array}
+\end{equation*}
+
+\medskip The semantic categories $\sem{EVal}$ (for expression-level values), $\sem{Tuple}$ and
+$\sem{Clos}$ are classical. The semantic category $\sem{NEVal}$ is used to wrap a subset of
+expression-level semantic values (integer and boolean constants) as network values. This is required
+to be able to manipulate actor parameters at the network level.
+% $\sem{EExtFun}$ values describe external functions.
+$\sem{Unknown}$ values are used for uninitialized actor variables.
+
+\medskip
+$\sem{Act}$ values describe actors. An actor is a 6-tuple consisting of 
+\begin{itemize}
+\item a name,
+\item a list of parameter names,
+\item a list of input and output names,
+\item a list of local variables, with an optional expression describing the initial value,
+\item a list of rules.
+\end{itemize}
+
+Note that initial value of actor variables is described as an \emph{unevaluated} expression since
+the corresponding semantic value can only be computed when the actor is instanciated as a box (it
+may depend on the actual value of the actor parameters, set at the network level).
+
+The actor rules are just copied from the abstract syntaxt representation, since the static semantics
+does not deal with the \emph{behavior} of actors (actors are essentially viewed as ``black boxes''
+at this level). They will be used by the dynamic semantics.
+
+\medskip
+$\sem{Box}$ values describe boxes (instanciated actors). A box is a 7-tuple consisting of 
+\begin{itemize}
+\item the name of corresponding actor,
+\item a tag, for distinguishing ``ordinary'' boxes (resulting from the instanciation of actors) from
+  boxes corresponding to i/o streams\footnote{The tag $\sem{BDummy}$ is used internally for handling
+    recursive definitions.},
+\item a list of parameters, with their actual values,
+\item a list of local variables, with their actual values,
+\item a list of inputs and outputs slots, each associating a name with a wire index,
+\item a list of rules (copied verbatim from the actor description). 
+\end{itemize}
+
+\medskip
+$\sem{Wire}$ values are used to describe
+interconnexions between boxes. Each box has a unique index ($\sem{bid}$). A \emph{location}
+($\sem{Loc}$) identifies a given i/o slot of a box (inputs and outputs are numbered from $1$ to
+$n$). So wires are actually described by a pair of locations.
+
+\medskip
+Semantic rules are given in a context consisting of
+\begin{itemize}
+\item a \emph{type environment} $\TE$ recording type constructors\footnote{This environment is
+    required for evaluating type coercion operations.},
+\item a \emph{expression-level environment} $\EE$, mapping identifiers to expression-level semantic values,
+\item a \emph{network-level environment} $\NE$, mapping identifiers to network-level semantic values,
+\item a \emph{box environment} $\BB$, mapping indexes to \emph{boxes},
+\item a \emph{wire environment} $\WW$, mapping indexes to \emph{wires}.
+\end{itemize}
+
+The notations for accessing and manipulating environments are similar to those defined in
+chapter~\ref{chap:typing}. Empty environments are noted $\emptyenv$.
+
+\newpage
+\section{Programs}
+\label{sec:static-programs}
+
+\ruleheader{\TE_0,\EE_0 \vdash \text{Program} \gives \TE,\EE,\NE,\BB,\WW}
+
+\infrule[Program]
+%{ \TE_0 \vdash \emtxt{tydecls} \gives \TE \\
+{ \TE, \EE \vdash \emtxt{valdecls} \gives \EE' \\
+  \TE, \EE' \vdash \emtxt{actdecls} \gives \NE_a \\
+  \TE \vdash \emtxt{strdecls} \gives \NE_s,\BB \\
+  \TE, \EE \oplus \EE', \NE_a \oplus \NE_s, \BB \vdash \emtxt{netdecls} \gives \BB',\WW' \\
+  \WW' \vdash \BB \oplus \BB' \gives \BB''}
+{\TE, \EE \vdash
+ % \sy{program}~\emtxt{tydecls}~\emtxt{valdecls}~\emtxt{actdecls}~\emtxt{strdecls}~\emtxt{netdecls}~\gives~\TE,\EE,\NE_a,\BB'',\WW'}
+  \sy{program}~\emtxt{valdecls}~\emtxt{actdecls}~\emtxt{strdecls}~\emtxt{netdecls}~\gives~\TE,\EE',\NE_a,\BB'',\WW'}
+
+The initial environment $\EE$ contains the internal value\footnote{Function from
+  semantic values to semantic values.} of the expression-level builtin primitives (\texttt{+},
+\texttt{-}, \ldots). 
+
+\medskip
+The result consists of
+\begin{itemize}
+\item a type environment, containing the declared type constructors\footnote{These constructors are
+    required to evaluate \emph{cast} expressions.},
+\item an expression-level environment, containing the declared constants and functions,
+\item a network-level environment, containing the declared actors.
+\item a indexed set of boxes and wires, describing the network,
+\end{itemize}
+
+\medskip
+Evaluation of network-level definitions produces a set of boxes and a set of wires, in which the latter
+refer to the former. The last subgoal of the previous rule -- detailed in the following rules --
+makes boxes also refer to the wires (a kind of  ``reverse-wiring'' step).
+
+\medskip
+\ruleheader{\WW \vdash \BB \gives \BB'}
+
+\infrule[]
+{\forallin{i}{1}{n},~~ \WW \vdash \emtxt{b}_i \gives \emtxt{b'}_i}
+{\WW \vdash \{ \emtxt{b}_1,~ \ldots,~ \emtxt{b}_n \} ~\gives \{ \emtxt{b'}_1,~ \ldots,~ \emtxt{b'}_n \}} 
+
+\ruleheader{\WW \vdash \txt{b} \gives \txt{b}'}
+\infrule[]
+{\WW \vdash \txt{bid},\emtxt{bins} \gives \emtxt{bins}' \andalso \WW \vdash \txt{bid},\emtxt{bouts} \gives \emtxt{bouts}'}
+{\WW \vdash \txt{bid} \mapsto
+  \tttttuple{\emtxt{id}}{\emtxt{tag}}{\emtxt{bparams}}{\emtxt{bins}}{\emtxt{bouts}}~
+\gives \txt{bid} \mapsto \tttttuple{\emtxt{id}}{\emtxt{tag}}{\emtxt{bparams}}{\emtxt{bins'}}{\emtxt{bouts'}}}
+
+\ruleheader{\WW \vdash \txt{bid},\emtxt{bios} \gives \emtxt{bios}'}
+
+\infrule[]
+{\forallin{i}{1}{n},~~ \WW \vdash \txt{bid}, i \gives \txt{wid}_i}
+{\WW \vdash \txt{bid},~ \{ \txt{id}_1 \mapsto 0,~ \ldots,~ \txt{id}_n \mapsto 0 \} ~\gives \{ \txt{id}_1 \mapsto
+  \txt{wid}_1,~ \ldots,~ \txt{id}_n \mapsto \txt{wid}_n \}} 
+
+\ruleheader{\WW \vdash \txt{bid},\txt{sel} \gives \txt{wid}}
+
+\infrule[]
+{\WW(k) = \ttuple{\semwild}{\ttuple{\txt{bid}}{\txt{sel}}}}
+{\WW \vdash \txt{bid},\txt{sel} \gives k}
+
+% \ifthenelse{\boolean{devel}}{
+% \section{Type declarations}
+% \label{sec:static-type-declarations}
+
+% \tbw
+% }{}
+
+\section{Value declarations}
+\label{sec:static-value-declarations}
+
+\ruleheader{\TE, \EE \vdash \text{ValDecls} \gives \EE'}
+
+\infrule[ValDecls]
+{\forallin{i}{1}{n},~~ \TE,\EE_{i-1} \vdash \emtxt{valdecl}_i \gives \EE_i,~~ \EE_0=\emptyenv}
+{\TE \vdash \emtxt{valdecl}_1~\ldots~\emtxt{valdecl}_n \gives \EE_n}
+
+A value definition can only refer to a value defined before (hence the order of declaration is relevant).
+
+\infrule[ConstDecl]
+{\TE,\EE \vdash \emtxt{exp} \gives v ~~ \emtxt{is\_static\_const}(v)}
+{\TE,\EE \vdash \tm{const}~\txt{id}~\txt{=}~\emtxt{exp} \gives [\txt{id} \mapsto v]}
+
+The predicate \emph{is\_static\_const} is true only for integer and boolean constants.
+% and arrays of constants.
+
+\infrule[FunDecl]
+{}
+{\TE,\EE \vdash \tm{fun}~\txt{id}~\txt{=}~\emtxt{pat}~\rightarrow~\emtxt{exp} \gives [\txt{id} \mapsto
+  \sem{EFun(\emtxt{pat},\emtxt{exp})}]}
+
+% \infrule[ExtFunDecl]
+% {}
+% {\TE,\EE \vdash \tm{extern}~\txt{id}~\txt{:}~\emtxt{ty} \gives [\txt{id} \mapsto
+%   \sem{ExtFun}]}
+
+\section{Expressions}
+\label{sec:static-expressions}
+
+This set of rules is classical.
+Note that the type environment $\TE$ is needed to process \emph{cast} expressions.
+
+\ruleheader{\TE,\EE \vdash \sem{Exp} \gives \txt{v}}
+
+\infrule[EConst]
+{}
+{\TE,\EE \vdash \text{int}/\text{bool} \gives \sem{Int}/\sem{Bool}}
+
+\todo{Should we include arrays consts in the previous rule ?}
+\todo{Clarify notation : where is the actual \emph{value} in the previous rule ?!}
+
+\infrule[EVar]
+{\EE(\txt{id}) = \vv}
+{\TE,\EE \vdash \txt{id} \gives \vv}
+
+\infrule[ECon]
+{\forallin{i}{1}{n}, ~~\TE,\EE \vdash \emtxt{exp}_i \gives \vv_i}
+{\TE,\EE \vdash \txt{con}~\tuplen{\emtxt{exp}} \gives \sem{ECon}~\tuplen{\vv}}
+
+\infrule[EFunApp1]
+{\EE(\txt{id}) = \sem{EPrim}~f \\
+ \forallin{i}{1}{n}, ~~\TE,\EE \vdash \emtxt{exp}_i \gives \vv_i \\
+ \overline{f}\parenn{\vv} = \vv}
+{\TE,\EE \vdash \txt{id}~\mathbf{(}\seqn{\emtxt{exp}}\mathbf{)} \gives \vv}
+
+Rule \textsc{EFunApp1} deals with the application of builtin functions. 
+For each function $f$, we assume that $\overline{f}(v_1,\dots,v_k)$ denotes the proper
+resulting value, provided that $k$ is equal to the function arity and
+that the arguments $v_1,\dots,v_k$ are of the proper type\footnote{This is ensured by the
+  the type cheking stage.}.
+
+\infrule[EFunApp2]
+{\EE(\txt{id}) = \sem{EFun}~\ttuple{\tuplen{\txt{id}}}{\emtxt{exp}} \\
+ \forallin{i}{1}{n}, ~~\TE,\EE \vdash \emtxt{exp}_i \gives \vv_i \\
+\TE, \EE \oplus [\txt{id}_1 \mapsto \vv_1, \ldots, \txt{id}_n \mapsto \vv_n ] \vdash \emtxt{exp} \gives \vv}
+{\TE,\EE \vdash \txt{id}~\mathbf{(}\seqn{\emtxt{exp}}\mathbf{)} \gives \vv}
+
+Rule \textsc{EFunApp2} deals with the application of globally defined functions. It follows the classical call-by-value
+strategy (the function expression is evaluated in an environment augmented with the bindings resulting
+from binding its pattern to the argument). 
+
+\infrule[ELet]
+{\TE,\EE \vdash \emtxt{exp}_2 \gives \vv \andalso \TE,\EE \oplus [\txt{id} \mapsto \vv] \vdash \emtxt{exp}_1 \gives \vv'}
+{\TE,\EE \vdash \tm{let}~ \txt{id} \tm{=}~ \emtxt{exp}_2~ \tm{in}~ \emtxt{exp}_1 \gives \vv'}
+
+\infrule[ECond0]
+{\TE,\EE \vdash \emtxt{exp} \gives \sem{true} \andalso \TE,\EE \vdash \emtxt{exp}_1 \gives \vv}
+{\TE,\EE \vdash \tm{if}~ \emtxt{exp}~ \tm{then}~ \emtxt{exp}_1~ \tm{else}~ \emtxt{exp}_2 \gives \vv}
+
+\infrule[ECond1]
+{\TE,\EE \vdash \emtxt{exp} \gives \sem{false} \andalso \TE,\EE \vdash \emtxt{exp}_2 \gives \vv}
+{\TE,\EE \vdash \tm{if}~ \emtxt{exp}~ \tm{then}~ \emtxt{exp}_1~ \tm{else}~ \emtxt{exp}_2 \gives \vv}
+
+% \infrule[EArrRd]
+% {\EE(\txt{id}) = \sem{Array}~\tuplen{\vv} \andalso \TE,\EE \vdash \emtxt{exp} \gives \sem{Int}~i}
+% {\TE,\EE \vdash \txt{id}~\tm{[}\emtxt{exp}\tm{]} \gives \vv_i}
+
+% \infrule[EArrUpd]
+% {\EE(\txt{id}) = \sem{Array}~\tuplen{\vv} \andalso \TE,\EE \vdash \emtxt{exp}_1 \gives \sem{Int}~i
+% \andalso \TE,\EE \vdash \emtxt{exp}_2 \gives \vv'}
+% {\TE,EE \vdash \txt{id}~\tm{[}\emtxt{exp}_1~\tm{\leftarrow}~\emtxt{exp}_2\tm{]} \gives
+%  \vv[i\leftarrow \vv']}
+
+% In the above rule, we note $t[i \leftarrow v]$ the array $t'$ defined by $t'[j]=t[j]$ for all
+% $j\not=i$ and $t'[i]=t[i]$.
+
+\infrule[ECast]
+{\TE,\EE \vdash \emtxt{exp} \gives \vv \andalso \TE \vdash \emtxt{ty} \gives \tau \TE \vdash
+  \emtxt{coerce}(\vv,\tau)=\vv'}
+{\TE,\EE \vdash \emtxt{exp}~ \tm{:}~ \emtxt{ty} \gives \vv'}
+
+The function \emph{coerce} coerces a value to a given type. Coercibility has been checked by the at
+the typing stage. The coercibility relation and the behavior of the \emph{coerce} function have been
+defined in Sec.~\ref{sec:e-coerce}.
+
+\section{Actor declarations}
+\label{sec:static-actor-declarations}
+
+\ruleheader{\TE,\EE \vdash \text{ActorDecls} \gives \NE}
+
+\infrule[ActorDecls]
+{\forallin{i}{1}{n},~~ \TE,\EE \vdash \emtxt{actdecl}_i \gives \NE_i}
+{\TE,\EE \vdash \emtxt{actdecl}_1~\ldots~\emtxt{actdecl}_n \gives \C{i=1}{n}{\NE_i}}
+
+\infrule[ActorDecl]
+{\vdash \text{params} \gives \text{params}'\\
+ \vdash \text{ins} \gives \text{ins}'\\
+ \vdash \text{outs} \gives \text{outs}' \\
+ \vdash \text{vars} \gives \text{vars}'}
+{\TE,\EE \vdash
+  \actorr~\txt{id}~\txt{params}~\txt{ins}~\txt{outs}~{\txt{vars}}~{\txt{rules}}
+  \\ \gives [\txt{id} \mapsto
+  \sem{Act}~\ttttttuple{\txt{id}}{\txt{params}'}{\txt{ins}'}{\txt{outs}'}{\txt{vars}'}{\txt{rules}}]}
+
+The rule \textsc{ActorDecl} builds $\sem{Act}$ semantic values from the corresponding description at the
+abstract syntax level.
+
+\medskip
+\ruleheader{\vdash \txt{params}/\txt{ins}/\txt{outs} \gives \txt{params}'/\txt{ins}'/\txt{outs}'}
+
+\infrule[ActorParamsInsOuts]
+{}
+{\vdash \txt{id}_1 : \ty_1 ~\ldots~\txt{id}_n : \ty_n \gives \{ \txt{id}_1, \ldots, \txt{id}_n \}}
+
+\medskip
+\ruleheader{\vdash \txt{vars} \gives \txt{vars}'}
+
+\infrule[ActorVars]
+{\forallin{i}{1}{n},~~ \vdash \emtxt{var}_i \gives \EE_i}
+{\vdash \emtxt{var}_1~\ldots~\emtxt{var}_n \gives \C{i=1}{n}{\EE_i}}
+
+\ruleheader{\vdash \txt{var} \gives \txt{var}'}
+
+% \infrule[ActVar]
+% {}
+% {\TE,\EE~\vdash \txt{id} ~:~ \ty \gives [\txt{id} \mapsto \sem{Unknown}]}
+
+\infrule[ActVar]
+{}
+{\vdash \txt{id} ~:~ \ty ~=~ \emtxt{exp} \gives [\txt{id} \mapsto \emtxt{exp}]}
+
+\section{Stream declarations}
+\label{sec:static-stream-declarations}
+
+\ruleheader{\TE \vdash \text{StreamDecls} \gives \NE, \BB}
+
+\infrule[StreamDecls]
+{\forallin{i}{1}{n},~~ \vdash \emtxt{strdecl}_i \gives \NE_i,\BB_i}
+{\TE \vdash \emtxt{strdecl}_1~\ldots~\emtxt{strdecl}_n \gives \C{i=1}{n}{\NE_i},\C{i=1}{n}{\BB_i}}
+
+\infrule[InStreamDecl]
+{\text{b}=\langle\txt{id},\sem{BIn},\emptytuple,\emptytuple,\tuple{"o"\mapsto 0}\rangle \andalso
+  \txt{l}=\textsc{NewBid}()}
+{\TE \vdash \tm{stream}~\txt{id}~\ty~\txt{from}~\txt{id'} \gives [\txt{id} \mapsto \sem{Loc}(l,1)], [l
+  \mapsto \txt{b}]}
+
+\infrule[OutStreamDecl]
+{\text{b}=\langle\txt{id},\sem{BOut},\emptytuple,\tuple{"i" \mapsto 0},\emptytuple\rangle \andalso
+  \txt{l}=\textsc{NewBid}()}
+{\TE \vdash \tm{stream}~\txt{id}~\ty~\txt{to}~\txt{id'} \gives [\txt{id} \mapsto \sem{Loc}(l,1)], [l
+  \mapsto \txt{b}]}
+
+\medskip Each stream declaration creates a new box and enters the corresponding location in the
+environment.  The $\sem{BIn}$ (resp. $\sem{BOut}$) boxes have no parameter, no input (resp. output).
+Wire identifiers in the input (resp.  output) list are set to 0 at
+this stage. They will be updated when all definitions have been processed (see last sub-goal of rule
+\textsc{Program}).
+
+The function $\textsc{NewBid}$ returns a new, fresh box index (i.e. an index $l$ such as $l \not\in Dom(\BB)$).
+
+\section{Network declaration}
+\label{sec:static-network-declarations}
+
+This section only deals with \emph{non recursive} declarations. Recursive declarations are handled
+in Sec.~\ref{sec:recurs-netw-decl}.
+
+\ruleheader{\TE,\EE,\NE \vdash \text{NetDecls} \gives \NE',\BB,\WW}
+
+\infrule[NetDecls]
+{\forallin{i}{1}{n}, ~~\TE,\EE,\NE_{i-1},\BB_{i-1},\WW_{i-1} \vdash \emtxt{netdecl}_i \gives \NE_i, \BB_i, \WW_i \andalso \NE_0=\NE}
+{\TE,\EE,\NE \vdash \emtxt{netdecl}_1,\ldots,\emtxt{netdecl}_n \gives \NE_n,~\BB_n,~\WW_n}
+
+\ruleheader{\TE,\EE,\NE,\BB,\WW \vdash \text{NetDecl} \gives \NE',\BB',\WW'}
+
+\infrule[NetDecl]
+{\forallin{i}{1}{n},~~ \TE,\EE,\NE,\BB,\WW \vdash \ibinding{npat}{nexp}{i} \gives \NE_i,\BB_i,\WW_i \\
+\NE' = \C{i=1}{n}{\NE_i},~ \BB' = \C{i=1}{n}{\BB_i},~ \WW' = \C{i=1}{n}{\WW_i}}
+{\TE,\EE,\NE,\BB,\WW \vdash \mathbf{net}~ \bindings{npat}{nexpr}{n} \gives \NE \oplus \NE', \BB \oplus \BB', \WW \oplus
+  \WW'}
+
+\ruleheader{\TE,\EE,\NE,\BB,\WW \vdash \bindings{npat}{nexpr}{n} \gives \NE',\BB',\WW'}
+
+\infrule[NetBindings]
+{\forallin{i}{1}{n},~~ \TE,\EE,\NE,\BB,\WW \vdash \ibinding{npat}{nexp}{i} \gives \NE_i,\BB_i,\WW_i \\
+\NE' = \C{i=1}{n}{\NE_i},~ \BB' = \C{i=1}{n}{\BB_i},~ \WW' = \C{i=1}{n}{\WW_i}}
+{\TE,\EE,\NE,\BB,\WW \vdash \bindings{npat}{nexpr}{n} \gives \NE \oplus \NE', \BB \oplus \BB', \WW \oplus
+  \WW'}
+
+\ruleheader{\TE,\EE,\NE,\BB,\WW \vdash \binding{npat}{nexpr} \gives \NE',\BB',\WW'}
+
+\infrule[NetBinding]
+{\TE,\EE,\NE \vdash \emtxt{nexp} \gives \vv,\BB',\WW' \andalso \NE,\BB' \vdash_n \emtxt{npat}, \vv \gives \NE',\WW''}
+{\TE,\EE,\NE,\BB,\WW \vdash \emtxt{npat}~\tm{=}~\emtxt{nexp} \gives \NE \oplus \NE',~ \BB \oplus
+  \BB',~ \WW\oplus\WW'\oplus\WW''}
+
+Each definition potentially augments the variable environment and the box and wire sets.
+Evaluating an expression potentially creates boxes and wires. Binding a pattern may only create
+wires.
+
+\medskip
+Network-level pattern binding is handled using the following rules, where
+
+\begin{center}
+$\NE,\BB \vdash_n \emtxt{npat}, \rho \gives \NE', \WW'$
+\end{center}
+
+means that in the context of $\NE$ and $\BB$ binding \emph{npat} to value $\rho$ results in a 
+network-level environment $\NE$ and a set of wires $\WW'$.
+
+\ruleheader{\NE,\BB \vdash_n \text{NPat},\rho \gives \NE',\WW}
+
+\infrule[TNPatVar]
+{}
+{\NE,\BB \vdash_n \id, \rho \gives [\id \mapsto \rho],~\emptyenv}
+
+\infrule[TNPatTuple]
+{\forallin{i}{1}{n}, ~~\NE,\BB \vdash_n \emtxt{npat}_i, \rho_i \gives \NE_i,~\WW_i}
+{\NE,\BB \vdash_n \tm{(}\emtxt{npat}_1,\ldots,\emtxt{npat}_n\tm{)}, \tuplen{\rho} \gives
+  \C{i=1}{n}{\NE_i},~\C{i=1}{n}{\WW_i}}
+
+\infrule[TNPatOutput]
+{\NE(\id)=\sem{Loc}(l',1) \andalso \rho=\sem{Loc}(l,s) \andalso
+  \BB(l)=\langle\sem{BOut},\ldots\rangle \andalso k=\textsc{NewWid}()}
+{\NE,\BB \vdash_n \id, \rho \gives \emptyenv,~ [k\mapsto \ttuple{\ttuple{l}{s}}{\ttuple{l'}{1}}]}
+
+The last rule handes the case where a an identifier previously declared as a stream output is bound
+to an expression. In this case, a wire is inserted, connecting the box resulting from the evaluation
+of this expression to the box which has been created when instanciating the stream output.
+
+The function $\textsc{NewWid}$ returns a new, fresh wire index (i.e. an index $k$ such as $k \not\in Dom(\WW)$).
+
+
+\subsection{Network expressions}
+\label{sec:static-network-expressions}
+
+Here the rules are fairly standard, except for those dealing with instanciation of actors and
+recursive \texttt{let} definitions.
+
+\ruleheader{\TE,\EE,\NE \vdash \text{NExp} \gives \rho,\BB,\WW}
+
+% \infrule[NAct]
+% {\NE(\id) =
+%   \sem{Act}~\tttttttuple{\emtxt{id}}{\tuplek{\emtxt{id}}{p}}{\emtxt{ins}}{\emtxt{outs}}{\emtxt{vars}}{\emtxt{rules}} \\
+%  \forallin{i}{1}{n}, ~~\TE,\EE \vdash \emtxt{exp}_i \gives \vv_i
+%  \andalso \emtxt{is\_static\_const}(v_i)}
+% {\TE,\EE,\NE \vdash \id ~\tuplen{\emtxt{exp}} \gives
+%   \sem{Act}~\tttttuple{\id}{\tuplek{\emtxt{id}}{k}}{\tuplek{\vv}{k}}{\emtxt{ins}}{\emtxt{outs}},~ \emptyenv,~ \emptyenv}
+
+% \infrule[NVar]
+% {\NE(\id) = \rho \andalso \rho \not= \sem{Act}~\tttttuple{.}{.}{.}{.}{.}}
+% {\TE,\EE,\NE \vdash \id ~\emptytuple \gives \rho,~ \emptyenv,~ \emptyenv}
+
+% The first rule refers to variable bound to actors (with a possible set of actual parameter
+% values). The second with all other variables. All variables are looked up in the network-level
+% environment. Evaluations of actor parameters may refer to variables defined at the expression-level.
+
+\infrule[NNVar]
+{\NE(\id) = \rho}
+{\TE,\EE,\NE \vdash \id \gives \rho,~ \emptyenv,~ \emptyenv}
+
+\infrule[NEVar]
+{\EE(\id) = \vv,~~ \emtxt{wrapable}(\vv)}
+{\TE,\EE,\NE \vdash \id \gives \sem{NEVal}(\vv) ,~ \emptyenv,~ \emptyenv}
+
+The value of an identifier appearing in a network expression is searched first in the network-level
+environment and, if this fails, in the expression-level environment. The predicate \emph{wrapable}
+indicates whether an expression-level value $\vv$ can be wrapped as network-level value (in other
+words whether this value can be used as a parameter value for an actor). It is only true for
+$\sem{Int}$ and $\sem{Bool}$ constants.
+
+\infrule[NEConst]
+{}
+{\TE,\EE \vdash \text{int}/\text{bool} \gives \sem{NEVal}(\sem{Int}/\sem{Bool})}
+
+\infrule[NTuple]
+{\forallin{i}{1}{n}, ~~\NE \vdash \emtxt{nexp}_i \gives \rho_i, \BB_i, \WW_i}
+{\TE,\EE,\NE \vdash \tm{(}\emtxt{nexp}_1,\ldots,\emtxt{nexp}_n\tm{)} \gives \tuplen{v},~ \C{i=1}{n}{\BB_i},~ \U{i=1}{n}{\WW_i}}
+
+\infrule[NFun]
+{}
+{\TE,\EE,\NE \vdash \tm{function}~\emtxt{npat}~\tm{\rightarrow}~\emtxt{nexp}~\gives
+  \sem{Clos}(\emtxt{npat},\emtxt{nexp},\NE),~ \emptyenv,~ \emptyenv}
+
+\infrule[NLetDef]
+{\TE,\EE,\NE,\emptyset,\emptyset \vdash \bindings{npat}{nexp}{n} \gives \NE', \BB, \WW \\
+ \TE,\EE,\NE \oplus \NE' \vdash \emtxt{nexp}_2 \gives \rho, \BB', \WW''}
+{\TE,\EE,\NE \vdash \tm{let}~ \bindings{npat}{nexp}{n}~ \tm{in}~ \emtxt{nexp}_2 \gives \rho,~ \BB,~ \WW}
+
+The above rule is for \emph{non recursive} definitions. Recursive definitions are handled
+in Sec.~\ref{sec:recurs-netw-decl}.
+
+% \infrule[Match]
+% {\NE \vdash \emtxt{nexp} \gives \rho, \BB, \WW \andalso \existsin{j}{1}{n},~~\vdash_p \emtxt{npat}_j, \rho \gives \NE_j \\
+% \NE \oplus \NE_j \vdash \emtxt{nexp}_j \gives \rho', \BB', \WW'}
+% {\NE \vdash
+%   \tm{match}~\emtxt{nexp}~\tm{with}~(\emtxt{nexp}_1~\tm{\rightarrow}~\emtxt{nexp}_1)~\ldots~(\emtxt{npat}_n~\tm{\rightarrow}
+%  ~\emtxt{nexp}_n)
+%   \gives \rho',~ \BB\oplus\BB',~ \WW\cup\WW'}
+
+% \note{Strictly speaking, the \textsc{Match} rule is non-deterministic since it does not specify what happens
+% if several cases of a \texttt{match} expression are valid -- \emph{i.e.} if there exits several $j$
+% such that $\vdash_p \emtxt{npat}_j, \rho \gives \EE_j$ holds. TO BE DISCUSNED ?}
+
+% \infrule[If True]
+% {\NE \vdash \emtxt{nexp} \gives \truee,\BB,\WW \andalso \NE \vdash \emtxt{nexp}_1 \gives \rho,\BB',\WW'}
+% {\NE \vdash \tm{if}~ \emtxt{nexp}~ \tm{then}~ \emtxt{nexp}_1~ \tm{else}~ \emtxt{nexp}_2 \gives
+%   \rho,\BB\oplus\BB',\WW\cup\WW'}
+
+% \infrule[If False]
+% {\NE \vdash \emtxt{nexp} \gives \falsee,\BB,\WW \andalso \NE \vdash \emtxt{nexp}_2 \gives \rho,\BB',\WW'}
+% {\NE \vdash \ifff \emtxt{nexp}~ \tm{then}~ \emtxt{nexp}_1~ \tm{else}~ \emtxt{nexp}_2 \gives \rho,\BB\oplus\BB',\WW\cup\WW'}
+
+
+\todo{Nil,Cons,If,Match,Let}
+
+% \infrule[Let Rec]
+% {\Sigma,\EE,\GG \vdash \lett \recc \emtxt{npat} \eqq \expp_2 \gives \EE',\GG'
+%   \andalso \Sigma, E \oplus \EE',\GG' \vdash \expp_1 \gives \rho', \GG''}
+% {\Sigma,\EE,\GG \vdash \lett \recc \emtxt{npat} \eqq \expp_2 \inn \expp_1 \gives \rho', \GG''}
+
+% \medskip
+% Pattern binding at the expression level is handled using the following rules, where $\vdash_p \emtxt{npat}, \rho
+% \gives \NE$ means that binding \emph{npat} to value $\rho$ results in a 
+% static environment $\NE$ :
+
+% \ruleheader{\vdash_p \text{NPat},\rho \gives \NE}
+
+% \infrule[NPat Id]
+% {}
+% {\vdash_p \id, \rho \gives [\id \mapsto \rho]}
+
+% \infrule[NPat Ignore]
+% {}
+% {\vdash_p \tm{\_}, \rho \gives \emptyenv}
+
+% \infrule[NPat Tuple]
+% {\forallin{i}{1}{n}, ~~\vdash_p \emtxt{npat}_i, \rho_i \gives \NE_i}
+% {\vdash_p \tm{(}\emtxt{npat}_1,\ldots,\emtxt{npat}_n\tm{)}, \tuplen{\rho} \gives
+%   \C{i=1}{n}{\NE_i}}
+
+\bigskip
+The following rules deals with applications.
+
+\medskip
+Rule \textsc{NAppClo} deals with the application of closures and follows the classical call-by-value
+strategy (the closure body is evaluated in an environment augmented with the bindings resulting
+from binding its pattern to the argument). 
+
+\infrule[NAppClo]
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 \gives \Clos(\emtxt{npat},\emtxt{nexp},\NE'), \BB, \WW \\
+ \TE,\EE,\NE \vdash \emtxt{nexp}_2 \gives \rho,\BB',\WW' \\
+ \NE,\BB \vdash_n \emtxt{npat},\rho \gives \NE'', . \\
+ \NE' \oplus \NE'' \vdash \emtxt{nexp} \gives \rho', \BB'', \WW''}
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 ~\emtxt{nexp}_2 \gives \rho',\BB\oplus\BB'\oplus\BB',\WW\cup\WW'\cup\WW''}
+
+% Rule \textsc{App Prim} deals with the application of builtin primitives (\texttt{+}, \texttt{-},
+% \ldots). For each $\prim \in \Prim$ we assume that $\prim(v_1,\dots,v_k)$ denotes the proper
+% resulting value, provided that $k$ is the proper number of arguments for operator $\prim$ and
+% that the arguments $v_1,\dots,v_k$ are of the proper type\footnote{This is ensured by the
+%   the type cheking stage.}.
+
+% \infrule[App Prim]
+% {\NE \vdash \emtxt{nexp}_1 \gives \Prim(p), \BB,\WW \\
+%  \NE \vdash \emtxt{nexp}_2 \gives \rho,\BB',\WW' \andalso p(\rho)=\rho'}
+% {\NE \vdash \emtxt{nexp}_1 ~\emtxt{nexp}_2 \gives \rho',\BB\oplus\BB', \WW\oplus\WW'}
+
+\medskip Rules \textsc{NAppAct1} and \textsc{NAppAct2} deals with the instanciation of actors. Both
+insert a new box and a set of new wires connecting the argument to the inputs of the inserted
+box. The former deals with actors with parameters, the latter with actors without parameters.
+
+\infrule[NAppAct1]
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 \gives \\
+  \sem{Act}\ttttttuple{\emtxt{id}}{\tuplek{p}{q}}{\tuplek{i}{m}}{\tuplek{o}{n}}{\mapset{\emtxt{v}}{\emtxt{exp}}{k}}{\emtxt{rules}},~~ \BB', \WW' \\
+ \forallin{i}{1}{k},~ \TE,~\EE \oplus \C{i=1}{q}{[\emtxt{p}_i \mapsto \vv'_i]} \vdash \emtxt{exp}_i \gives \vv_i \\
+ TE,\EE,NE \vdash \emtxt{nexp}_2 \gives \langle\sem{NEVal}(\vv'_1),\ldots,\sem{NEVal}(\vv'_q)\rangle, \BB',\WW' \\
+ TE,\EE,NE \vdash \emtxt{nexp}_3 \gives \langle\Loc(l_1,s_1),\ldots,\Loc(l_m,s_m)\rangle, \BB'',\WW'' \\
+ \txt{b} = \tttttttuple{\emtxt{id}}{\sem{BBox}}{\mapset{\emtxt{p}}{\vv'}{q}}{\mapset{\emtxt{v}}{\vv}{k}}{\tuplek{\ut{bi}}{m}}{\tuplek{\ut{bo}}{n}}{\emtxt{rules}} \\
+ l = \textsc{NewBid}() \\
+ \forallin{j}{1}{m},~~ k_j=\textsc{NewWid}(),~~\txt{w}_j = \sem{Wire}\ttuple{\ttuple{l_j}{s_j}}{\ttuple{l}{j}} \\
+ \forallin{j}{1}{m},~~\ut{bi}_j=\ttuple{i_j}{0} \\
+ \forallin{j}{1}{n},~~\ut{bo}_j=\ttuple{o_j}{0} \\
+ \WW''' = \{k_1 \mapsto \txt{w}_1,\ldots,k_m \mapsto \txt{w}_m\}}
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 ~\emtxt{nexp}_2 ~\emtxt{nexp}_3 \\
+\gives \langle\Loc(l,1),\ldots,\Loc(l,n)\rangle,~~ [l \mapsto \txt{b}] \oplus \BB'' \oplus \BB' \oplus \BB,~~ \WW''' \cup \WW'' \cup \WW' \cup \WW}
+
+\infrule[NAppAct2]
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 \gives \\
+  \sem{Act}\ttttttuple{\emtxt{id}}{\emptytuple}{\tuplek{i}{m}}{\tuplek{o}{n}}{\mapset{\emtxt{v}}{\emtxt{exp}}{k}}{\emtxt{rules}},~~ \BB', \WW' \\
+ \forallin{i}{1}{k},~ \TE,\EE \vdash \emtxt{exp}_i \gives \vv_i \\
+ TE,\EE,NE \vdash \emtxt{nexp}_2 \gives \langle\Loc(l_1,s_1),\ldots,\Loc(l_m,s_m)\rangle, \BB'',\WW'' \\
+ \txt{b} =
+ \tttttttuple{\emtxt{id}}{\sem{BBox}}{[]}{\mapset{\emtxt{v}}{\vv}{k}}{\tuplek{\ut{bi}}{m}}{\tuplek{\ut{bo}}{n}}{\emtxt{rules}}
+ \andalso l = \textsc{NewBid}() \\
+ \forallin{j}{1}{m},~~ k_j=\textsc{NewWid}(),~~\txt{w}_j = \sem{Wire}\ttuple{\ttuple{l_j}{s_j}}{\ttuple{l}{j}} \\
+ \forallin{j}{1}{m},~~\ut{bi}_j=\ttuple{i_j}{0} \\
+ \forallin{j}{1}{n},~~\ut{bo}_j=\ttuple{o_j}{0} \\
+ \WW''' = \{k_1 \mapsto \txt{w}_1,\ldots,k_m \mapsto \txt{w}_m\}}
+{\TE,\EE,\NE \vdash \emtxt{nexp}_1 ~\emtxt{nexp}_2 \\
+ \gives \langle\Loc(l,1),\ldots,\Loc(l,n)\rangle,~~ [l \mapsto \txt{b}] \oplus \BB'' \oplus \BB' \oplus \BB,~~ \WW''' \cup \WW'' \cup \WW' \cup \WW}
+
+\subsection{Recursive network definitions }
+\label{sec:recurs-netw-decl}
+
+Recursive definitions may appear both within network expressions or at the network declaration level.
+
+\ruleheader{\TE,\EE,\NE \vdash \text{NExp} \gives \rho,\BB,\WW}
+
+\infrule[NLetRecDef]
+{\TE,\EE,\NE,\emptyset,\emptyset \vdash \bindings{npat}{nexp}{n}_{rec} \gives \NE', \BB, \WW \\
+ \TE,\EE,\NE \oplus \NE' \vdash \emtxt{nexp}_2 \gives \rho, \BB', \WW''}
+{\TE,\EE,\NE \vdash \tm{let}~ \tm{rec}~ \bindings{npat}{nexp}{n}~ \tm{in}~ \emtxt{nexp}_2 \gives \rho,~ \BB,~ \WW}
+
+\ruleheader{\TE,\EE,\NE,\BB,\WW \vdash \text{NetRecDecl} \gives \NE',\BB',\WW'}
+
+\infrule[NetRecDecl]
+{\TE,\EE,\NE,\emptyset,\emptyset \vdash \bindings{npat}{nexp}{n}_{rec} \gives \NE', \BB', \WW'}
+{\TE,\EE,\NE,\BB,\WW \vdash \tm{net}~ \tm{rec}~ \bindings{npat}{nexp}{n} \gives \NE \oplus \NE', \BB \oplus \BB', \WW \oplus
+  \WW'}
+
+Both cases are handled with a common rule \textsc{NetRecBindings}.
+This rule supports only two kinds of recursive bindings :
+\begin{itemize}
+\item all the bound identifiers are \emph{functions},
+\item all the bound identifiers \emph{wires}.
+\end{itemize}
+
+In the former case, the result is a circular closure (or a set of mutually recursive closures in
+case of multiple bindings).
+
+In the latter case, the recursively defined values correspond to \emph{cycles} in the network.
+
+\subsubsection{Recursive functions}
+\label{sec:recursive-functions}
+
+% \infrule[NetBindings]
+% {\forallin{i}{1}{n},~~ \TE,\EE,\NE,\BB,\WW \vdash \ibinding{npat}{nexp}{i} \gives \NE_i,\BB_i,\WW_i \\
+% \NE' = \C{i=1}{n}{\NE_i},~ \BB' = \C{i=1}{n}{\BB_i},~ \WW' = \C{i=1}{n}{\WW_i}}
+% {\TE,\EE,\NE,\BB,\WW \vdash \bindings{npat}{nexpr}{n} \gives \NE \oplus \NE', \BB \oplus \BB', \WW \oplus
+%   \WW'}
+
+% \infrule[NetRecBindings]
+% {\forallin{i}{1}{n},~~ \TE,\EE,\NE,\BB,\WW \vdash \emtxt{nbind} \gives \NE_i,\BB_i,\WW_i \\
+% \NE' = \C{i=1}{n}{\NE_i},~ \BB' = \C{i=1}{n}{\BB_i},~ \WW' = \C{i=1}{n}{\WW_i}}
+% {\TE,\EE,\NE,\BB,\WW \vdash \tm{net}~ \tm{rec}~ \tm{rec} \bindings{npat}{nexp}{n} \gives \NE \oplus \NE', \BB \oplus \BB', \WW \oplus
+%   \WW'}
+
+\ruleheader{\TE,\EE,\NE,\BB,\WW \vdash \bindings{npat}{nexpr}{n}_{rec} \gives \NE',\BB',\WW'}
+
+\infrule[NRecBindingsF]
+{\forallin{i}{1}{n},~~ \NE_i=[\txt{id} \mapsto \txt{cl}_i]\\
+ \forallin{i}{1}{n},~~ \txt{cl}_i = \sem{Clos}(\emtxt{npat}_i,\emtxt{nexp}_i,\NE \oplus \NE')]\\
+\NE' = \C{i=1}{n}{\NE_i}}
+{\TE,\EE,\NE \vdash \langle~ \txt{id}_1 \tm{=}~
+  \tm{function}~\emtxt{npat}_1~\tm{\rightarrow}~\emtxt{nexp}_1, \ldots, \txt{id}_n \tm{=}~
+  \tm{function}~\emtxt{npat}_n~\tm{\rightarrow}~\emtxt{nexp}_n\rangle_{rec}~\\
+ \gives \NE', \emptyenv, \emptyenv}
+
+% \infrule[NRecDecls1]
+% {\forallin{i}{1}{n},~~ \NE_i=[\txt{id} \mapsto \sem{Clos}(\emtxt{npat}_i,\emtxt{nexp}_i,\NE \oplus \NE')]\\
+% \NE' = \C{i=1}{n}{\NE_i}}
+% {\TE,\EE,\NE \vdash \tm{let}~ \tm{rec}~ \langle~ \txt{id}_1 \tm{=}~
+%   \tm{function}~\emtxt{npat}_1~\tm{\rightarrow}~\emtxt{nexp}_1, \ldots, \txt{id}_n \tm{=}~
+%   \tm{function}~\emtxt{npat}_n~\tm{\rightarrow}~\emtxt{nexp}_n\rangle~\\
+%  \gives \NE', \emptyenv, \emptyenv}
+
+\subsubsection{Recursive wires}
+\label{sec:recursive-wires}
+
+If the defined value is \emph{not} a function, then the recursively defined values
+correspond to \emph{cycles} in the network. Evaluation is then carried out as follows:
+
+\begin{enumerate}
+\item First, we create a \emph{recursive environment} $\NE'$, by binding each identifier occuring in
+  the LHS patterns to the location of a temporary, freshly created, box with tag $\sem{BDummy}$. This
+  can be formalized with the following set of rules:
+
+\ruleheader{\vdash_r \text{NPat} \gives \NE,\BB}
+
+\infrule[]
+{\text{b}=\langle\txt{id},\sem{BDummy},\emptytuple,\tuple{"i" \mapsto 0},\tuple{"o"\mapsto 0}\rangle \andalso
+  \txt{l}=\textsc{NewBid}()}
+{\vdash_r \id \gives [\id \mapsto \sem{Loc}(l,0)],~ [l \mapsto \txt{b}]}
+
+\infrule[]
+{\forallin{i}{1}{n}, ~~\vdash_r \emtxt{npat}_i \gives \NE_i,~\BB_i}
+{\vdash_r \tm{(}\emtxt{npat}_1,\ldots,\emtxt{npat}_n\tm{)} \gives \C{i=1}{n}{\NE_i},~\C{i=1}{n}{\BB_i}}
+
+\item Second, all the RHS expressions are evaluated in an environment augmented with $\NE'$. The
+resulting values are bound to the LHS patterns using the usual rules defined in
+section~\ref{sec:static-network-declarations}, leading an environment $\NE''$.
+
+\item Third, for each identifier $r$ occuring in the recursive environment $\NE'$, we build a
+\emph{substitution} $\phi = \lbrace u \mapsto v \rbrace$, where $u=\NE'(r)=Loc(l,s)$ and
+$v=\NE''(r)=Loc(l',s')$. This results in a set $\Phi$ of substitutions.
+
+\item Fourth, we apply each $\phi \in \Phi$ to the set $\WW'$ of wires produced by the evaluation of
+  the expressions evaluated at step 2. More precisely, we replace each pair $\ttuple{\gamma}{\gamma'} \in \WW'$ by
+$\ttuple{\phi(\gamma)}{\phi(\gamma')}$, where $\phi(\gamma)$ is defined as follows:
+
+if $\phi = \lbrace \Loc(k,s) \mapsto \Loc(k',s') \rbrace$ and $\gamma=\Loc(l,s'')$ then
+\begin{equation}
+\phi(\gamma) =
+\begin{cases}
+\Loc(k',s') & \text{if } l=k, \\
+\gamma & \text{otherwise}.
+\end{cases}
+\end{equation}
+\end{enumerate}
+
+The process can be summarized in the following rule:
+
+\infrule[NRecBindingsV]
+{\forallin{i}{1}{n},~ \vdash_r \emtxt{npat}_i \gives \NE'_i, \BB_i \\
+  \NE' = \C{i=1}{n}{\NE'_i} \andalso \BB = \C{i=1}{n}{\BB_i} \\
+ \forallin{i}{1}{n},~ \TE,\EE,\NE'\oplus\NE \vdash \emtxt{nexp}_i \gives \rho_i, \BB'_i, \WW'_i \\
+ \forallin{i}{1}{n},~ \NE, \BB \vdash_n \emtxt{npat}_i, \rho_i \gives \NE''_i, \WW'''_i \\
+  \NE'' = \C{i=1}{n}{\NE''_i} \\
+ \Phi = \lbrace \NE'(r) \mapsto \NE''(r), ~\forall r \in dom(\NE') \rbrace \\
+ \WW'' = \Pi_{\Phi} (\WW')}
+{\TE,\EE,\NE \vdash \bindings{npat}{nexp}{n}_{rec} \gives \NE'', \BB', \WW''}
+
+% \infrule[NLetRecDef]
+% {E \oplus \EE',\GG \vdash \expp \gives \vv,\GG' \andalso \vdash \patt, \vv \gives \EE'}
+% {\EE,\GG \vdash \lett \recc \patt \eqq \expp \gives \EE \oplus \EE', \GG'}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

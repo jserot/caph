@@ -1,0 +1,32 @@
+-- This example illustrates the use of "dynamic" parameters
+-- Whenener a value is available on input [t] of actor [thr], it becomes the new threshold value
+-- for the rest of the stream on its input [a]
+-- 2012-12-15, JS
+
+actor thr
+  in (t: unsigned<8>, a:unsigned<8>)
+  out (c:unsigned<1>)
+var th : unsigned<8> = 0
+rules
+  ( t, a) -> (c,                       th)
+| ( t, _) -> (                      _,  t)
+| ( _, v) -> (if v > th then 1 else 0,  _)
+;
+
+actor async (period:unsigned<4>)    -- This actor (grossly) simulates an "async" input by "decimating" its input
+  in (a: unsigned<8>)               -- 
+ out (c: unsigned<8>)               
+var cnt: unsigned<4> = 0
+rules
+| a:v when cnt=period -> (c:v,     cnt:0)
+| a:v                 -> (cnt:cnt+1)  -- input [a] is read but discarded
+;
+
+stream i1:unsigned<8> from "sample1.txt";  -- stream of threshold values
+stream i2:unsigned<8> from "sample2.txt";  -- stream of data values
+stream o1:unsigned<8> to "result1.txt";    -- decimated ("async") stream of thresholds
+stream o2:unsigned<1> to "result2.txt";    -- stream of thresholded values
+
+net ts = async %period i1;
+net o1 = ts;
+net o2 = thr (ts, i2);

@@ -1,0 +1,29 @@
+#include "dc.cph"
+
+-- suml
+-- SUML:<x1,x2,...,xn> = x1+x2+...+xn
+-- Non-recursive wiring version (see ../sumlrec for a recursive version)
+-- Jun 11, 2010 - JS
+
+
+-- actor decl section 
+
+actor suml ()
+  in (a:signed<8> dc)
+  out (c:signed<8>)
+var st : {S0,S1} = S0
+var s : signed<8>
+rules
+| (st:S0, a:'<) -> (st:S1, s:0)
+| (st:S1, a:'p) -> (s:s+p)
+| (st:S1, a:'>) -> (st:S0, c:s)
+;
+
+-- stream decl section
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+-- network section
+
+net o = suml i;

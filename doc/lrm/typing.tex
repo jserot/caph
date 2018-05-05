@@ -1,0 +1,708 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Typing}
+\label{chap:typing}
+
+\newcommand{\sy}[1]{\mathbf{#1}}
+\newcommand{\sem}[1]{\mathsf{#1}}
+
+\todo{type abbrevs}
+
+This section gives the formal typing rules for the so-called \emph{Core} \caph language defined in
+Chap.~\ref{chap:abssyn}. 
+
+\medskip
+The type language is fairly standard. A type $\tau$ is either\footnote{Functional, product and
+  enumerated types are here treated specially although they could be handled as "normal" constructed
+types.}
+\begin{itemize}
+\item a type variable $\alpha$
+\item a constructed type $\chi\ \tau_1 \ldots \tau_n$, 
+\item a functional type $\tau_1 \rightarrow \tau_2$,
+\item a product type $\tau_1 \times \ldots \times \tau_n$,
+\end{itemize}
+\note{Should we write $\varepsilon=\{c_1,\ldots,c_n\}$, i.e. make enumerated types keep track of
+  their constructors ?}
+A type schema $\sigma$ is either
+\begin{itemize}
+\item a type $\tau$,
+\item a type scheme $\forall \alpha. \sigma$.
+\end{itemize}
+
+\medskip
+For simplicity, conversions from type schemes to types (instanciation)
+and from types to type schemes (generalisation) have been left implicit since the rules are
+completely standard.
+
+\medskip
+Typing occurs in the context of a \emph{typing environment} consisting of :
+\begin{itemize}
+\item a type environment T, recording type and value constructors (\emph{tycons} and \emph{ctors}
+  resp.),
+\item a variable environments V, mapping identifiers to (polymorphic) types.
+\end{itemize}
+
+\medskip
+The initial type environment $TE_0$ records the type of the \emph{builtin} type and value
+constructors :
+
+$\begin{array}{lcl}
+\TE_0.tycons & = & [ \sy{int}\mapsto \sem{Int}, \sy{bool}\mapsto \sem{Bool}, \\
+%             &   &   \sy{array}\mapsto \alpha \rightarrow \sem{Array}~\alpha, \\
+             &   &   \sy{dc}\mapsto \alpha \rightarrow \sem{Dc}~\alpha ] \\
+\TE_0.ctors & = & [ \sy{0} \mapsto \sem{Int}, \sy{1} \mapsto \sem{Int}, \ldots, \\
+            &   & \sy{true} \mapsto \sem{Bool}, \sy{false} \mapsto \sem{Bool} \\
+            &   & \sy{SoS} \mapsto \sem{Dc}~\alpha, \sy{EoS} \mapsto \sem{Dc}~\alpha, \sy{Data} \mapsto \alpha \rightarrow \sem{Dc}~\alpha ] \\
+\end{array}$
+
+\note{Internally, there's no \texttt{Signed} nor \texttt{Unsigned} type constructors. These types
+  are represented as annotated \texttt{Int}s. This avoids having to define distinct versions of the
+  basic primitives like \texttt{+} or \texttt{-}.}
+
+The initial variable environment $VE_0$ contains the types of the expression-level builtin
+primitives.
+
+$\begin{array}{lcl}
+\VE_0 & = & [ \sy{+} : \sem{Int} \times \sem{Int} \rightarrow \sem{Int}, \\
+      &   &   \sy{=} : \sem{Int} \times \sem{Int} \rightarrow \sem{Bool}, \ldots ] \\
+\end{array}$
+
+\section{Notations}
+\label{sec:typing-notations}
+
+Both type and variable \emph{environments} are viewed as partial maps (from identifiers to types and
+from type constructors to types resp.). If $E$ is an environment, the domain and co-domain of $E$
+are denoted by $\text{dom}(E)$ and $\text{codom}(E)$ respectively.  The empty environment will be
+written $\emptyenv$.  $[x \mapsto y]$ denotes the singleton environment mapping $x$ to $y$.  We will
+note $E(x)$ the result of applying the underlying map to $x$ (for ex. if $E$ is $[x \mapsto y]$ then
+$E(x)=y$). We denote by $E[x \mapsto y]$ the environment that maps $x$ to $y$ and behaves like $E$
+otherwise. $E \oplus E'$ denotes the environment obtained by adding the mappings of $E'$ to those of
+$E$. If $E$ and $E'$ are not disjoints, then the mappings of $E$ are ``shadowed'' by those of
+$E'$. We will also use a specialized version of the $\oplus$ merging
+operator, denoted $\replace$, for which shadowing is replaced by type unification: if $x$ appears
+both in $E$ and $E'$, and maps respectively to $\sigma$ and $\sigma'$, then it will map to
+$\text{unify}_E(\sigma,\sigma')$ in $E \replace E'$
+(this simplifies the description of the semantics of definitions for outputs).
+$E \ominus E'$ denotes the environment obtained by removing any mapping $\lbrace x \mapsto y \rbrace$ for which $x
+\in dom(E')$ from E.
+
+When an environment $E$ is composed of several sub-environments $E'$,$E''$, \ldots, we note $E = \{
+E', E'', \ldots \}$ and use the dot notation to access these sub-environments (ex: $E.E'$).
+
+\medskip
+For convenience and readability, we try to adhere to the following
+naming conventions throughout this chapter :
+
+\begin{center}
+\begin{tabular}[c]{c|c}
+  \textbf{Meta-variable} & \textbf{Meaning} \\ \hline
+  $\TE$         & Type environment \\ 
+  $\VE$         & Variable environment \\ 
+  $ty$          & Type expression \\ 
+  $\tau$        & Type \\ 
+  $\sigma$      & Type scheme \\ 
+  $\alpha$      & Type variable \\ 
+   $\chi$           & Type constructor \\ 
+   $c$           & Value constructor \\ 
+   $\text{id}$    & Identifier \\ 
+   $\emph{npat}$   & Pattern (network level) \\ 
+   $\emph{nexp}$   & Network-level expression \\ 
+   $\emph{qpat}$   & Qualified rule pattern (actor level) \\
+   $\emph{rpat}$   & Rule pattern (actor level) \\
+   $\emph{qexp}$   & Qualified rule expression (actor level) \\
+   $\emph{exp}$   & Expression \\
+   $\emph{qual}$   & Rule qualifier (actor level)
+\end{tabular}
+\end{center}
+
+\medskip
+Syntactical terminal symbols are written in $\mathbf{bold}$. Non terminals in $\emph{italic}$. Types
+values are written in $\mathsf{serif}$.
+
+\newpage
+\section{Typing rules}
+\label{sec:typing-rules}
+
+\subsection{Programs}
+\label{sec:typing-progr}
+
+
+\ruleheader{\TE,\VE \vdash \text{Program} \gives \VE'}
+
+\infrule[Program]
+%{ \TE_0 \vdash \emtxt{tydecls} \gives \TE \\
+{  \TE, \VE_0 \vdash \emtxt{valdecls} \gives \VE_v \\
+  \andalso \TE, \VE_0 \oplus \VE_v \vdash \emtxt{actdecls} \gives \VE_a \\
+  \andalso \TE \vdash \emtxt{iodecls} \gives \VE_i, \VE_o \\
+  \andalso \TE, \VE_0 \oplus \VE_v \oplus \VE_a \oplus \VE_i \vdash \emtxt{netdecls} \gives \VE'}
+%{\TE_0, \VE_0 \vdash \sy{program} ~\emtxt{tydecls} ~\emtxt{valdecls} ~\emtxt{actdecls}
+{\TE_0, \VE_0 \vdash \sy{program} ~\emtxt{valdecls} ~\emtxt{actdecls}
+  ~\emtxt{iodecls} ~\emtxt{netdefns} \gives \VE' \replace \VE_o}
+
+% \subsection{Type declarations}
+% \label{sec:typing-type-decls}
+
+% \ruleheader{\TE~\vdash \text{TyDecls} \gives \TE'}
+
+% \infrule[TyDecls]
+% {\forallin{i}{1}{n},~~ \TE~\vdash \emtxt{tydecl}_i \gives \TE_i}
+% {\TE, \VE~ \vdash \emtxt{tydecl}_1~\ldots~\emtxt{tydecl}_n \gives \C{i=1}{n}{\TE_i}}
+
+% \infrule[TyDecl]
+% { \TE~\vdash \emtxt{ty} \gives \tau }
+% {\TE~ \vdash \mathtt{type}~\txt{id}~\mathtt{=}~\emtxt{ty} \gives [\txt{id} \mapsto \tau]}
+
+\subsection{Value declarations}
+\label{sec:typing-value-decls}
+
+\ruleheader{\TE, \VE~\vdash \text{ValDecls} \gives \VE'}
+
+\infrule[ValDecls]
+{\forallin{i}{1}{n},~~ \TE,\VE_{i-1}~\vdash \emtxt{valdecl}_i \gives \VE_i,~~ \VE_0=\VE}
+{\TE, \VE~ \vdash \emtxt{valdecl}_1~\ldots~\emtxt{valdecl}_n \gives {\VE_n}}
+
+\infrule[ConstDecl1]
+{ \TE, \VE~\vdash \emtxt{exp} \gives \tau }
+{\TE, \VE~ \vdash \mathtt{const}~\txt{id}~\mathtt{=}~\emtxt{exp} \gives [\txt{id} \mapsto \tau]}
+
+\infrule[ConstDecl2]
+{ \TE, \VE~\vdash \emtxt{exp} \gives \tau \andalso \TE~\vdash \ty \gives \tau' \quad \emtxt{coercible}(\tau,\tau') }
+{\TE, \VE~ \vdash \mathtt{const}~\txt{id}~\mathtt{=}~\emtxt{exp} ~:~ \ty \gives [\txt{id} \mapsto
+  \tau']}
+
+\infrule[FunDecl1]
+{\forallin{i}{1}{n},~\vdash \emtxt{pat}_i, \tau_i \gives \VE_i \andalso \VE'=\C{i=1}{n}{\VE_i}\\
+\TE,\VE \oplus \VE'~\vdash \emtxt{exp} \gives \tau'}
+{\TE,\VE~ \vdash \mathtt{fun}~\txt{fid}~\tuplen{\emtxt{pat}}~\mathtt{\rightarrow}~\emtxt{exp} \gives
+  [\txt{fid} \mapsto \tuplen{\tau} \rightarrow \tau']}
+
+\infrule[FunDecl2]
+{\forallin{i}{1}{n},~\vdash \emtxt{pat}_i, \tau_i \gives \VE_i \andalso \VE'=\C{i=1}{n}{\VE_i}\\
+\TE,\VE \oplus \VE'~\vdash \emtxt{exp} \gives \tau' \\
+ \TE~\vdash \ty \gives \tau'' \quad \emtxt{coercible}(\tuplen{\tau} \rightarrow \tau',\tau'') }
+{\TE,\VE~ \vdash \mathtt{fun}~\txt{fid}~\tuplen{\emtxt{pat}}~\mathtt{\rightarrow}~\emtxt{exp} ~:~ \ty  \gives
+  [\txt{fid} \mapsto \tau'']}
+
+% \infrule[ExtFunDecl]
+% { \TE~\vdash \ty \gives \tau \andalso \TE~\vdash \ty' \gives \tau'}
+% {\TE,\VE~ \vdash \mathtt{extern}~\txt{id}~\mathtt{:}~\ty~\mathtt{\rightarrow}~\ty' \gives [\txt{id}
+%   \mapsto \tau \rightarrow \tau']}
+
+\newpage
+where 
+
+\infax{\vdash \emtxt{pat}, \tau \gives \VE}
+
+means that declaring \emph{pat} with type $\tau$ creates the variable environment $\VE$.
+
+\medskip
+The predicate \emph{coercible} tells whether the infered type $\tau$ can be cast to the declared type
+$\tau'$. The coercibility relation has been defined in Sec.~\ref{sec:e-coerce}.
+
+% \subsubsection{Function patterns}
+% \label{sec:typing-fun-patterns}
+
+% The following rules are used to handle pattern binding in function declarations
+
+% \ruleheader{\vdash_f \text{FPat},\tau \gives \VE}
+
+% \infrule[FPatId]
+% {}
+% {~\vdash_f \txt{id},~ \tau \gives [\txt{id} \mapsto \tau]}
+
+% \infrule[FPatTuple]
+% {\forallin{i}{1}{n}, ~~\vdash_f \emtxt{fpat}~_i, \tau_i \gives \VE_i}
+% {\vdash_f \emtxt{fpat}~_1, \ldots \emtxt{fpat}~_n,~~ \tau_1 \times \ldots \times \tau_n \gives \C{i=1}{n}{\VE_i}}
+% where 
+
+% \infax{\vdash_f \emtxt{pat}, \tau \gives \VE}
+
+% means that declaring \emph{pat} with type $\tau$ creates the variable environment $\VE$.
+
+\subsection{Actor declarations}
+\label{sec:typing-actors}
+
+\ruleheader{\TE, \VE ~\vdash \text{ActorDecls} \gives \VE'}
+
+\infrule[ActorDecls]
+{\forallin{i}{1}{n},~~ \TE,\VE~\vdash \emtxt{actdecl}_i \gives \VE_i}
+{\TE,\VE~ \vdash \emtxt{actdecl}_1~\ldots~\emtxt{actdecl}_n \gives \C{i=1}{n}{\VE_i}}
+
+\infrule[ActorDecl1]
+{          \emtxt{params} \not = \emptyset \\
+           \TE \vdash \emtxt{params} \gives \tau,\VE_p \\
+  \andalso \TE \vdash \emtxt{ins} \gives \tau',\VE_i \\
+  \andalso \TE \vdash \emtxt{outs} \gives \tau'',\VE_o \\
+  \andalso \TE,\VE \oplus \VE_p \vdash \emtxt{localvars} \gives \VE_v,\TE_v \\
+  \andalso \TE \oplus \TE_v, \VE \oplus \VE_p \oplus \VE_v \oplus \VE_i \oplus \VE_o \vdash \emtxt{rules} \gives \VE_r}
+{\TE,\VE~ \vdash
+  \actorr~\txt{id}~\emtxt{params}~\emtxt{ins}~\emtxt{outs}~\emtxt{localvars}~\emtxt{rules}
+  \gives [\txt{id} \mapsto \tau \rightarrow \tau' \rightarrow \tau'']}
+
+\infrule[ActorDecl2]
+{          \emtxt{params} = \emptyset \\
+  \andalso \TE \vdash \emtxt{ins} \gives \tau',\VE_i \\
+  \andalso \TE \vdash \emtxt{outs} \gives \tau'',\VE_o \\
+  \andalso \TE,\VE \oplus \VE_p \vdash \emtxt{localvars} \gives \VE_v,\TE_v \\
+  \andalso \TE \oplus \TE_v, \VE \oplus \VE_p \oplus \VE_v \oplus \VE_i \oplus \VE_o \vdash \emtxt{rules} \gives \VE_r}
+{\TE,\VE~ \vdash
+  \actorr~\txt{id}~\emtxt{params}~\emtxt{ins}~\emtxt{outs}~\emtxt{localvars}~\emtxt{rules}
+  \gives [\txt{id} \mapsto \tau' \rightarrow \tau'']}
+
+Note that the type assigned to an actor only depends on its interface (parameters, inputs and outputs).
+An actor \texttt{a} declared as
+
+\medskip
+$\mathtt{actor}~a~(p_1:t_1,\ldots,p_k:t_k)~\mathtt{in}~(i_1:t'_1,\ldots,i_m:t'_m)~\mathtt{out}~(o_1:t''_1,\ldots,o_n:t''_n)$
+
+\medskip
+will be assigned type
+
+\medskip
+$t_1\times\ldots\times t_k \rightarrow t'_1\times\ldots\times t'_m \rightarrow t''_1\times\ldots\times t''_n$
+
+\medskip
+whereas an actor \texttt{a} declared as
+
+\medskip
+$\mathtt{actor}~a~\mathtt{in}~(i_1:t'_1,\ldots,i_m:t'_m)~\mathtt{out}~(o_1:t''_1,\ldots,o_n:t''_n)$
+
+\medskip
+will be assigned type
+
+\medskip
+$t'_1\times\ldots\times t'_m \rightarrow t''_1\times\ldots\times t''_n$
+
+\medskip
+% The rule schema may refer to identifiers bound to parameters, inputs, outputs or local variables.
+% When typing rules, only the parameters are visible. Inputs, outputs and local variables are accessed
+% indirectly by pattern matching against the rule schema.
+
+\ruleheader{\TE~\vdash \text{ActParams} \gives \tau,\VE}
+
+\infrule[ActParams]
+{\forallin{i}{1}{n},~~ \TE~\vdash \emtxt{param}_i \gives \tau_i,\VE_i}
+{\TE~ \vdash \emtxt{param}_1~\ldots~\emtxt{param}_n \gives \tau_1\times\ldots\times\tau_n,~ \C{i=1}{n}{\VE_i}}
+
+\infrule[ActParam]
+{\TE~\vdash \ty \gives \tau}
+{\TE~\vdash \txt{id} ~:~ \ty \gives \tau,~ [\txt{id} \mapsto \tau]}
+
+% The predicate \emph{valid\_param\_type} is used to accept only parameters with type 
+% \begin{itemize}
+% \item $\tau$, where $\tau$ is a \emph{scalar type} ($\mathsf{Int}$ or $\mathsf{Bool}$),
+% \item $\mathsf{Array}~\tau$ where $\tau$ is a scalar type,
+% \item $\tau_1 \times \ldots \times \tau_n \rightarrow \tau_{n+1}$, where $\tau$ is a scalar type.
+% \end{itemize}
+
+\medskip\ruleheader{\TE~\vdash \text{ActIOs} \gives \tau,\VE'}
+
+\infrule[ActIOs]
+{\forallin{i}{1}{n},~~ \TE~\vdash \emtxt{io}_i \gives \tau_i, \VE_i}
+{\TE~ \vdash \emtxt{io}_1~\ldots~\emtxt{io}_n \gives \tau_1 \times \ldots \times \tau_n,~ \C{i=1}{n}{\VE_i}}
+
+\infrule[ActIO]
+{\TE~\vdash \ty \gives \tau}
+{\TE~\vdash \txt{id} ~:~ \ty \gives \tau,~ [\txt{id} \mapsto \tau]}
+
+% The predicate \emph{valid\_io\_type} is used to accept only parameters with type $\tau$ or
+% $\mathsf{Dc}~\tau$ where $\tau$ is a scalar type.
+
+\ruleheader{\VE,\TE~\vdash \text{ActVars} \gives \VE',\TE'}
+
+\infrule[ActVars]
+{\forallin{i}{1}{n},~~ \VE,\TE~\vdash \emtxt{var}_i \gives \VE_i, \TE_i}
+{\VE,\TE~ \vdash \emtxt{var}_1~\ldots~\emtxt{var}_n \gives \C{i=1}{n}{\VE_i}, \C{i=1}{n}{\TE_i}}
+
+\infrule[ActVar]
+{\TE~\vdash \ty \gives \tau,\TE'}
+{\VE,\TE~\vdash \txt{id} ~:~ \ty \gives \tau, [\txt{id} \mapsto \tau], \TE'}
+
+\infrule[ActVar']
+{\TE~\vdash \ty \gives \tau,\TE' \quad \TE,\VE~\vdash \emtxt{exp} \gives \tau' \quad
+  \emtxt{coercible}(\tau',\tau)}
+{\VE,\TE~\vdash \txt{id} ~:~ \ty ~=~ \emtxt{exp} \gives [\txt{id} \mapsto \tau], \TE'}
+
+% The predicate \emph{valid\_var\_type} is used to accept only parameters with type 
+% \begin{itemize}
+% \item $\tau$, where $\tau$ is a \emph{scalar type} ($\mathsf{Int}$ or $\mathsf{Bool}$) or an enumerated type,
+% \item $\mathsf{Array}~\tau$ where $\tau$ is a scalar type.
+% \end{itemize}
+
+\medskip
+Typing of
+actor local variables is the only situation where the type environment TE can be augmented. This
+happens when a variable is declared with an enumerated type. In this case, the (nullary) enumerated
+constants are added, as nullary value constructors, to the type environment. Such declarations can be viewed as
+purely local type declarations, since the scope of the declared constructors is limited to the rule set of the enclosing actor).
+
+% \medskip
+% A special set of rules deals with the values which can be used to initialize local
+% variables\footnote{Enumerated constants are only valid for local variables.}
+
+% \ruleheader{\TE~\vdash \text{Const} \gives \tau}
+
+% \infrule[ScalarConst]
+% {}
+% {\TE,\VE \vdash \txt{int}/\txt{bool} \gives \mathsf{Int}/\mathsf{Bool}}
+
+% \infrule[ArrayConst]
+% {\forallin{i}{1}{n},~ \TE~\vdash \emtxt{cst}_i \gives \tau \quad \emtxt{valid\_scalar\_type}~ \tau}
+% {\TE~ \vdash \mathbf{[}~\emtxt{cst}_1~\ldots~\emtxt{cst}_n\mathbf{]} \gives \mathsf{Array}~\tau}
+
+% \infrule[EnumConst]
+% {\TE.ctors(c)=\tau}
+% {\TE~ \vdash \txt{c} \gives \tau}
+
+
+\subsubsection{Actor rules}
+\label{sec:typing-actor-rules}
+
+\ruleheader{\TE,\VE~\vdash \text{ActRules} \gives \VE'}
+
+\infrule[ActRules]
+{\forallin{i}{1}{n},~~ \TE,\VE~\vdash \emtxt{rule}_i \gives \tau_i}
+{\TE,\VE~ \vdash \emtxt{rule}_1~\ldots~\emtxt{rule}_n \gives [ 1 \mapsto \tau_1, \ldots, n \mapsto \tau_n]}
+
+Typing the rule set produces a environment mapping rule numbers to types. Each rule can have a
+distinct type. 
+
+\ruleheader{\TE,\VE~\vdash \text{ActRule} \gives \tau \rightarrow \tau'}
+
+\infrule[ActRule]
+{ \forallin{i}{1}{m},~~\TE,\VE~\vdash \emtxt{qpat}_i \gives \tau_i, \VE'_i \\
+  \forallin{j}{1}{n},~~\TE,\VE\oplus\C{i=1}{n}{\VE'_i} \vdash \emtxt{qexp}_j \gives \tau'_j}
+{\TE,\VE~ \vdash \langle \emtxt{qpat}_1,\ldots,\emtxt{qpat}_m\rangle
+  ~\rightarrow~\langle\emtxt{qexp}_1,\ldots,\emtxt{qexp}_n\rangle \gives
+  \tau_1\times\ldots\times\tau_m \rightarrow \tau'_1\times\ldots\times\tau'_n}
+
+\subsubsection{Rule patterns}
+\label{sec:typing-rule-patterns}
+
+Typing a (qualified) rule pattern gives a type and an environment, mapping each identifier
+introduced in the pattern to a type. The type is retrieved using the pattern qualifier.
+
+\ruleheader{\TE,\VE~\vdash \text{QPat} \gives \tau,\VE}
+
+\infrule[RPatConstInt]
+{\VE(\txt{id})=\mathsf{Int}}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{int}} \gives \mathsf{Int},~  \emptyenv}
+
+\infrule[RPatConstBool]
+{\VE(\txt{id})=\mathsf{Bool}}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{int}} \gives \mathsf{Bool},~  \emptyenv}
+
+\infrule[RPatVar]
+{\VE(\txt{id})=\tau}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{var}} \gives \tau,~ [\txt{var} \mapsto \tau]}
+
+\infrule[RPatWild]
+{\VE(\txt{id})=\tau}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{\_}} \gives \tau,~ \emptyenv}
+
+\infrule[RPatCon0]
+{\VE(\txt{id})=\tau \andalso \TE.ctors(c)=\tau}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{c}~\emptytuple} \gives \tau,~ \emptyenv}
+
+\infrule[RPatCon]
+{\VE(\txt{id})=\tau \andalso \TE.ctors(c) = \seqopn{\tau}{\times} \rightarrow \tau \\
+ \forallin{i}{1}{n}, \TE,\VE~\vdash \emtxt{qpat}_i \gives \tau_i,~ \VE_i}
+{\TE,\VE~\vdash \ttuple{\txt{id}}{\txt{c}~\tuplen{\emtxt{qpat}}} \gives \tau,~ \C{i=1}{n}{\VE_i}}
+
+\subsection{Expressions}
+\label{sec:typing-expressions}
+
+\ruleheader{\TE,\VE~ \vdash \text{QExp} \gives \tau}
+\infrule[]
+{\TE,\VE \vdash \emtxt{exp} \gives \tau \andalso \VE(\txt{id}) = \tau}
+{\TE,\VE \vdash \ttuple{\txt{id}}{\emtxt{exp}} \gives \tau}
+
+The infered type for a qualified expression must match the type assigned to the corresponding output
+or local variable.
+
+\ruleheader{\TE,\VE~ \vdash \text{Exp} \gives \tau}
+
+\infrule[EConst]
+{}
+{\TE,\VE \vdash \txt{int}/\txt{bool} \gives \mathsf{Int}/\mathsf{Bool}}
+
+\infrule[EVar]
+{\VE(id) = \tau}
+{\TE,\VE \vdash \txt{id} \gives \tau}
+
+\infrule[EWild]
+{}
+{\TE,\VE \vdash \txt{\_} \gives \alpha}
+
+\infrule[ECon0]
+{\TE.ctors(c)=\tau}
+{\TE,\VE ~\vdash \txt{c}~\emptytuple \gives \alpha}
+
+\infrule[ECon]
+{\TE.ctors(c) = \seqopn{\tau}{\times} \rightarrow \tau \\
+ \forallin{i}{1}{n},~~ \TE, \VE \vdash \emtxt{exp}_i \gives \tau_i}
+{\TE,\VE ~\vdash \txt{c}~\tuplen{\emtxt{exp}} \gives \tau}
+
+\note{If $c=\sem{Data}$, $\tau_1$ must be a scalar type !}
+
+% \infrule[REEnum]
+% {\TE.ctors(c)=\tau}
+% {\TE,\VE \vdash \txt{c} \gives \tau}
+
+% \infrule[RESEOS]
+% {}
+% {\TE,\VE \vdash \mathbf{SoS}/\mathbf{EoS} \gives \mathsf{Dc}~\alpha}
+
+% \infrule[REData]
+% {\TE,\VE \vdash exp \gives \tau \quad \emtxt{valid\_scalar\_type}~\tau}
+% {\TE,\VE \vdash \mathbf{data}~\emtxt{exp} \gives \mathsf{Dc}~\alpha}
+
+\infrule[EApp]
+{\VE(id)=\tau_1 \times \ldots \times \tau_n \rightarrow \tau' \\
+ \forallin{i}{1}{n}, ~~\TE,\VE \vdash ~\emtxt{exp}_i \gives  \tau_i}
+{\TE,\VE \vdash \text{id}\lparenn \emtxt{exp}_1,~\ldots,~\emtxt{exp}_n\rparenn \gives \tau'}
+
+\infrule[ECond]
+{\TE,\VE \vdash \emtxt{exp} \gives \mathsf{Bool} \andalso \TE,\VE \vdash \emtxt{exp}_1 \gives \tau
+  \andalso \VE,\TE \vdash \emtxt{exp}_2 \gives \tau}
+{\TE,\VE \vdash \mathbf{if}~ \emtxt{exp}~ \mathbf{then} ~\emtxt{exp}_1 ~\elsee ~\emtxt{exp}_2  \gives \tau}
+
+\infrule[ELet]
+{\vdash_p \text{id},\tau' \gives \VE' \andalso \TE,\VE \vdash \emtxt{exp}_2 \gives \tau' \andalso
+  \TE,\VE \oplus \VE'' \vdash \emtxt{exp}_1 \gives \tau}
+{\TE,\VE \vdash \mathbf{let}~\text{id}~\mathbf{=}~\emtxt{exp}_2~\mathbf{in}~\emtxt{exp}_1 \gives  \tau}
+
+% \infrule[AEFun]
+% {\vdash_p \text{id},\tau \gives \VE' \andalso \TE,\VE \oplus \VE' \vdash \emtxt{exp} \gives \tau'}
+% {\TE,\VE \vdash \mathbf{function}~\text{id}~\mathbf{\rightarrow}~\emtxt{exp} \gives \tau \rightarrow \tau'}
+
+% \infrule[EArrRd]
+% {\VE(\txt{id}) = \mathsf{Array}~\tau \andalso \TE,\VE \vdash \emtxt{exp} \gives \mathsf{Int}}
+% {\TE,\VE \vdash \txt{id} \mathbf{[} \emtxt{exp} \mathbf{]} \gives \tau}
+
+% \infrule[EArrUpd]
+% {\VE(\txt{id}) = \mathsf{Array}~\tau \andalso \TE,\VE \vdash \emtxt{exp}_1 \gives \mathsf{Int} \andalso
+%   \TE,\VE \vdash \emtxt{exp}_2 \gives \tau}
+% {\TE,\VE \vdash \txt{id} \mathbf{[} \emtxt{exp}_1 \leftarrow \emtxt{exp}_2 \mathbf{]} \gives
+%   \mathsf{Array}~\tau}
+
+\infrule[ECoerce]
+{\TE,\VE \vdash ~\emtxt{exp} \gives \tau \andalso \TE \vdash \emtxt{ty} \gives \tau' \andalso
+  \emtxt{coercible}(\tau,\tau') }
+{\TE,\VE ~\vdash \emtxt{exp}~\mathbf{:}~\emtxt{ty} \gives \tau'}
+
+% The predicate \emph{coercible} tells whether the infered type $\tau$ can be cast to the declared type
+% $\tau'$. The coercibility relation has been defined in Sec.~\ref{sec:e-coerce}.
+
+% \begin{figure}[h]
+%   \centering
+% \begin{tabular}[c]{|c|c|c|c|c|c|c|}
+%                      & \texttt{signed<n>} & \texttt{unsigned<n>} & \texttt{int} & \texttt{bool} & \\ \hline
+% \texttt{signed}      & Y                  & Y                    & Y            &               & \\ \hline
+% \texttt{unsigned}    &                    & Y                    & Y            &               & \\ \hline
+% \texttt{int}         & Y                  & Y                    & Y            &               & \\ \hline
+% \texttt{bool}        &                    &                      &              & Y             & \\ \hline
+% \end{tabular}
+%   \caption{Coercibility relation}
+%   \label{fig:coercible}
+% \end{figure}
+
+\subsection{IOs}
+\label{sec:typing-io-declarations}
+
+\ruleheader{\TE~\vdash \text{IoDecls} \gives \VE_i,\VE_o}
+
+\infrule[IoDecls]
+{\forallin{i}{1}{n},~~ \TE~\vdash \emtxt{iodecl}_i \gives \VE_i,\VE_o}
+{\TE~ \vdash \emtxt{iodecl}_1~\ldots~\emtxt{iodecl}_n \gives \C{i=1}{n}{\VE_i},\C{i=1}{n}{\VE_o}}
+
+\infrule[StreamDecl]
+{\TE~\vdash \ty \gives \tau}
+{\TE~ \vdash \streamm~\txt{id}~\ty~\txt{from}~\txt{id'} \gives [\txt{id} \mapsto \tau], \emptyenv}
+
+\infrule[StreamDecl]
+{\TE~\vdash \ty \gives \tau}
+{\TE~ \vdash \streamm~\txt{id}~\ty~\txt{to}~\txt{id'} \gives \emptyenv, [\txt{id} \mapsto \tau]}
+
+\subsection{Network declarations}
+\label{sec:typing-network-declarations}
+
+\ruleheader{\TE, \VE~ \vdash \text{NetDecls} \gives \VE'}
+
+\infrule[NetDecls]
+{\VE_0=\VE \andalso \forallin{i}{1}{n},~~ \TE, \VE_{i-1}~\vdash \emtxt{netdecl}_i \gives \VE_i}
+{\text{\VE}~ \vdash \emtxt{netdecl}_1~\ldots~\emtxt{netdecl}_n \gives \VE_n}
+
+\ruleheader{\TE, \VE~ \vdash \text{NetDecl} \gives \VE'}
+
+\infrule[NetDecl]
+{\forallin{i}{1}{n},~~ \TE,\VE \vdash \emtxt{nbind} \gives \VE_i \andalso \VE'=\C{i=1}{n}{\VE_i}}
+{\TE, \VE \vdash \mathbf{net}~ \tuplen{nbind} \gives \VE \oplus \VE'}
+
+\infrule[NetRecDecl]
+{\forallin{i}{1}{n},~~ \TE,\VE \oplus \VE' \vdash \emtxt{nbind} \gives \VE_i \andalso \VE'=\C{i=1}{n}{\VE_i}}
+{\TE, \VE \vdash \mathbf{net}~ \mathbf{rec}~ \tuplen{nbind} \gives \VE \oplus \VE'}
+
+\ruleheader{\TE, \VE~ \vdash \text{NetBind} \gives \VE'}
+
+\infrule[NetBind]
+{\TE, \VE \vdash \emtxt{nexp} \gives \tau \andalso \vdash_p \emtxt{npat},\tau \gives \VE'}
+{\TE, \VE \vdash \emtxt{npat}~ \mathbf{=}~ \emtxt{nexp}~ \gives \VE'}
+
+% \infrule[RecNDecl]
+% {\VE \oplus \VE' \vdash \emtxt{nexp}~ \gives \tau  \andalso \vdash_p \emtxt{npat}~,\tau \gives \VE'}
+% {\TE, \VE \vdash \mathbf{ndef}~ \mathbf{rec}~ \emtxt{npat}~ \mathbf{=}~ \emtxt{nexp}~ \gives \VE \oplus \VE'}
+
+\note{Can we omit \TE from here ?}
+
+\subsubsection{Patterns}
+\label{sec:typing-patterns}
+
+The following rules are used to handle pattern binding at the network level :
+
+\ruleheader{\vdash_p \text{NPat},\tau \gives \VE}
+
+\infrule[NPatVar]
+{}
+{\vdash_p \txt{id}, \tau \gives [\txt{id} \mapsto \tau]}
+
+\infrule[NPat Tuple]
+{\forallin{i}{1}{n}, ~~\vdash_p \emtxt{npat}~_i, \tau_i \gives \VE_i}
+{\vdash_p \leftp \emtxt{npat}~_1, \ldots \emtxt{npat}~_n \rightp, \tau_1 \times \ldots \times \tau_n \gives \C{i=1}{n}{\VE_i}}
+
+% \infrule[NPat Cons]
+% {\vdash_p \emtxt{npat}_1, \tau \gives \VE \andalso \vdash_p \emtxt{npat}_2,\mathsf{List}~{\tau} \gives \VE'}
+% {\vdash_p \mathbf{cons}(\emtxt{npat}_1,\emtxt{npat}_2), \mathsf{List}~{\tau} \gives \VE \oplus \VE'}
+
+% \infrule[NPat Nil]
+% {}
+% {\vdash_p \mathbf{nil}, \mathsf{List}~{\alpha} \gives \emptyenv}
+
+where 
+
+\infax{\vdash_p \emtxt{npat}, \tau \gives \VE}
+
+means that declaring \emph{npat} with type $\tau$ creates the variable environment $\VE$.
+
+\subsubsection{Network Expressions}
+\label{sec:typing-network-expressions}
+
+\ruleheader{\TE, \VE~ \vdash \text{NExp} \gives \tau}
+
+% \infrule[NVar1]
+% {\VE(id) = \tau}
+% {\TE,\VE \vdash \txt{id} \langle \rangle \gives \tau}
+
+% \infrule[NVar2]
+% {\VE(id) = \tau_1 \times \ldots \times \tau_n \rightarrow \tau' ~~ \forallin{i}{1}{n}, ~~\TE,\VE \vdash ~\emtxt{exp}_i \gives \tau_i}
+% {\TE,\VE \vdash \txt{id}~ \langle \emtxt{exp}_1 , ~\ldots ~\emtxt{exp}_n \rangle \gives \tau'}
+
+% Rule \textsc{NVar1} applies when the identifier has been defined the network level or designates an actor
+% with no parameter. Rule \textsc{NVar2} applies when the identifier refers to an actor with
+% parameters. 
+
+\infrule[NVar]
+{\VE(id) = \tau}
+{\TE,\VE \vdash \txt{id} \gives \tau}
+
+\infrule[NConst]
+{}
+{\TE,\VE \vdash \txt{int}/\txt{bool} \gives \mathsf{Int}/\mathsf{Bool}}
+
+\infrule[NTuple]
+{\forallin{i}{1}{n}, ~~\VE \vdash ~\emtxt{nexp}_i \gives  \tau_i}
+{\TE,\VE \vdash \mathbf{(} \emtxt{nexp}_1 \mathbf{,} ~\ldots ~\emtxt{nexp}_n \mathbf{)} \gives  \tau_1 \times \ldots \times \tau_n}
+
+\infrule[NApp]
+{\VE \vdash \emtxt{nexp}_1 \gives  \tau \rightarrow \tau' \andalso \VE \vdash \emtxt{nexp}_2 \gives \tau}
+{\TE,\VE \vdash \emtxt{nexp}_1 ~\emtxt{nexp}_2 \gives  \tau'}
+
+\infrule[NFun]
+{\vdash_p \emtxt{npat}~, \tau \gives \VE' \andalso \VE \oplus \VE' \vdash \emtxt{nexp} \gives  \tau'}
+{\TE,\VE \vdash \mathbf{function}~ \emtxt{npat}~ \rightarrow \emtxt{nexp} \gives  \tau \rightarrow \tau'}
+
+\infrule[NLet]
+{\vdash_p \emtxt{npat}~, \tau' \gives \VE' \andalso \VE \vdash \emtxt{nexp}_2 \gives  \tau' \andalso \VE \oplus \VE' \vdash \emtxt{nexp}_1 \gives  \tau}
+{\TE,\VE \vdash \mathbf{let}~ \mathbf{nonrec}~ \emtxt{npat}~ \bftxt{=} \emtxt{nexp}_2~ \mathbf{in}~ \emtxt{nexp}_1 \gives  \tau}
+
+\infrule[NLet Rec]
+{\vdash_p \emtxt{npat}~, \tau' \gives \VE' \andalso \VE \oplus \VE' \vdash \emtxt{nexp}_2 \gives  \tau'
+  \andalso \VE \oplus \VE' \vdash \emtxt{nexp}_1 \gives  \tau}
+{\TE,\VE \vdash \mathbf{let}~ \mathbf{rec}~ \emtxt{npat}~ \bftxt{=} \emtxt{nexp}_2~ \mathbf{in}~ \emtxt{nexp}_1 \gives  \tau}
+
+% \infrule[NCond]
+% {\VE \vdash \emtxt{nexp} \gives \text{bool} \andalso \VE \vdash \emtxt{nexp}_1 \gives \tau \andalso \VE \vdash \emtxt{nexp}_2 \gives \tau}
+% {\VE \vdash \mathbf{if}~ \emtxt{nexp}~ \mathbf{then}~ ~\emtxt{nexp}_1 ~\mathbf{then} ~\emtxt{nexp}_2  \gives  \tau}
+
+% \infrule[NMatch]
+% {\VE \vdash \emtxt{nexp}\gives\tau_1 \andalso \forallin{i}{1}{n},~~\vdash_p \emtxt{pat}~_i,\tau_1 \gives \VE_i
+%   \andalso \VE
+%   \oplus \VE_i \vdash \emtxt{nexp}_i \gives \tau_2}
+% {\VE \vdash \mathbf{match}~ \emtxt{nexp} ~\mathbf{with}~ (\emtxt{pat}~_1 \rightarrow \emtxt{nexp}_1) \ldots (\emtxt{pat}~_n \rightarrow \emtxt{nexp}_n) \gives \tau_2}
+
+% \infrule[NCons]
+% {\VE \vdash \emtxt{nexp}~_1 \gives \tau \andalso \VE \vdash \emtxt{nexp}~_2 \gives \mathsf{List}~\tau}
+% {\VE \vdash \mathbf{cons}(\emtxt{nexp}_1,\emtxt{nexp}_2) \gives  \mathsf{List}~\tau}
+
+% \infrule[NNil]
+% {}
+% {\VE \vdash \mathbf{()} \gives \mathsf{List}~\alpha}
+
+\subsection{Type expressions}
+\label{sec:typing-type-expressions}
+
+\ruleheader{\TE~\vdash \emtxt{ty} \gives \tau,\TE'}
+
+\infrule[TyCon0]
+{\TE.tycons(\chi)=\tau}
+{\TE \vdash \chi \gives \tau, \emptyenv}
+
+\infrule[TyCon]
+{\TE.tycons(\chi)=\seqopn{\tau}{\times}\rightarrow\tau \\
+ \forallin{i}{1}{n},~~ \TE \vdash \emtxt{ty}_i \gives \tau_i, \emptyenv}
+{\TE \vdash \chi~\tuplen{\emtxt{ty}} \gives \tau, \emptyenv}
+
+\infrule[TyTuple]
+{\forallin{i}{1}{n}, ~~\TE \vdash ~\emtxt{ty}_i \gives  \tau_i, \emptyenv}
+{\TE \vdash \emtxt{ty}_1 \times \ldots \times \emtxt{ty}_n \gives  \tau_1 \times \ldots \times \tau_n, \emptyenv}
+
+\infrule[TyFun]
+{\TE \vdash \emtxt{ty} \gives \tau, \emptyenv \andalso \vdash \emtxt{ty}' \gives \tau', \emptyenv}
+{\TE \vdash \emtxt{ty}~ \rightarrow ~\emtxt{ty}' \gives  \tau \rightarrow \tau', \emptyenv}
+
+\infrule[TyEnum]
+{\text{tyname},\tau = \text{new\_tyname}()}
+{\TE \vdash \mathbf{enum}\langle \txt{c}_1, \ldots, \txt{c}_n \rangle \gives \tau,
+  \{tycons=[\text{tyname}
+  \mapsto \tau]; ctors=[c_1 \mapsto \tau, \ldots, c_n \mapsto \tau]\}}
+
+The function \emph{new\_tyname} generates a fresh type name and type constructor.
+
+\ruleheader{\TE~\vdash \emtxt{ty} \gives \tau}
+
+\infrule[]
+{\TE \vdash \emtxt{ty} \gives \tau, \TE'}
+{\TE \vdash \emtxt{ty} \gives \tau}
+
+\medskip
+The main originality here is the introduction of local, anonymous declarations for enumerated types.
+These declarations are given when declaring local variables within actors. The scope of the
+implicitely declared type is limited to the enclosing actor. As a result, typing a type expression
+may result in an updated type environment, which is reflected in the signature of the above rules.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

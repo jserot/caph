@@ -1,0 +1,14 @@
+-- Programmable Look Up Table
+-- 2013-04-23, JS
+
+actor lut (mem: unsigned<8> array[8])
+  in (a:unsigned<4>)
+  out (c:unsigned<8>)
+rules 
+| a:i -> c:mem[i]
+;
+
+stream i:unsigned<4> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = lut [0,10,20,30,40,50,60,70] i;

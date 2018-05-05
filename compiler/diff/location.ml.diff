@@ -1,0 +1,157 @@
+0a1,13
+> (************************************************************************************)
+> (*                                                                                  *)
+> (*                                     CAPH                                         *)
+> (*                            http://caph.univ-bpclermont.fr                        *)
+> (*                                                                                  *)
+> (*                                  Jocelyn SEROT                                   *)
+> (*                         Jocelyn.Serot@univ-bpclermont.fr                         *)
+> (*                                                                                  *)
+> (*         Copyright 2011-2015 Jocelyn SEROT.  All rights reserved.                 *)
+> (*  This file is distributed under the terms of the Q Public License version 1.0.   *)
+> (*                                                                                  *)
+> (************************************************************************************)
+> 
+3,12c16,30
+< (**) #open "config";;
+< (**) #open "lexing";;
+< (**) #open "parsing";;
+< (**) #open "interntl";;
+< 
+< let input_name = ref ""                 (* Input file name. *)
+< and input_chan = ref std_in             (* The channel opened on the input. *)
+< and input_lexbuf = ref (obj__magic 0 : lexbuf)
+<                                         (* The lexer buffer on the input. *)
+< ;;
+---
+> (* Taken almost verbatim from the file location.ml found in the Caml Light 0.75 distribution  *)
+> 
+> open Lexing
+> open Parsing_m
+> 
+> let input_name = ref ""                       (* Input file name. *)
+> and input_chan = ref stdin                    (* The channel opened on the input. *)
+> and input_lexbuf = ref (Obj.magic 0 : lexbuf) (* The lexer buffer on the input. *)
+> 
+> let error_prompt = ">"
+> 
+> type location =
+>     Loc of string  (* Filename *)
+>          * int     (* Position of the first character *)
+>          * int     (* Position of the next character following the last one *)
+15,16c33
+<   Loc(0,0)
+< ;;
+---
+>   Loc("",0,0)
+19,20c36
+<   Loc(symbol_start(), symbol_end())
+< ;;
+---
+>   Loc (!input_name, symbol_start(), symbol_end())
+23d38
+< 
+28c43
+< 	  fprintf oc ", line %d-%d, characters %d-%d:\n" line1 line2 n1 n2
+---
+> 	  Printf.fprintf oc ", line %d-%d, characters %d-%d:\n" line1 line2 n1 n2
+30c45
+< 	  fprintf oc ", line %d, characters %d-%d:\n" line1 n1 n2;
+---
+> 	  Printf.fprintf oc ", line %d, characters %d-%d:\n" line1 n1 n2;
+33d47
+< ;;
+35c49
+< let output_loc oc input seek line_flag (Loc(pos1, pos2)) =
+---
+> let output_loc oc input seek line_flag (Loc(f,pos1, pos2)) =
+40c54
+<       while input() != `\n` do () done
+---
+>       while input() != '\n' do () done
+43c57
+<     let c = ref ` ` in
+---
+>     let c = ref ' ' in
+45c59
+<         while c := input(); !c != `\n` do output_char oc !c done
+---
+>         while c := input(); !c != '\n' do output_char oc !c done
+49c63
+<       output_char oc `\n` in
+---
+>       output_char oc '\n' in
+51c65
+<     let c = ref ` `
+---
+>     let c = ref ' '
+55c69
+<         while c := input (); !c != `\n` do
+---
+>         while c := input (); !c != '\n' do
+58c72
+<             output_char oc (if !c == `\t` then !c else ` `)
+---
+>             output_char oc (if !c == '\t' then !c else ' ')
+62c76
+<             output_char oc (if !c == `\t` then !c else ch)
+---
+>             output_char oc (if !c == '\t' then !c else ch)
+77c91
+<       if input() == `\n` then begin incr line1; line1_pos := !pos; () end
+---
+>       if input() == '\n' then begin incr line1; line1_pos := !pos; () end
+86c100
+<       if input() == `\n` then
+---
+>       if input() == '\n' then
+98,99c112,113
+<     pr_line (pos1 - !line1_pos) (pos2 - pos1) `^`;
+<     output_char oc `\n`
+---
+>     pr_line (pos1 - !line1_pos) (pos2 - pos1) '^';
+>     output_char oc '\n'
+103c117
+<     pr_line 0 (pos1 - !line1_pos) `.`;
+---
+>     pr_line 0 (pos1 - !line1_pos) '.';
+129c143
+<       pr_line 0 100 `.`
+---
+>       pr_line 0 100 '.'
+132c146
+<     output_char oc `\n`
+---
+>     output_char oc '\n'
+134d147
+< ;;
+137c150
+<   if string_length !input_name > 0 then begin
+---
+>   if String.length !input_name > 0 then begin
+139c152
+<     fprintf oc "File \"%s\"" !input_name;
+---
+>     Printf.fprintf oc "File \"%s\"" !input_name;
+145c158
+<     fprintf oc "Toplevel input:\n";
+---
+>     Printf.fprintf oc "Toplevel input:\n";
+152c165
+<           nth_char !input_lexbuf.lex_buffer !curr_pos
+---
+>           String.get !input_lexbuf.lex_buffer !curr_pos
+154c167
+<           `.`
+---
+>           '.'
+162d174
+< ;;
+164a177
+>   Printf.fprintf oc "File \"%s\", line 1:\n" !input_name
+166,168c179
+<   fprintf oc "File \"%s\", line 1:\n" !input_name
+< 
+< ;;
+---
+> let string_of_location (Loc (f,c1,c2)) = Printf.sprintf "%s:%d-%d" f c1 c2

@@ -1,0 +1,51 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Fri Oct  2 13:54:37 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/basic/scale/main_tb.vcd"
+[dumpfile_mtime] "Fri Oct  2 12:58:06 2015"
+[dumpfile_size] 6655
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/basic/scale/main_tb.sav"
+[timestart] 0
+[size] 1000 600
+[pos] 64 32
+*-24.852959 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] n.
+[sst_width] 198
+[signals_width] 133
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@28
+clock
+reset
+@22
+w3[9:0]
+@28
+w3_f
+w3_wr
+@22
+w6[9:0]
+@28
+w6_e
+w6_rd
+@22
+n.b3.a[9:0]
+@28
+n.b3.a_rd
+@22
+n.b3.c[9:0]
+@28
+n.b3.c_wr
+@22
+n.f5.datain[9:0]
+n.f5.dataout[9:0]
+@28
+n.f5.enr
+n.f5.empty
+@22
+b2.din[9:0]
+@28
+b2.empty
+b2.rd
+[pattern_trace] 1
+[pattern_trace] 0

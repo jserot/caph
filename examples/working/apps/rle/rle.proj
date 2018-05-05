@@ -1,0 +1,5 @@
+DOT_OPTS = -I $(CAPHLIB)  -dump_fsms
+SIM_OPTS = -I $(CAPHLIB) 
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 400 
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_io_converters
+GHDL_RUN_OPTS = --stop-time=400ns  

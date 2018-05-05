@@ -1,0 +1,4 @@
+PRE_PROC = pgm2txt -abbrev lena64.pgm lena64.txt
+PRE_PROC = pgm2txt -abbrev lena128.pgm lena128.txt
+POST_PROC = txt2pgm -abbrev 255 sim/result1.txt sim/result1.pgm
+POST_PROC = txt2pgm -abbrev 255 sim/result2.txt sim/result2.pgm

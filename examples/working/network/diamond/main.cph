@@ -1,0 +1,17 @@
+-- The diamond higher-order wiring function
+
+type byte == unsigned<8>;
+
+actor f in (a:byte) out (c:byte,d:byte) rules | a:x -> (c:x,d:x);
+actor g in (a:byte) out (c:byte) rules | a:x -> c:x+1;
+actor h in (a:byte,b:byte) out (c:byte) rules | (a:x,b:y) -> c:(x*y:byte);
+
+stream i : byte from "sample.txt";
+stream o : byte to "result.txt";
+
+net diamond (top,middle,bottom) v = 
+  let (x,y) = top v in
+  bottom (middle x, middle y)
+;
+
+net o = diamond (f,g,h) i;

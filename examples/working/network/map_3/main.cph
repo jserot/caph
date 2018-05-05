@@ -1,0 +1,19 @@
+-- A basic example with the [map] higher-order wiring primitive
+-- Here, the first argument is a wiring function
+-- May 16, 2014, JS
+
+actor scale (k:unsigned<8>) 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> 2*x
+;
+
+stream i1:unsigned<8> from "sample.txt";
+stream i2:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+
+net double x = scale 2 x;
+
+net (o1,o2) = map double (i1,i2);

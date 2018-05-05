@@ -1,0 +1,13 @@
+-- The [smap2] higher order actor, also defined in [lib/caph/dc.cph] generalizes [smap] to operate
+-- on two concurrent input streams.
+-- 2016-05-26, JS
+
+#include "dc.cph"
+
+function f (x,y) = x+y+(1:signed<8>) : signed<8> * signed<8> -> signed<8>;
+
+stream i11:signed<8> dc from "sample11.txt";
+stream i12:signed<8> dc from "sample11.txt";
+stream o1:signed<8> dc to "result1.txt";
+
+net o1 = smap2 f (i11,i12);

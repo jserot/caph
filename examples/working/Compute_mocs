@@ -1,0 +1,23 @@
+#!/bin/bash
+caphmake=$CAPH/bin/caphmake
+caphc=$CAPH/bin/caphc
+resfile=mocs_summary.csv
+for i in [a-z]*/[a-z]*
+do
+  (cd $i; echo $i; $caphmake > /dev/null; make clean > /dev/null ; make dot CAPHC="$caphc -infer_mocs" | grep "^Wrote.*\.dat")
+done
+echo "" > $resfile
+nf=0
+for i in [a-z]*/[a-z]*
+do
+  f=$i/*_mocs.dat
+  if [ -e $f ]
+  then
+      cat $f >> $resfile
+      nf=`expr $nf + 1`
+  else
+      echo "** no file $f found"
+ fi
+done
+echo "Wrote $nf lines in file $resfile"
+

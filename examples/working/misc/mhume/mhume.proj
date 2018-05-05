@@ -1,0 +1,5 @@
+DOT_OPTS = -dump_fsms
+SIM_OPTS = -abbrev_dc_ctors
+SC_OPTS = -sc_stop_time 800 -sc_stop_when_idle 50 -sc_abbrev_dc_ctors 
+VHDL_OPTS =
+GHDL_RUN_OPTS = --stop-time=800ns  

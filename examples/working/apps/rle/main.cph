@@ -1,0 +1,7 @@
+#include "rle.cph"
+
+stream i:signed<8> from "sample.txt";
+stream o:signed<8> rl<4> to "result.txt";
+
+net o = rle 4 i;
+

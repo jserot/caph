@@ -1,0 +1,536 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \newcommand{\sy}[1]{\mathbf{#1}}
+% \newcommand{\sem}[1]{\mathsf{#1}}
+% \newcommand{\tm}[1]{\mathtt{#1}}
+% \newcommand{\ut}[1]{\emph{#1}}
+% \newcommand{\cat}[1]{\text{#1}}
+% \newcommand{\semwild}{\underline{.}}
+
+\chapter{Dynamic semantics}
+\label{chap:dynamic-semantics}
+
+This semantics is the one used to define the reference interpreter.
+% Again, we present a slightly simplified one based on the \emph{Core} subset defined in
+% Chap.~\ref{chap:abssyn}. Moreover, it does not include the behavior of i/o streams\footnote{Channels
+% connected to input (resp. streams) are supposed to be constantly ready.}
+% and does not handle the case of % uninitialized variables and
+% of out-of-bound indexes in arrays.
+% \footnote{
+% Formally handling this situation would require introducing exceptions to the semantic
+% domains; in practice, the reference interpreter actually uses exceptions to deal with this.}.
+
+It is defined in an axiomatic style. It assumes that type-checking has
+been properly carried out and that all translations defined by the static semantics are valid and
+have been properly carried out.
+
+\section{Semantic domain}
+
+The dynamic semantics is given in terms of the semantic domain {\it DVal}
+defined below. We use the same notations than for the static semantics for tuples, environments,
+\emph{etc.} In addition, we denote by $E[x \mapsto y]$ the environment that maps $x$ to $y$ and behaves like $E$ otherwise. 
+We write $\emptylist$ to denote the empty list and $[a,b,c]$ for the list
+containing the elements $a,b \text{ and } c$. 
+The concatenation of two lists is written $l_1 \listconc l_2$.
+If $h$ is a suitable element and $t$ is a (possibly empty) list,
+then $\prepend{h}{t}$ is the list obtained by prepending $h$ to~$t$; 
+while $\append{t}{h}$ denotes the list obtained by attaching element $h$ at the end of list~$t$.
+The cardinality of a list $l$ is denoted by~$|l|$.
+
+% As in chapter~\ref{chap:static-semantics}, and when we will use the dot notation to
+% access individual components of processes and channels when appropriate. 
+
+% We will use the notation $\underline{.}$ to denote the "\emph{dont care}" (wildcard)
+% value at the semantical level (in order to avoid confusion with the "\emph{dont care}" value at the
+% syntactical level (\_).
+
+% We use the classical notations for lists, writting
+% $[\vv_1;\ldots;\vv_n]$ for a list composed of elements $\vv_1, \ldots \vv_n$, $\txt{hd}(l)$ for the head
+% of list $l$, and $\txt{tl}(l)$ for its tail. The empty list is written $[]$. List concatenation is
+% written $\l\concat l'$.
+
+\begin{equation*}
+  \renewcommand{\arraystretch}{1}
+  \begin{array}[t]{c|c|l|l}
+\textbf{Variable}  & \textbf{Set ranged over}  &  \textbf{Definition} & \textbf{Meaning} \\\hline 
+\text{v}           & \sem{DVal}  & \sem{EVal} + \sem{Unknown} & \text{Expression-level semantic value} \\
+\EE                & \sem{EEnv} & \lbrace \txt{id} \mapsto \sem{DVal} \rbrace & \text{Dynamic environments} \\
+\pi                & \sem{Process} & \langle \{\sem{id}\mapsto\sem{DVal}\}, & \text{Processes} \\
+                   &           &         \{\sem{id}\mapsto\sem{cid}\},~ \{\sem{id}\mapsto\sem{cid}\}, & \\
+                   &           &         \{\sem{id}\mapsto\sem{DVal}\},~ \sem{Rule}^{*},~ \sem{RIndex} \rangle & \\
+\text{r}           & \sem{Rule} & \ttuple{\sem{QPat}^+}{\sem{QExp}^+} & \text{Actor rule} \\
+\text{qpat'}        & \sem{QPat} & \tttuple{\sem{Qual}}{\txt{id}}{\emtxt{Pat}} & \text{Qualified rule pattern}  \\
+\text{qexp'}        & \sem{QExp} & \tttuple{\sem{Qual}}{\txt{id}}{\emtxt{Exp}} & \text{Qualified rule expression}  \\
+\text{q}           & \sem{Qual} & \sem{In}+\sem{Out}+\sem{Var} & \text{Qualifier} \\
+theta            & \sem{Channel} & \tttuple{\text{bool}}{\text{bool}}{[\sem{DVal}]} & \text{Channels} \\
+\PP,\II,\AA       &              & \lbrace \sem{pid} \mapsto \sem{Process} \rbrace & \text{Process environment} \\
+\HH               &              & \lbrace \sem{cid} \mapsto \sem{Channel} \rbrace & \text{Channel environment} \\
+\BB               &              & \lbrace \sem{bid} \mapsto \sem{Box} \rbrace & \text{Box environment} \\
+\WW               &              & \lbrace \sem{wid} \mapsto \sem{Wire} \rbrace & \text{Wire environment} \\
+\text{l},\text{l'} & \sem{pid} & \lbrace 1, 2, \ldots \rbrace & \text{Process ids} \\
+\text{k},\text{k'} & \sem{cid} & \lbrace 1, 2, \ldots \rbrace & \text{Channel ids} \\
+\text{j}          & \sem{RIndex} & \lbrace 0, 1, \ldots \rbrace & \text{Rule index} \\
+\end{array}
+\end{equation*}
+
+\medskip
+\textbf{Expression-level} semantic values are the same as those defined for the static
+semantics, with the addition of an $\sem{Unknown}$ value for dealing with uninitialized local
+variable.
+
+\medskip
+\textbf{Processes} are the dynamic view of boxes. They consist of 
+\begin{itemize}
+\item a list of parameters (mapping names to values),
+\item a list of inputs and outputs (mapping names to channel ids),
+\item a list of local variables (mapping names to values),
+\item a list of rules.
+\item a rule index, indicating the current fireable rule for an active process (rules are numbered from
+  $0$ to $N_r$; 0 means that no rule is fireable)
+\end{itemize}
+
+\medskip
+\textbf{Channels} are the dynamic view of wires. They consist of
+\begin{itemize}
+\item two boolean flags indicating whether the channel is ready for reading (not empty) and
+  ready for writing (not full).
+\item a list of memorized values (modeling the buffering capabilities of the channel),
+\end{itemize}
+
+
+\section{Programs}
+\label{sec:programs}
+
+\ruleheader{\TE_0, \EE_0 \vdash \text{Program} \gives \PP,\HH}
+
+\infrule[Program]
+{ \TE_0, \EE_0 \vdash
+  \sy{program}~\emtxt{valdecls}~\emtxt{actdecls}~\emtxt{strdecls}~\emtxt{netdecls}~\gives~\TE,\EE,\NE,\BB,\WW \\
+  \TE,\EE,\NE \vdash \BB \gives \PP \andalso \vdash \WW \gives \HH \\
+  \EE_0 \oplus \EE, \HH \vdash \PP \gives \HH', \PP' }
+{\SE_0, \TE_0, \EE_0 \vdash \sy{program}~~\emtxt{valdecls}~\emtxt{actdecls}~\emtxt{strdecls}~\emtxt{netdecls}~\gives~\HH',\PP'}
+
+The program is first translated to set of type, expression-level, network-level, box and wire
+environments according to the static semantics.  Boxes and wires are turned into initial sets of
+processes and channels and the processes are executed. The result is an final set of processes (in
+which no process can be executed any longer) and channels.
+
+\subsection{Conversion from boxes to processes}
+\label{sec:conv-from-boxes}
+
+\medskip
+\ruleheader{\TE,\EE,\NE \vdash \sem{B} \gives \sem{P}}
+
+\infrule[]
+{\forallin{i}{1}{n},~~ \TE,\EE,\NE \vdash \emtxt{b}_i \gives \pi_i}
+{\WW \vdash \mapn{l}{b} ~\gives \mapn{l}{\pi}} 
+
+\ruleheader{\TE,\EE,\NE \vdash \sem{b} \gives \sem{\pi}}
+
+\infrule[]
+{\txt{b} =
+  \tttttuple{\id}{\sem{BBox}}{\txt{params}}{\txt{vars}}{\txt{bins}}{\txt{bouts}}{\txt{rules}} \\
+ \vdash \txt{bins} \gives \txt{ins} \\
+ \vdash \txt{bouts} \gives \txt{outs} \\
+ \text{ins},\text{outs},\text{vars} \vdash \text{rules} \gives \text{rules'}}
+{\vdash \txt{l} \mapsto \txt{b} ~\gives
+    \txt{l} \mapsto \tttttuple{\txt{params}}{\txt{ins}}{\txt{outs}}{\txt{vars}}{\txt{rules'}}}
+
+\todo{Translation of $\sem{BBin}$ and $\sem{BBout}$ boxes !}
+
+\medskip
+\ruleheader{\vdash \text{bins}/\text{bouts} \gives \text{ins}/\text{outs}}
+
+\infrule[]
+{\forallin{i}{1}{n},~~ \vdash \txt{wid}_i \gives \txt{cid}_i}
+{\vdash \mapn{\txt{id}}{\txt{wid}} ~\gives \mapn{\txt{id}}{\txt{cid}}}
+
+\ruleheader{\vdash \text{wid} \gives \text{cid}}
+
+\infrule[]
+{\vdash \txt{wid}=i}
+{\vdash \txt{wid} \gives i}
+
+Identifying wire and channel ids simplifies the translation of box ios.
+
+% \medskip
+% The following rules deal with the initialisation of local variables.
+
+% \ruleheader{\TE,\EE \vdash \text{vars} \gives \text{vars}'}
+
+% \infrule[]
+% {\forallin{i}{1}{n},~~ \TE,\EE \vdash \txt{var}_i \gives \EE_i}
+% {\TE,\EE \vdash \txt{var}_1 \ldots \txt{var}_n ~\gives \C{i=1}{n}{\EE_i}}
+
+% \ruleheader{\TE,\EE \vdash \text{var} \gives \EE'}
+
+% \infrule[]
+% {}
+% {\TE,\EE \vdash \txt{id} : \ty \gives [\txt{id} \mapsto \sem{Unknown}]}
+
+% \infrule[]
+% {\TE,\EE \vdash \emtxt{exp} \gives \vv}
+% {\TE,\EE \vdash \txt{id} : \ty ~=~ \emtxt{exp} \gives [\txt{id} \mapsto \vv]}
+
+\medskip
+The following rules refine the qualification of each pattern (resp. expression) appearing in the
+actor rules.
+
+\ruleheader{\txt{ins},\txt{outs},\txt{vars} \vdash \text{rules} \gives \text{Rules}}
+
+\infrule[]
+{\forallin{i}{1}{n},~~\txt{ins},\txt{outs},\txt{vars} \vdash \txt{rule}_i \gives \txt{Rule}}
+{\txt{ins},\txt{outs},\txt{vars} \vdash \lbrace \text{rule}_1, \ldots, \text{rule}_n \rbrace \gives
+  \lbrace \text{rule'}_1, \ldots, \text{rule'}_n \rbrace}
+
+\ruleheader{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{rule} \gives \text{Rule}}
+
+\infrule[]
+{\forallin{i}{1}{m},~~\txt{ins},\txt{outs},\txt{vars} \vdash \txt{qpat}_i \gives \txt{qpat'}_i \\
+ \forallin{i}{1}{n},~~\txt{ins},\txt{outs},\txt{vars} \vdash \txt{qexp}_i \gives \txt{qexp'}_i}
+{\txt{ins},\txt{outs},\txt{vars} \vdash \tuplek{\txt{qpat}}{m} \sy{\rightarrow} \tuplek{\txt{qexp}}{n}\\
+ \gives \tuplek{\txt{qpat'}}{m} \sy{\rightarrow} \tuplek{\txt{qexp'}}{n}}
+
+\ruleheader{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{qpat} \gives \txt{QPat}}
+
+\infrule[]
+{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{id} \gives \txt{q}}
+{\txt{ins},\txt{outs},\txt{vars} \vdash \ttuple{\txt{id}}{\emtxt{pat}} \gives \tttuple{\txt{q}}{\txt{id}}{\emtxt{pat}}}
+
+\ruleheader{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{qexp} \gives \txt{QExp}}
+
+\infrule[]
+{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{id} \gives \txt{q}}
+{\txt{ins},\txt{outs},\txt{vars} \vdash \ttuple{\txt{id}}{\emtxt{exp}} \gives \tttuple{\txt{q}}{\txt{id}}{\emtxt{exp}}}
+
+\ruleheader{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{id} \gives \txt{q}}
+
+\infrule[]
+{ q = \begin{cases}
+   \sem{In}~\text{if}~\txt{id}\in\txt{ins},\\
+   \sem{Out}~\text{if}~\txt{id}\in\txt{outs},\\
+   \sem{Var}~\text{if}~\txt{id}\in\txt{Dom}(\txt{vars})\\
+   \end{cases}}
+{\txt{ins},\txt{outs},\txt{vars} \vdash \txt{id} \gives q}
+
+\subsection{Conversion from wires to channels}
+\label{sec:conv-from-wires}
+
+\ruleheader{\vdash \WW \gives \HH}
+
+\infrule[]
+{\forallin{i}{1}{n},~~ \vdash \emtxt{w}_i \gives \emtxt{c}_i}
+{\WW \vdash \mapn{k}{w} ~\gives \mapn{k}{c}}
+
+\ruleheader{\vdash \sem{Wire} \gives \sem{Channel}}
+
+\infrule[]
+{}
+{\vdash \ttuple{\ttuple{l}{s}}{\ttuple{l'}{s'}} \gives \tttuple{\sem{false}}{\sem{true}}{[]}}
+
+Channels are initially empty, ready for writing and herit their id from the corresponding wire.
+
+\todo{Initial values on wires}
+
+\section{Processes}
+\label{sec:processes}
+
+Execution of processes proceeds by successive synchronous cycles. Each execution cycle can be decomposed into
+2 steps :
+\begin{enumerate}
+\item processes are split into two subsets : the \emph{active} (A) subset and \emph{inactive}
+  (I) subset; a process is active \emph{iff} at least one of its rules is fireable
+\item all active processes are executed; during execution, a process can read values from
+  its input channels, updates local variables and write values to its output channels.
+\end{enumerate}
+Execution cycle are repeated until the active set becomes empty.  The separation of each cycle into
+two steps ensures that the order in which the processes are executed at step 2 does not matter (as
+long as the channel have sufficient capacity).  This synchronous style of scheduling, in which all
+active processes are executed at each cycle is coherent with a ``hardware-oriented'' interpretation
+of processes\footnote{A more more ``software-oriented'' view could prefer to execute only one
+  process at a time.}.
+
+\ruleheader{\EE, \HH \vdash \PP \gives \HH',\PP'}
+
+\infrule[EvalPs]
+{\EE, \HH \vdash \PP \gives \II,\AA \andalso \EE,\HH \vdash \II, \AA \gives \HH',\PP'}
+{\EE, \HH \vdash \PP \gives \HH', \PP'}
+
+\ruleheader{\EE, \HH \vdash \II, \AA \gives \HH', \PP'}
+
+\infrule[RunPs0]
+{}
+{\EE, \HH \vdash \II, \{\} \gives \HH, \II}
+
+\infrule[RunPs1]
+{\AA \not= \{\} \\
+ \EE \vdash \HH, \AA \gives \HH', \AA' \\
+ \EE, \HH' \vdash \AA' \cup \II \gives \II', \AA'' \\
+ \EE, \HH' \vdash \II', \AA'' \gives \HH'', \PP'' }
+{\EE, \HH \vdash \II, \AA \gives \HH'', \PP''}
+
+\ruleheader{\EE, \HH \vdash \PP \gives \HH', \PP'}
+
+\infrule[ExecPs]
+{\PP = \setn{\pi} \\
+ \forallin{i}{1}{n},~~ \EE, \HH_{i-1} \vdash \pi_i \gives \HH_i, \pi'_i \andalso \HH_0=\HH
+ \andalso \HH'=\HH_n \\
+ \PP' = \setn{\pi'}}
+{\EE, \HH \vdash \PP \gives \HH', \PP'}
+
+\subsection{Identifying and marking active processes}
+\label{sec:ident-active-proc}
+
+\ruleheader{\EE, \HH \vdash \PP \gives \PP,\PP'}
+
+\infrule[SplitPs]
+{\forallin{i}{1}{n},~~ \EE, \HH \vdash \pi_i \gives \II_i,\AA_i}
+{\EE, \HH \vdash \setn{\pi} \gives \U{i=1}{n}{\II_i},~ \U{i=1}{n}{\AA_i}}
+
+\ruleheader{\EE, \HH \vdash \pi \gives \PP,\PP'}
+
+\infrule[SplitP]
+{\EE, \HH \vdash \pi \gives \beta, \pi' \andalso \sialorsinon{\beta}{\{\},\{\pi'\}}{\{\pi'\},\{\}}}
+{\EE, \HH \vdash \pi = \II,~\AA}
+
+\ruleheader{\EE, \HH \vdash \pi \gives \sem{Bool}, \pi'}
+
+\infrule[]
+{\pi=\ttttttuple{.}{.}{.}{.}{\tuplen{\txt{r}}}{.} \\
+  \existsin{j}{1}{n},~~\EE, \HH, \pi \vdash \txt{r}_j \gives \sem{true} \\
+  \pi' = \ttttttuple{.}{.}{.}{.}{\tuplen{\txt{r}}}{j}}
+{\EE, \HH \vdash \pi \gives \sem{true}, \pi'}
+
+\infrule[]
+{\pi=\ttttttuple{.}{.}{.}{.}{\tuplen{\txt{r}}}{.} \\
+  \forallin{j}{1}{n},~~\EE, \HH, \pi \vdash \txt{r}_j \gives \sem{false} \\
+  \pi' = \ttttttuple{.}{.}{.}{.}{\tuplen{\txt{r}}}{0}}
+{\EE, \HH \vdash \pi \gives \sem{false}, \pi'}
+
+A process is active if at least one of its rules is fireable.
+The semantics described here does not tell
+  \emph{which} rule is selected when several are fireable. It is therefore non-deterministic. Making
+  it deterministic is straightforward, by assigning an fixed index to each rule and by requiring
+  that the rule with the lowest (or highest) index is always selected, for example. Determinism is of course a
+  highly desirable property for hardware implementations. For software implementations, other
+  strategies can be chosen. For example, one could implement \emph{fair} matching  -- like in
+  \textsc{hume}~\cite{Hume} -- by reordering rules after selection to ensure that each fireable rule
+  is eventually selected.
+
+\ruleheader{\EE, \HH, \pi \vdash \txt{Rule} \gives \sem{Bool}}
+
+\infrule[FireableRule]
+{\forallin{i}{1}{m},~~ \HH, \pi \vdash \txt{qpat}_i \gives \beta_i \\
+ \forallin{i}{1}{n},~~ \HH, \pi \vdash \txt{qexp}_i \gives \beta'_i}
+{\EE, \HH, \pi \vdash \tuplen{\txt{qpat}}\rightarrow\tuplen{\txt{qexp}} \gives
+  \seqopin{\beta}{\wedge}{1}{m}\wedge\seqopin{\beta'}{\wedge}{1}{n}}
+
+A process rule is fireable if all its LHS patterns and RHS expressions are ready.
+
+\medskip
+The following rules specify when an rule pattern is ready, depending on whether this pattern is attached
+to a local variable or an input channel.
+
+\ruleheader{\HH, \pi \vdash \sem{QPat} \gives \sem{Bool}}°
+
+\infrule[]
+{\pi.vars(\txt{id})=\txt{v} \andalso \vdash_p \txt{pat}, \txt{v} \gives \beta, \EE'}
+{\HH, \pi \vdash \tttuple{\sem{Var}}{\txt{id}}{\txt{pat}} \gives \beta}
+
+Patterns attached to variables are ready as soon as the value of the variable matches the pattern.
+
+\infrule[]
+{}
+{\HH, \pi \vdash \tttuple{\sem{In}}{\txt{id}}{\sy{\_}} \gives \txt{true}}
+
+Ignored inputs are always ready.
+
+\infrule[]
+{\pi.ins(\txt{id})=\txt{k} \andalso \HH(\txt{k})=\tttuple{\txt{false}}{\semwild}{\semwild}}
+{\HH, \pi \vdash \tttuple{\sem{In}}{\txt{id}}{\txt{pat}} \gives \txt{false}}
+
+Inputs connected to empty input channels are not ready.
+
+\infrule[]
+{\txt{pat} \not= \_ \andalso \pi.ins(\txt{id})=\txt{k} \andalso \HH(\txt{k})=\tttuple{\txt{true}}{\semwild}{\prepend{v}{vs}} \\
+  \vdash_p \txt{pat}, \txt{v} \gives \beta, \EE'}
+{\HH, \pi \vdash \tttuple{\sem{In}}{\txt{id}}{\txt{pat}} \gives \beta}
+
+Inputs connected to an non-empty channel are ready \emph{iff} the first available value in the
+channel matches the corresponding rule pattern.
+
+\medskip
+The three following rules specify when an rule expression is ready, depending on whether this expression is attached
+to a local variable or an output channel.
+
+\ruleheader{\HH, \pi \vdash \sem{QExp} \gives \sem{Bool}}
+
+\infrule[OutVarRdy]
+{}
+{\HH, \pi \vdash \tttuple{\sem{Var}}{$\semwild$}{$\semwild$} \gives \sem{true}}
+
+Variables are always ready for updating.
+
+\infrule[]
+{}
+{\HH, \pi \vdash \tttuple{\sem{Out}}{\txt{id}}{\sy{\_}} \gives \txt{true}}
+
+Ignored outputs are always ready.
+
+\infrule[OutChanRdy]
+{\txt{pat} \not= \_ \andalso \pi.outs(\txt{id})=\txt{k} \andalso \HH(\txt{k})=\tttuple{\semwild}{\beta}{\semwild}}
+{\HH, \pi \vdash \tttuple{\sem{Out}}{\txt{id}}{\txt{pat}} \gives \beta}
+
+An non-ignored output is ready for \emph{iff} the connected channel can be written (is not full).
+
+\subsection{Individual process execution}
+\label{sec:process}
+
+Execution of an active process is done as follows :
+
+\begin{enumerate}
+\item retrieve the index of the selected fireable rule (there must be one, since the process has been tagged as active)
+\item bind the rule LHS patterns to the corresponding values (consuming the values on the involved input channels)
+\item add these bindings to an environment containing global values, actor parameters and actor
+  local variables,
+\item evaluate the RHS of the selected rule in this environment, environment producing values to
+  update outputs and local variables
+\end{enumerate}
+
+\ruleheader{\EE, \HH \vdash \pi \gives \HH', \pi'}
+
+\infrule[ExecP]
+{\pi = \tttttuple{\txt{params}}{.}{.}{\text{vars}}{\tuplen{\txt{r}}}{j} \andalso 1 \leq j \leq n \\
+  \txt{r}_j=\ttuple{\txt{qpat}}{\txt{qexps}} \\
+  \HH, \pi \vdash \txt{qpats} \gives \EE', \HH' \\
+  \EE \oplus \EE' \oplus \txt{params} \oplus \txt{vars} \HH', \pi \vdash \txt{qexps} \gives \HH'', \pi' }
+{\EE, \HH \vdash \pi \gives \HH'', \pi'}
+
+\subsubsection{Binding of rule patterns}
+\label{sec:rule-pattern-binding}
+
+\ruleheader{\HH, \pi \vdash \sem{QPats} \gives \EE', \HH'}
+
+\infrule[BindRPats]
+{\HH_{i-1}, \pi \vdash \txt{qpat}_i \gives \EE_i, \HH_i \andalso \HH_0=\HH}
+{\HH, \pi \vdash \tuplen{\txt{qpat}} \gives \C{i=1}{n}{\EE_i},~ \HH_n}
+
+The previous rule creates a local environment by binding the patterns of the rule RHS.
+The four next rules details the process of pattern matching depending on whether the pattern is
+attached to a variable or an input channel.
+
+\ruleheader{\HH, \pi \vdash \sem{QPat} \gives \EE', \HH'}
+
+\infrule[MatchVar1]
+{}
+{\HH, \pi \vdash \tttuple{\sem{Var}}{\txt{id}}{\_} \gives \emptyset, \HH}
+
+\infrule[MatchVar2]
+{\txt{rpat} \not= \_ \andalso \pi.vars(\txt{id}) = \vv \andalso \vdash_p \txt{rpat}, \vv \gives \EE}
+{\HH, \pi \vdash \tttuple{\sem{Var}}{\txt{id}}{\txt{rpat}} \gives \EE, \HH}
+
+\infrule[MatchInp1]
+{}
+{\HH, \pi \vdash \tttuple{\sem{In}}{\txt{id}}{\_} \gives \emptyset, \HH}
+
+\infrule[MatchInp2]
+{\txt{rpat}\not=\_ \andalso \pi.ins(\txt{id}) = \txt{k} \andalso
+  \HH(\txt{k})=\tttuple{\sem{true}}{\beta}{\prepend{\txt{v}}{\txt{vs}}} \\
+  \txt{c}' = \tttuple{|\txt{vs}>0|}{\beta}{\txt{vs}} \\
+  \vdash_p \txt{rpat}, \txt{v} \gives \txt{true}, \EE'}
+{\HH, \pi \vdash \tttuple{\sem{In}}{\txt{id}}{\txt{rpat}} \gives \EE', \HH[\txt{k}\leftarrow\txt{c}']}
+
+When a pattern is attached to an input channel, the value is consummed on this channel (except when
+the pattern is \_).
+
+\subsubsection{Pattern matching}
+\label{sec:indiv-patt-match}
+
+\medskip
+Pattern matching at the rule level is handled using the following rules, where $\vdash_p \txt{rpat}, \vv
+\gives \sem{Bool}, \EE, $ means that binding \emph{rpat} to value $\vv$ succeeds or not and results in a 
+dynamic environment $\EE$ :
+
+\ruleheader{\vdash_p \sem{RPat}, \txt{v} \gives \sem{Bool}, \EE}
+
+\infrule[]
+{}
+{\vdash \txt{int}/\txt{bool}~ \txt{v'},~ \sem{Int}/\sem{Bool}~ \vv \gives \txt{v'}=\vv, \emptyenv}
+
+\infrule[]
+{}
+{\vdash \txt{var}~\txt{v'},~ \vv \gives \txt{true}, [\txt{v'} \mapsto \vv]}
+
+\infrule[]
+{}
+{\vdash \sy{\_},~ \vv \gives \txt{true}, \emptyenv}
+
+\infrule[]
+{\txt{con}\not=\txt{con}'}
+{\vdash \txt{con} \tuplen{\txt{rpat}}, \txt{con}' \tuplen{\vv} \gives \txt{false}, \emptyenv}
+
+\infrule[]
+{\txt{con}=\txt{con}' \andalso \forallin{i}{1}{n},~~ \vdash_p \emtxt{rpat}_i,~ \vv_i \gives \beta_i, \EE_i}
+{\vdash \txt{con} \tuplen{\txt{rpat}}, \txt{con}' \tuplen{\vv} \gives \seqopn{\beta}{\wedge},~ \C{i=1}{n}{\EE}}
+
+\subsubsection{Evaluation of rule expressions}
+\label{sec:eval-rule-expr}
+
+\ruleheader{\EE, \HH, \pi \vdash \sem{QExps} \gives \HH', \pi'}
+
+\infrule[EvalQExps]
+{\HH_0=\HH \andalso \pi_0=\pi \andalso \forallin{i}{1}{n},~ \EE,\HH_{i-1},\pi_{i_1} \vdash \txt{qexp}_i \gives \HH_i, \pi_i}
+{\EE, \HH, \pi \vdash \tuplen{\txt{qexp}} \gives \HH_n, \pi_n}
+
+\ruleheader{\EE,\HH,\pi \vdash \sem{QExp} \gives \HH', \pi'}
+
+\infrule[UpdVar]
+{\pi = \tttuple{\ldots}{\txt{vars}}{\ldots}
+  \andalso \EE \vdash \txt{exp} \gives \vv
+  \andalso \pi' = \tttuple{\ldots}{\txt{vars}[\txt{id}\leftarrow\txt{v}]}{\ldots}}
+{\EE,\HH,\pi \vdash \tttuple{\sem{Var}}{\txt{id}}{\txt{exp}} \gives \HH, \pi'}
+
+A variable update is directly reflected in the process local state.
+
+\infrule[UpdOut1]
+{}
+{\EE,\HH,\pi \vdash \tttuple{\sem{Out}}{\txt{id}}{\_} \gives \HH, \pi}
+
+Nothing happens when an output is assigned the value $\_$ (ignore).
+
+\infrule[UpdOut 2]
+{\txt{exp} \not= \_
+ \andalso \pi.outs(\txt{id})=\txt{k}
+ \andalso \HH(\txt{k})=\tttuple{\semwild}{\sem{true}}{\txt{vs}}
+  \andalso \EE \vdash \txt{exp} \gives \vv \\
+ \txt{c}'=\tttuple{\sem{true}}{\sem{true}}{\append{\txt{vs}}{\txt{v}}}}
+{\EE,\HH,\pi \vdash \tttuple{\sem{Out}}{\txt{id}}{\txt{exp}} \gives
+  \HH[\txt{k}\leftarrow\txt{c}'], \pi}
+
+Updating an output channel adds the value at the end of the channel buffer (FIFO behavior). The
+above semantics assumes undbounded FIFOs (the written channel is always ready for
+writting). Assuming FIFOs with a finite capacity $\kappa$ would just require modifying the last
+premisse of the above rule into :
+
+
+\begin{center}
+$\txt{c}'=\tttuple{\sem{true}}{|\append{\txt{vs}}{\txt{v}}|<\kappa}{\append{\txt{vs}}{\txt{v}}}$
+\end{center}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

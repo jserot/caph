@@ -1,0 +1,15 @@
+#include "dc.cph"
+
+actor scale (k:signed<8>)
+  in (a:signed<8> dc)
+  out (c:signed<8> dc)
+rules a -> c
+| '< -> '<
+| 'p -> 'p*k
+| '> -> '>
+;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+net o = scale 3 (scale 2 i);

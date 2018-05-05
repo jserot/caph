@@ -1,0 +1,25 @@
+-- Iterative computing of \sqrt(a) using Heron's algorithm
+-- 2013-01-08, JS
+
+function f_abs x = if x <. 0.0 then -.x else x : float -> float;
+function stop (x,a,eps) = f_abs(x *. x -. a) <. eps;
+function iter (x,a) = (x +. a /. x) /. 2.0;
+
+actor heron (eps: float)
+  in (i: float)
+ out (r: float, niter: unsigned<10>)
+var a: float
+var x: float
+var state: {Idle, Iter} = Idle
+var n: unsigned<10> 
+rules
+| (state:Idle, i:u)              -> (state:Iter, a:u, x:u, n:0)
+| state:Iter when stop (x,a,eps) -> (state:Idle, r:x,  niter:n)
+| state:Iter                     -> (state:Iter, x:iter(x,a), n:n+1)
+;
+
+stream a:float from "sample.txt";
+stream r:float to "result1.txt";
+stream n:unsigned<10> to "result2.txt";
+
+net (r,n) = heron 0.000001 a;

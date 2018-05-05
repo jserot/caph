@@ -1,0 +1,19 @@
+-- sample(n):x_1,x_2,x_3=xn,x_2n,..
+-- This example comes from the "Model of Computation" chapter in the LRM
+-- Jul 2017 - JS
+
+actor sample (n: int)
+  in (i: $t)
+  out (o: $t)
+var k : {1,..,n} = 1
+rules
+| i:x when k<n -> k:k+1
+| i:x when k=n -> (k:1, o:x)
+;
+
+stream i:signed<8> from "sample.txt";
+stream o1:signed<8> to "result1.txt";
+stream o2:signed<8> to "result2.txt";
+
+net o1 = sample 2 i;
+net o2 = sample 4 i;

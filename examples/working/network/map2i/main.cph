@@ -1,0 +1,22 @@
+-- A basic example with the [map2i] higher-order wiring primitive
+-- May 16, 2014, JS
+
+const coeff = [2,4] : unsigned<8> array[2];
+
+actor add (k:unsigned<8>)
+  in (a:unsigned<8>, b:unsigned<8>)
+  out (c:unsigned<8>)
+rules (a,b) -> c
+| (x,y) -> k*x+y
+;
+
+stream i11:unsigned<8> from "sample.txt";
+stream i12:unsigned<8> from "sample.txt";
+stream i21:unsigned<8> from "sample.txt";
+stream i22:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+
+net f i (x,y) = add (coeff[i]) (x,y);
+
+net (o1,o2) = map2i f ((i11,i12),(i21,i22));

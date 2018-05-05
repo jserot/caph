@@ -1,0 +1,35 @@
+-- 1x3 Finite Impulse Response filter on lists, with scaling and padding - multi-actor version
+-- FIR(a,p,s):<x_1,x_2,x_3,x_4,...> = <y_1,y_2,y_3,y_2,y_3,y_4...>
+-- where
+--   y_i = (a_0*x_{i-2}+a_1*x_{i-1}+a_2*x_i)>>s  for i>2
+--   y_1 = y_2 = p
+-- Aug 1, 2015 - JS
+
+#include "img_ops.cph"
+
+#include "misc.cph"
+
+actor hpad (p:int<s,m>, n:unsigned<4>)
+  in (i:int<s,m> dc)
+  out (o:int<s,m> dc)
+var j : unsigned<4>
+var st : {S0, S1, S2} = S2
+rules
+| (st:S2, i:'<)          -> (o:'<, st:S0)                        -- SoI
+| (st:S0, i:'>)          -> (o:'>, st:S2)                        -- EoI
+| (st:S0, i:'<)          -> (o:'<, j:0, st:S1)                   -- SoL
+| (st:S1, i:'x) when j<2 -> (o:'p, j:j+1)                        -- Padding
+| (st:S1, i:'x)          -> (o:'x)                               -- Forward
+| (st:S1, i:'>)          -> (o:'>, st:S0)                        -- EoL
+;
+
+net hdelay p i =
+  let x3 =  i in
+  let x2 = d1p p x3 in
+  let x1 = d1p p x2 in
+  (x1,x2,x3);
+
+net fir13 p s x =
+  let xs = hdelay p x in
+  let ys = mapi mult xs in
+  hpad (p,3) (shift s (foldl add ys));

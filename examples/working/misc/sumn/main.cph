@@ -1,0 +1,18 @@
+-- SUM(n):x1,...,xn,xn+1,...,x2n,...=x1+...+xn,xn+1+...+x2n,...
+-- Jan 23, 2012 - JS
+--
+
+actor sumn (n : unsigned<4>)
+  in (a:signed<8>)
+  out (c:signed<8>)
+var k : unsigned<4> = 0
+var s : signed<8> = 0
+rules
+| a:v when k=n -> (k:1,   s:v, c:s)
+| a:v          -> (k:k+1, s:s+v)
+;
+
+stream i:signed<8> from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+net o = sumn 4 i;

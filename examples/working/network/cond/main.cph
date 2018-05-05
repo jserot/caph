@@ -1,0 +1,87 @@
+-- Introducing the [cond] HO wiring function for defining [if..then..else] constructs at the network level
+--
+--    COND P T F x = IF P(x) THEN T(x) else F(x) =
+-- 
+--           |
+--           +-----------------+
+--           |                 |
+--           v                 v
+--       +-------+         .........
+--      / switch  \        .       .
+--     /           \<---+--.   P   .
+--    /  t       f  \   |  .       .
+--   +---------------+  |  .........
+--       |       |      |
+--       v       v      |
+--     .....   .....    |
+--     .   .   .   .    |
+--     . T .   . F .    |
+--     .   .   .   .    |
+--     .....   .....    |
+--       |       |      |
+--       v       v      |
+--   +---------------+  |
+--    \  t       f  /   |
+--     \           /<---+
+--      \  merge  /
+--       +-------+
+--           |
+--           v
+--
+-- Dec 27, 2012 - JS
+-- Updated with fully polymorphic actors Jun 13, 2013 - JS
+
+actor switch
+  in (c:bool, x:$t)
+ out (t: $t, f:$t)
+rules
+  (    c, x) -> (t, f)
+| ( true, x) -> (x, _)
+| (false, x) -> (_, x)
+;
+
+actor merge
+  in (c:bool, t: $t, f:$t)
+ out (x: $t)
+rules
+  (    c, t, f) -> x
+| ( true, x, _) -> x
+| (false, _, x) -> x
+;
+
+net cond p t f x = 
+  let px = p x in
+  let (xt,xf) = switch (px, x) in
+  merge (px, t xt, f xf) 
+;
+
+-- In this example P(x)=even(x), T(x)=2*x+1 and F(x)=(x+1)*2
+
+actor even
+  in (a: unsigned<s>)
+ out (c: bool)
+rules a -> c
+| x -> x mod 2 = 0
+;
+
+actor add (k: unsigned<s>)
+  in (a: unsigned<s>)
+ out (c: unsigned<s>)
+rules a -> c
+| x -> x+k 
+;
+
+actor mul (k: unsigned<s>)
+  in (a: unsigned<s>)
+ out (c: unsigned<s>)
+rules a -> c
+| x -> x*k
+;
+
+stream x:unsigned<8> from "sample.txt";
+stream r:unsigned<8> to "result.txt";
+
+net f1 x = add 1 (mul 2 x); 
+net f2 x = mul 2 (add 1 x); 
+
+net r = cond even f1 f2 x;

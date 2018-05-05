@@ -1,0 +1,6 @@
+DOT_OPTS = -I $(CAPHLIB)  -D ifile=sample.txt -D thr=2
+SIM_OPTS = -I $(CAPHLIB)  -abbrev_dc_ctors -D ifile=sample.txt -D thr=2
+SC_OPTS = -I $(CAPHLIB)   -D ifile=sample.txt -D thr=2 -sc_stop_time 100 -sc_abbrev_dc_ctors 
+VHDL_OPTS = -I $(CAPHLIB)  -D ifile=sample.txt -D thr=2
+GHDL_RUN_OPTS = --stop-time=300ns  
+

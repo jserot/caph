@@ -1,0 +1,4 @@
+SIM_OPTS = -I $(CAPHLIB)  -suppress_cast_warnings # -phantom_types
+SC_OPTS = -I $(CAPHLIB)  -sc_stop_time 800 -suppress_cast_warnings
+VHDL_OPTS = -I $(CAPHLIB)  -suppress_cast_warnings -vhdl_io_converters
+GHDL_RUN_OPTS = --stop-time=400ns  

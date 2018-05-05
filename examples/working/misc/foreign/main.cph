@@ -1,0 +1,24 @@
+-- This example shows to use external functions
+
+-- external fns section
+
+#include "dc.cph"
+
+function mult = extern "mult", "mult", "mult" :  signed<s> * signed<s> -> signed<s>;
+
+-- actor decl section 
+
+actor scale (k:signed<8>)
+  in (a:signed<8> dc)
+  out (c:signed<8> dc)
+rules a -> c
+| '< -> '<
+| 'p -> '(mult(p,k))
+| '> -> '>;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+-- definition section
+
+net o = scale 2 i ;

@@ -1,0 +1,36 @@
+-- 2x2 Finite Impulse Response filter
+-- FIR(k0,k1,k2,k3):<L1,L2,...,Ln> = <f:L1,...,f:Lm>
+-- where
+--   Li=<Pi1,...,Pin>
+--   f:L1=<0,...,0>
+--   f:Li=<0,...,g:Pij,...>
+--   g:Pij=k3*P_{i-1,j-1}+k2*P_{i-1,j}+k1*P_{i,j-1}+k0*P_ij
+-- Jul 13, 2011 - JS - reformulated for v2.6, 2015-05-26, JS.
+--
+
+#include "dc.cph" 
+
+actor fir (k:signed<8> array[4], maxwidth:int)
+  in (a:signed<8> dc)
+  out (c:signed<8> dc)
+var s : {S0,S1,S2,S3,S4,S5} = S0
+var zp : signed<8> = 0
+var zr : signed<8> array[maxwidth] = [ 0 | i=0 to maxwidth-1 ]
+var i: int
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<) -> (s:S2, c:'<, i:0)
+| (s:S2, a:'p) -> (s:S2, c:'0, zr[i]:p, i:i+1)
+| (s:S2, a:'>) -> (s:S3, c:'>)
+| (s:S3, a:'<) -> (s:S4, c:'<, i:0)
+| (s:S3, a:'>) -> (s:S0, c:'>)
+| (s:S4, a:'p) -> (s:S5, c:'0, zp:p, zr[i]:p, i:i+1)
+| (s:S5, a:'p) -> (s:S5, c:'(k[3]*zr[i-1]+k[2]*zr[i]+k[1]*zp+k[0]*p), zp:p, zr[i]:p, i:i+1)
+| (s:S5, a:'>) -> (s:S3, c:'>)
+;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+net o = fir ([1,1,1,1],512) i;

@@ -1,0 +1,29 @@
+-- This example illustrates the definition and usage of so-called "higher order" actors,
+-- i.e. actors taking functions as parameters (introduced in version 2.8.0)
+-- Here, the [fmap] actor accepts a stream of values [x1; x2; ...] (of type [t]) as input and
+-- produces the stream of values [f(x1); f(x2); ... ] (also of type [t]) as input.
+-- The applied function [f] is specified as a parameter when the actor is instanciated.
+-- 2016-05-26, JS
+
+actor fmap (f:$t1->$t2)
+  in (a:$t1)
+ out (c:$t2)
+rules
+| a:x -> c:f(x)
+;
+
+-- Three examples of functions to apply
+
+function f1 x = (2:signed<8>)*x : signed<8> -> signed<8>;
+function f2 x = x+(1:unsigned<16>) : unsigned<16> -> unsigned<16>;
+function f3 x = ((x*(3:signed<8>)):unsigned<16>) : signed<8> -> unsigned<16>;
+
+stream i1:signed<8> from "sample1.txt";
+stream o1:signed<8> to "result1.txt";
+stream i2:unsigned<16> from "sample2.txt";
+stream o2:unsigned<16> to "result2.txt";
+stream o3:unsigned<16> to "result3.txt";
+
+net o1 = fmap f1 i1;
+net o2 = fmap f2 i2;
+net o3 = fmap f3 i1;

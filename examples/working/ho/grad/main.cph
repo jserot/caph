@@ -1,0 +1,19 @@
+-- Basic gradient computing
+-- Examples given in [../apps/grad] rewritten with the [smap] and [smap2] HO actors
+-- 2016-05-27, JS
+
+#include "dc.cph"       -- to get the [smap] and [smap2] HO actors
+#include "img_ops.cph"  -- to get the [d1p] and [d1l] actors
+
+function f_abs x = if x < 0 then -x else x : signed<s> -> signed<s>;
+function f_thr(x) = if x > %th then (1:unsigned<1>) else (0:unsigned<1>) : signed<m> -> unsigned<1>;
+function f_add(x,y) = x+y : signed<m> * signed<m> -> signed<m>;
+function f_sub(x,y) = f_abs(x-y) : signed<m> * signed<m> -> signed<m>;
+
+net dx i = smap2 f_sub (i, d1p 0 i);
+net dy i = smap2 f_sub (i, d1l 0 i);
+
+stream inp:signed<10> dc from %ifile;
+stream res:unsigned<1> dc to "result.txt";
+
+net res = smap f_thr (smap2 f_add (dx inp, dy inp));

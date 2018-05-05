@@ -1,0 +1,8 @@
+This example shows how to use [ports] (as opposed as [streams]) to perform asynchronous I/O.  Here
+the [scale] actor multiplies each value token, read on stream [i1] by a factor [k] provided by input
+port [i2].  The initial value of [k] is 2. According the event file "factors.txt" attached to port
+[i2], this value is changed to 10 at time t=100.
+The [scale] actor also produced the value 100 on output port [o2] each time it finishes the processing of 
+line of tokens.
+
+Nov 26, 2014. JS

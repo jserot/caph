@@ -1,0 +1,57 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter*{Introduction}
+\label{sec:cl-intro}
+
+This part describes how to use \caph in a command line based environment, using
+\texttt{Makefile}s. On Unix-like platforms like Linux or MacOS, this is typically accomplished by
+running the corresponding tools from within a command shell. On Windows, this can be done using Unix
+emulation systems like MinGW~\cite{MinGW} or Cygwin~\cite{CygWin}.  As stated in the general
+introduction, although this approach may appear a bit more complicated than the former at first
+sight but it provides a way of integrating existing third-party tools, such as C++ compilers and
+VHDL synthetizers, in a fully automatized design flow. 
+
+\medskip This part assumes a basic familiarity with command line interfaces, shell programming
+and \texttt{make}-based compilation flows. Aside, a knowledge in digital design (and of the VHDL
+language) will help to appreciate the final products of the \caph toolset. Sections describing the
+synthesis of VHDL code on FPGA requires a previous knowledge of the \textsc{altera}
+Quartus~\textsc{ii} environment.
+
+\bigskip
+The following typographic conventions are followed :
+\begin{itemize}
+\item source code is written in gray-shaded boxes, like this :
+\begin{lstlisting}[style=CaphStyle]
+-- CAPH source code will appear here
+\end{lstlisting}
+\item \texttt{makefile}s are written in pink-shaded boxes, like this :
+\begin{lstlisting}[style=MakeStyle]
+-- Makefiles will appear like this
+\end{lstlisting}
+\item shell input (on the command line) is written like this (the character \verb|#| is the shell
+  prompt) :
+\begin{lstlisting}[style=BashInputStyle]
+# command
+\end{lstlisting}
+\item shell output is written like this :
+\begin{lstlisting}[style=BashOutputStyle]
+shell output
+\end{lstlisting}
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph-primer"
+%%% End: 

@@ -1,0 +1,45 @@
+=encoding utf8
+
+=head1 NAME
+
+bin2pgm - convert CAPH text-encoded binary format to PGM file
+
+=head1 SYNOPSIS
+
+bin2pgm bitwidth ifile ofile
+
+=head1 DESCRIPTION
+
+This program can be used to convert the F<.bin> files read or produced by the VHDL backend of the
+CAPH compiler to to be viewed by image viewers.
+
+=head1 ARGUMENTS
+
+=over
+
+=item bitwidth
+
+size, in bits, of the data words to read in the input file
+
+=item ifile
+
+name of the input file
+
+=item ofile
+
+name of the output file
+
+=back
+
+=head1 EXIT STATUS
+
+The program returns a zero exit status if it succeeds and a non zero value in case of failure. In
+the latter case, an error message is printed to stderr.
+
+=head1 AUTHOR
+
+Jocelyn SE<eacute>rot (jocelyn.serot@univ-bpclermont.fr)
+
+=head1 SEE ALSO
+
+L<pgm2txt(1)>, L<txt2pgm(1)>, L<txt2bin(1)>, L<bin2txt(1)>, L<pgm2bin(1)>

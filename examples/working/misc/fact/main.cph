@@ -1,0 +1,24 @@
+-- Computes the factorial of integers by intra-actor iteration
+-- To be compared with the program computing the same values using extra-actor feedback (network-level recursion)
+-- Dec 27, 2012 - JS
+
+type uint8 == unsigned<8>;
+
+actor fact
+  in (a:uint8)
+ out (c:uint8)
+var k: uint8
+var r: uint8 = 0
+var st: {S0,S1} = S0
+rules
+| (st:S0, a:n) -> (st:S1, k:n, r:1)
+| (st:S1, k:0) -> (st:S0, c:r)
+| (st:S1, k:m) -> (st:S1, k:m-1, r:(r*k:unsigned<8>))
+-- | (st:S1, k:m) -> (st:S1, k:m-1, r:(r*m:unsigned<8>))  -- ALSO works
+-- | (st:S1) -> (st:S1, k:k-1, r:(r*k:unsigned<8>))        -- ALSO works
+;
+
+stream i:uint8 from "sample.txt";
+stream o:uint8 to "result.txt";
+
+net o = fact i;

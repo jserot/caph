@@ -1,0 +1,21 @@
+#!/bin/bash
+
+target_dir=$1
+qip_name=main_net
+proj_name=main_net
+quartus_lib=$CAPH_DIR/lib/quartus
+
+if [ ! -d $target_dir ]; then
+  echo "Creating dir $target_dir"
+  mkdir $target_dir
+fi
+cp $quartus_lib/qsf_templ.qsf $target_dir/$proj_name.qsf
+cp $quartus_lib/qpf_templ.qpf $target_dir/$proj_name.qpf
+cp $quartus_lib/sdc_templ.sdc $target_dir/$proj_name.sdc
+(cat ./$qip_name.qip; cat $quartus_lib/qip_templ.qip) > $target_dir/$proj_name.qip
+src_files=`find . \( -name "*.vhd" -and -not \( -name "*_tb.vhd" \) \) -print`
+for f in $src_files; do
+echo "Copying $f to $target_dir"
+cp $f $target_dir
+done
+

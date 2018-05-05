@@ -1,0 +1,146 @@
+----------------------------------------------
+-- Basic operations on images (lists of lists)
+-- 2014-11-05, JS
+----------------------------------------------
+
+#include "dc.cph"  -- the [dc] type
+
+--------------------------------------------------
+-- D1P - 1-pixel delay on images
+-- D1P(v):<L1,L2,...,Ln>=<f:L1,f:L2,...,f:Ln> 
+--    where : f:<x1,x2,...,xn> = <v,x1,...,xn-1>
+--------------------------------------------------
+
+actor d1p (v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2} = S0
+var z : $t
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<) -> (s:S2, c:'<, z:v)
+| (s:S2, a:'p) -> (s:S2, c:'z, z:p)
+| (s:S2, a:'>) -> (s:S1, c:'>)
+;
+
+--------------------------------------------------
+-- F1P - One-pixel forward on images
+-- F1P(v):<L1,L2,...,Ln>=<f:L1,f:L2,...,f:Ln> 
+--    where : f:<x1,x2,...,xn> = <x2,...,xn,v>
+--------------------------------------------------
+
+actor f1p (v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3,S4} = S0
+rules 
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<) -> (s:S2, c:'<)
+| (s:S2, a:'p) -> (s:S3      )
+| (s:S3, a:'p) -> (s:S3, c:'p)
+| (s:S3, a:'>) -> (s:S4, c:'v)
+| (s:S4      ) -> (s:S1, c:'>)
+;
+
+------------------------------------------------------
+-- DkP - k-pixel delay on images
+-- DkP(k,v):<L1,L2,...,Ln>=<f:L1,f:L2,...,f:Ln> 
+--    where : f:<x1,x2,...,xn> = <v,...,v,x1,...,xn-k>
+--                                \--k--/
+------------------------------------------------------
+
+actor dkp (k:int, v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3} = S0
+var i : int
+var z : $t array[k] = [ v | i = 0 to k-1 ]
+rules
+| (s:S0, a:'<)            -> (s:S1, c:'<)
+| (s:S1, a:'>)            -> (s:S0, c:'>)
+| (s:S1, a:'<)            -> (s:S2, c:'<, i:0)
+| (s:S2, a:'p) when i<k-1 -> (s:S2, c:'v, z[i]:p, i:i+1)
+| (s:S2, a:'p)            -> (s:S3, c:'v, z[i]:p, i:0)
+| (s:S3, a:'p)            -> (s:S3, c:'z[i], z[i]:p, i:if i<k-1 then i+1 else 0)
+| (s:S3, a:'>)            -> (s:S1, c:'>)
+;
+
+--------------------------------------------------------------------------------------------------
+-- FkP - k-pixel forward on images
+-- FkP(k,v):<L1,L2,...,Ln>=<f:L1,f:L2,...,f:Ln> 
+--   where f:<x1,x2,...,xn> = <xk,...,xn-k,v,....,v>
+--                                        \--k--/
+-- WARNING: unless the input device insert some inter-line delay between lines of the input image,
+-- this actor requires a FIFO with min capacity [k*nb_lignes] on input..
+-- To understand why, just run the simulator in trace mode on a small (4x4) example..
+--------------------------------------------------------------------------------------------------
+
+actor fkp (k:int, v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3,S4} = S0
+var i : int
+rules
+| (s:S0, a:'<)            -> (s:S1, c:'<)
+| (s:S1, a:'>)            -> (s:S0, c:'>)
+| (s:S1, a:'<)            -> (s:S2, c:'<, i:k)
+| (s:S2, a:'p) when i>0   -> (s:S2, i:i-1)
+| (s:S2, a:'p)            -> (s:S3, c:'p)
+| (s:S3, a:'p)            -> (s:S3, c:'p)
+| (s:S3, a:'>)            -> (s:S4, c:'v, i:k-1)
+| (s:S4) when i>0         -> (s:S4, c:'v, i:i-1)
+| (s:S4)                  -> (s:S1, c:'>)
+;
+
+--------------------------------------------------
+-- D1Li - 1-line delay on images (with local storage)
+-- D1Li(v):<L1,L2,...,Ln>=<L0,L1,...,Ln-1>
+--     where L0=<v,v,...,v>
+--------------------------------------------------
+
+actor d1li (v:$t, maxwidth:int)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3,S4}=S0
+var z : $t array[maxwidth] = [ v | i = 0 to maxwidth-1 ]
+var i : int
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<) -> (s:S2, c:'<, i:0)
+| (s:S2, a:'>) -> (s:S3, c:'>)
+| (s:S2, a:'p) -> (s:S2, c:'v, z[i]:p, i:i+1)
+| (s:S3, a:'>) -> (s:S0, c:'>)
+| (s:S3, a:'<) -> (s:S4, c:'<, i:0)
+| (s:S4, a:'p) -> (s:S4, c:'z[i], z[i]:p, i:i+1)
+| (s:S4, a:'>) -> (s:S3, c:'>)
+;
+
+------------------------------------------------------------------------------------
+-- D1L - 1-line delay on images (recursive version, with feedback via external FIFO)
+-- D1L(v):<L1,L2,...,Ln>=<L0,L1,...,Ln-1>
+--     where L0=<v,v,...,v>
+------------------------------------------------------------------------------------
+
+actor d1lr (v:$t)
+  in (a:$t dc, z:$t)
+  out (c:$t dc, zz:$t)
+var s : {S0,S1,S2,S3,S4}=S0
+rules
+  ( s,  a, z) -> ( s,  c, zz)
+| (S0,  _, z) -> (S0,  _,  _)  -- empty the feedback wire
+| (S0, '<, _) -> (S1, '<,  _)  -- start of frame
+| (S1, '>, _) -> (S0, '>,  _)  -- end of frame
+| (S1, '<, _) -> (S2, '<,  _)  -- start of first line
+| (S2, '>, _) -> (S3, '>,  _)  -- end of first line
+| (S2, 'p, _) -> (S2, 'v,  p)  -- first line
+| (S3, '>, _) -> (S0, '>,  _)  -- end of last line
+| (S3, '<, _) -> (S4, '<,  _)  -- start of line
+| (S4, 'p, z) -> (S4, 'z,  p)  -- line
+| (S4, '>, _) -> (S3, '>,  _)  -- end of line
+;
+
+net d1l z i = let rec (o,l) = d1lr z (i,l) in o;
+

@@ -1,0 +1,3 @@
+type $t rl<s> =            -- [t rl<n>] is the type of run lengths where [t] is type of the sequence elements 
+  RL of $t * unsigned<s>;  -- and [n] the number of bits used for coding the length
+ 

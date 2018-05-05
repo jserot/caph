@@ -1,0 +1,24 @@
+-- Computes the factorial of integers by extra-actor feedback (network-level recursion)
+-- To be compared with the program computing the same values using intra-actor iteration
+-- Dec 27, 2012 - JS
+
+type uint == unsigned<8>;
+
+actor fact
+  in (a:uint, k:uint, r:uint)
+ out (c:uint, kk:uint, rr:uint)
+-- Note : stateless actor 
+rules
+  (a, k, r) -> ( kk,                rr, c)
+| (_, 0, r) -> (  _,                 _, r)
+| (_, k, r) -> (k-1, (r*k:unsigned<8>), _)
+| (n, _, _) -> (  n,                 1, _)
+;
+
+stream i:uint from "sample.txt";
+stream o:uint to "result.txt";
+
+net o = 
+  let rec (c,k,r) = fact (i,k,r) in
+  c
+;

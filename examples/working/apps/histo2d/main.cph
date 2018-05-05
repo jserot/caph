@@ -1,0 +1,25 @@
+#include "dc.cph"
+
+actor histo2 (nxbins:int, nybins:int, bindepth:int)
+  in (a:unsigned<8> dc, b:unsigned<8> dc)
+  out (c:unsigned<bindepth> dc)
+var s : {S0,S1,S2,S3}=S0
+var h : unsigned<bindepth> array[nxbins][nybins] = [ 0 | i=0 to nxbins-1, j=0 to nybins-1 ]
+--var h : unsigned<bindepth> array[nxbins][nybins] = [ i*10+j | i=0 to nxbins-1, j=0 to nybins-1 ]
+var i : int
+var j : int
+rules
+| (s:S0, a:'<, b:'<)   -> (s:S1)
+| (s:S1, a:'x, b:'y)   -> (s:S1, h[x][y]:h[x][y]+1)
+| (s:S1, a:'>, b:'>)   -> (s:S2, c:'<, i:0, j:0)
+| (s:S2) when i=nxbins -> (s:S0, c:'>)
+| (s:S2)               -> (s:S3, c:'<, j:0)
+| (s:S3) when j=nybins -> (s:S2, c:'>, i:i+1)
+| (s:S3)               -> (s:S3, c:'h[i][j], h[i][j]:0, j:j+1)
+;
+
+stream i1:unsigned<8> dc from "sample.txt";
+stream i2:unsigned<8> dc from "sample.txt";
+stream o:unsigned<3> dc to "result.txt";
+
+net o = histo2 (4,5,3) (i1,i2);

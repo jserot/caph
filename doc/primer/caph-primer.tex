@@ -1,0 +1,187 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[A4]{report}
+%\usepackage[french]{babel}
+%\usepackage[latin1]{inputenc}
+\usepackage{titlepic}
+\usepackage{alltt}
+\usepackage{listings}
+%\usepackage[T1]{fontenc}
+\usepackage{xspace}
+%\usepackage{verbatim}
+\usepackage{spverbatim}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{amsmath}
+
+\lstloadlanguages{C++,VHDL}
+% \lstset{frameround=tttt} 
+% \lstset{captionpos=t}
+% \lstset{breaklines=true}
+% \lstset{aboveskip=2\medskipamount}
+% \lstset{belowskip=1.5\medskipamount}
+% \lstset{abovecaptionskip=\medskipamount}
+\lstdefinelanguage{Caph}{keywords={function,constant,actor,in,out,var,rules,stream,from,to,net,type,let,and,of,const,extern},morecomment=[l]{--}}
+% \lstset{language=Caph}
+% \lstset{frame=single}
+
+\lstdefinestyle{CaphStyle}{
+  language=Caph,
+  basicstyle=\small,
+%  numbers=left,
+%  numberstyle=\tiny,
+%  numbersep=3pt,
+  frame=single,
+  frameround=tttt,
+  breaklines=true,
+%  columns=fullflexible,
+  backgroundcolor=\color{gray!10}
+}
+
+\lstdefinestyle{MakeStyle}{
+  language=make,
+  basicstyle=\small,
+%  numbers=left,
+%  numberstyle=\tiny,
+%  numbersep=3pt,
+  frame=single,
+  frameround=tttt,
+  breaklines=true,
+  breakatwhitespace=true,
+%  columns=fullflexible,
+  backgroundcolor=\color{pink!10}
+}
+
+
+\lstdefinestyle{BashInputStyle}{
+  language=bash,
+%  firstline=2,% Supress the first line that begins with `%`
+  basicstyle=\small\sffamily,
+%  numbers=left,
+%  numberstyle=\tiny,
+%  numbersep=3pt,
+  frame=tb,
+  columns=fullflexible,
+  backgroundcolor=\color{yellow!20},
+%  linewidth=0.9\linewidth,
+%  xleftmargin=0.1\linewidth
+}
+
+\lstdefinestyle{BashOutputStyle}{
+  basicstyle=\small\ttfamily,
+  numbers=none,
+  frame=tblr,
+  columns=fullflexible,
+  backgroundcolor=\color{blue!10},
+%  linewidth=0.9\linewidth,
+%  xleftmargin=0.1\linewidth
+}
+
+\usepackage[pdftex]{graphicx}
+
+\setlength{\textheight}{23cm}
+\setlength{\textwidth}{17cm}
+\setlength{\columnsep}{1.9pc}
+\setlength{\topmargin}{-.3in}
+\setlength{\oddsidemargin}{-.19in}
+
+\newcounter{stepcnt}
+\setcounter{stepcnt}{1}
+%\newcommand{\step}{\medskip$\blacktriangleright$\xspace\underline{Etape \thestepcnt}\stepcounter{stepcnt}}
+\newcommand{\step}{}
+
+\titlepic{\includegraphics[width=0.3\textwidth]{figs/caph-logo}}
+
+\title{The CAPH Primer}
+
+\author{J. S\'erot}
+
+\newcommand{\caph}{CAPH\xspace }
+\newcommand{\caphc}{\texttt{caphc}\xspace }
+\newcommand{\caphy}{\textsc{caph} IDE\xspace }
+\newcommand{\vhdl}{VHDL\xspace}
+\newcommand{\note}[1]{\marginpar{\tiny #1}}
+\newcommand{\todo}[1]{\note{TODO: #1}}
+\newcommand{\df}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\dx}[1]{\df{#1}{x}}
+\newcommand{\dy}[1]{\df{#1}{y}}
+
+\begin{document}
+
+\maketitle
+
+\input{intro}
+
+\part{The Caph language}
+%\input{lang-intro}
+\input{lang-basic}
+\input{lang-images}
+\input{lang-ip}
+\part{The Caph IDE}
+\input{ide-intro}
+\input{ide-basic}
+\input{ide-project}
+\input{ide-options}
+\part{Makefile-based design with Caph}
+\input{cl-intro}
+\input{cl-basic}
+\input{cl-images}
+\input{cl-ip}
+
+
+\begin{thebibliography}{1}
+
+\bibitem{caph-lrm}
+J.~S\'erot.
+\newblock CAPH Reference Manual.
+\newblock Available online at \url{caph.univ-bpclermont.fr}
+
+\bibitem{Graphviz}
+\newblock The \texttt{Graphviz} Graph Visualization Software.
+\newblock Available online at \url{www.graphviz.org}
+
+\bibitem{GHDL}
+\newblock The GHDL VHDL Simulator.
+\newblock Available online at \url{gna.org/projects/ghdl}
+
+\bibitem{gtkwave}
+\newblock The GTKWave Software.
+\newblock Available online at \url{gtkwave.sourceforge.net}
+
+\bibitem{VCD}
+\newblock The Value Change Dump file format.
+\newblock \url{en.wikipedia.org/wiki/Value_change_dump}
+
+\bibitem{PGM}
+\newblock The NetPBM grayscale file format.
+\newblock \url{netpbm.sourceforge.net/doc/pgm.html}
+
+\bibitem{GpStudio}
+\newblock GpStudio : a Toolchain for FPGA-based smart camera.
+\newblock \url{gpstudio.univ-bpclermont.fr}
+
+\bibitem{MinGW}
+\newblock Minimalist GNU for Windows
+\newblock \url{www.mingw.org}
+
+\bibitem{CygWin}
+\newblock Linux for Windows
+\newblock \url{www.cygwin.com}
+
+ 
+\end{thebibliography}
+\tableofcontents
+
+\end{document}

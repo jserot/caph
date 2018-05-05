@@ -1,0 +1,16 @@
+include ../config 
+
+all: 
+	@echo "Nothing to do"
+
+install: 
+	$(INSTALL) -d $(MANDIR)
+	(for f in *.$(MANEXT); do $(CP) $$f $(MANDIR); done)
+
+clean:
+	@echo "Nothing to clean"
+
+realclean: 
+	rm -f *.$(MANEXT) *.tex
+
+clobber: realclean

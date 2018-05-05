@@ -1,0 +1,19 @@
+-- This simple example illustrates the use of size-generic actors
+-- Lacking this feature would have obliged to declare _two_ [incr] actors with distinct signatures
+-- 2012-11-25, JS
+
+actor incr
+  in (a:int<s,n>)
+  out (c:int<s,n>)
+rules a -> c
+| v -> v+1
+;
+
+stream i1:signed<8> from "sample1.txt";
+stream o1:signed<8> to "result1.txt";
+stream i2:unsigned<16> from "sample2.txt";
+stream o2:unsigned<16> to "result2.txt";
+
+net o1 = incr i1;
+net o2 = incr i2;
+

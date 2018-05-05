@@ -1,0 +1,38 @@
+-- This is the first example described in the "Caph Primer" tutorial, chapter 1
+
+
+--  Actor declarations
+
+actor inc
+in (i: unsigned<8>)
+out (o: unsigned<8>)
+rules
+| i:x -> o:x+1;
+
+actor dec
+in (i: unsigned<8>)
+out (o: unsigned<8>)
+rules
+| i:x -> o:x-1;
+
+actor mul
+in (i1: unsigned <8>, i2 : unsigned<8>)
+out (o: unsigned<8>)
+rules
+| (i1:x, i2:y) -> o:x*y;
+
+actor dup
+in (i: unsigned<8>)
+out (o1: unsigned <8>, o2: unsigned<8>)
+rules
+| i:x -> (o1:x, o2:x);
+
+-- I/O declarations
+stream inp: unsigned<8> from "sample.txt";
+stream outp: unsigned<8> to "result.txt";
+
+-- Network declarations
+net (x1, x2) = dup inp;
+net y1 = inc x1;
+net y2 = dec x2;
+net outp = mul (y1, y2);

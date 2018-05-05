@@ -1,0 +1,5 @@
+DOT_OPTS = -I $(CAPHLIB)   -D ifile=lena64.pgm
+SIM_OPTS = -I $(CAPHLIB)  -chan_cap 68 -D ifile=lena64.pgm -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB)  -sc_default_fifo_capacity 130 -sc_stop_time 200000 -sc_dump_fifo_stats -D ifile=lena64.pgm -sc_abbrev_dc_ctors
+VHDL_OPTS = -I $(CAPHLIB)  -vhdl_annot_file conv33_v1_fifo_stats.dat -D ifile=lena64.pgm
+GHDL_RUN_OPTS = --stop-time=100000ns

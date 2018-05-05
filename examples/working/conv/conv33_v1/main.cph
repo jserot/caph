@@ -1,0 +1,32 @@
+-- 2D 3x3 convolution - with explicit neighborhood generation
+
+#include "neigh.cph" 
+
+actor maddn (k:int<s,m> array[9], n:unsigned<4>)
+  in (x0:int<s,m> dc, x1:int<s,m> dc, x2:int<s,m> dc,
+      x3:int<s,m> dc, x4:int<s,m> dc, x5:int<s,m> dc,
+      x6:int<s,m> dc, x7:int<s,m> dc, x8:int<s,m> dc)
+  out (s:int<s,m> dc)
+rules
+  ( x0,  x1,  x2,  x3,  x4,  x5,  x6,  x7,  x8) -> s
+| ( '<, '<,   '<,  '<,  '<,  '<,  '<,  '<,  '<) -> '<
+| ('x0, 'x1, 'x2, 'x3, 'x4, 'x5, 'x6, 'x7, 'x8) -> '(k[0]*x8+k[1]*x7+k[2]*x6+k[3]*x5+k[4]*x4+k[5]*x3+k[6]*x2+k[7]*x1+k[8]*x0)>>n
+| ( '>, '>,   '>,  '>,  '>,  '>,  '>,  '>,  '>) -> '>
+;
+
+actor abs
+  in (a:signed<s> dc)
+ out (c:signed<s> dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'x when x<0 -> '-x
+| 'x -> 'x
+;
+
+stream x:signed<16> dc from %ifile;
+stream r1:signed<16> dc to "result1.txt"; 
+stream r2:signed<16> dc to "result2.txt"; 
+
+net r1 = maddn ([1,2,1, 2,4,2, 1,2,1], 4) (neigh233 0 x);           -- Gaussian smoothing
+net r2 = abs (maddn ([0,-1,0,-1,4,-1, 0,-1,0], 0) (neigh233 0 x));  -- Laplace filtering

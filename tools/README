@@ -1,0 +1,5 @@
+This directory contains utilities for
+- converting text and pgm files from (resp. to) the specific binary format which is used
+  by the VHDL testbench to read (resp. write) input (resp. output) data.
+- generating .cph source files from higher level specifications
+- generating top-level Makefile from project descriptions (caphmake)

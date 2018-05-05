@@ -1,0 +1,19 @@
+-- A small example illustrating the use of the [float] type
+-- Dec 21, 2012, JS
+
+#include "dc.cph"
+
+actor scale (k:float)
+  in (a:float dc)
+  out (c:float dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'p -> 'p *. k
+;
+
+stream i:float dc from "sample.txt";
+stream o:float dc to "result.txt";
+
+net o = scale 2.0 i;
+

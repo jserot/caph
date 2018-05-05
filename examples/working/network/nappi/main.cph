@@ -1,0 +1,16 @@
+-- A basic example with the [nappi] higher-order wiring primitive
+-- Dec 8, 2015, JS
+
+actor scale (k: unsigned<8>) 
+  in (i:unsigned<8>)
+  out (o:unsigned<8>)
+rules 
+| i:x -> o:(k+1)*x
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+stream o3:unsigned<8> to "result3.txt";
+
+net (o1,o2,o3) = nappi 3 scale i;

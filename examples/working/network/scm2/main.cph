@@ -1,0 +1,30 @@
+-- Nested SCM patterns
+-- May 16, 2014 - JS
+
+actor compute 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> 2*x
+;
+
+actor split 
+  in (i:unsigned<8>)
+  out (o1:unsigned<8>,o2:unsigned<8>,o3:unsigned<8>,o4:unsigned<8>)
+rules i -> (o1,o2,o3,o4)
+| x -> (x,x,x,x)
+;
+
+actor merge 
+  in (i1:unsigned<8>,i2:unsigned<8>,i3:unsigned<8>,i4:unsigned<8>)
+ out (o:unsigned<8>)
+rules (i1,i2,i3,i4) -> o
+| (x1,x2,x3,x4) -> x1+x2+x3+x4
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net scm s c m x = m (map c (split x));
+
+net o = scm split (scm split compute merge) merge i;

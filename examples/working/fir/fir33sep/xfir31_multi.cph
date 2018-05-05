@@ -1,0 +1,40 @@
+-- 3x1 Finite Impulse Response filter on images, with scaling and padding - multi-actor version
+-- FIR(a,p,s):<L_1,L_2,L_3,L_4,...> = <L'_1,L'_2,f(L_3),f(L_4),...> 
+-- where
+--   L'_1 = L'_2 = <p,p,...,p>
+--   f(L_i) = f:<x_i_1,x_i_2,x_i_3,...> = <g(x_i_1),g(x_i_2),g(x_i_3),...>
+--   g(x_i_j) = (a_0*x_{i-2}_j+a_1*x_{i-1}_j+a_2*x_i_j)>>s  for i>2
+-- Aug 1, 2015 - JS
+-- 1x3 Finite Impulse Response filter on lists, with scaling and padding - multi-actor version
+
+#include "img_ops.cph"
+#include "misc.cph"
+
+actor vpad (p:int<s,m>, n:unsigned<4>)
+  in (i:int<s,m> dc)
+  out (o:int<s,m> dc)
+var j : unsigned<4>
+var st : {S0, S1, S2, S3} = S0
+rules
+| (st:S0, i:'<)            -> (o:'<, j:1, st:S1)                   -- Start of image
+| (st:S1, i:'<)            -> (o:'<, st:S1)                        -- Start of padded line
+| (st:S1, i:'x)            -> o:'p                                 -- Padding
+| (st:S1, i:'>) when j<n-1 -> (o:'>, j:j+1)                        -- Keep on padding
+| (st:S1, i:'>)            -> (o:'>, st:S2)                        -- Stop padding
+| (st:S2, i:'<)            -> o:'<                                 -- Copy normal line
+| (st:S2, i:'x)            -> o:'x                                 -- 
+| (st:S2, i:'>)            -> (o:'>, st:S3)                        -- End of normal line
+| (st:S3, i:'<)            -> (o:'<, st:S2)                        -- Next normal line
+| (st:S3, i:'>)            -> (o:'>, st:S0)                        -- End of image
+;
+
+net vdelay p i =
+  let x3 =  i in
+  let x2 = d1l p x3 in
+  let x1 = d1l p x2 in
+  (x1,x2,x3);
+
+net fir31 p s x =
+  let xs = vdelay p x in
+  let ys = mapi mult xs in
+  vpad (p,3) (shift s (foldl add ys));

@@ -1,0 +1,4 @@
+SIM_OPTS =
+SC_OPTS = -sc_stop_time 200
+VHDL_OPTS =
+GHDL_RUN_OPTS = --stop-time=200ns

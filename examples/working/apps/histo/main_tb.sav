@@ -1,0 +1,42 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Wed Oct  7 12:41:29 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/apps/histo/main_tb.ghw"
+[dumpfile_mtime] "Wed Oct  7 12:39:15 2015"
+[dumpfile_size] 3762
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/apps/histo/main_tb.sav"
+[timestart] 0
+[size] 899 615
+[pos] 330 122
+*-25.411926 50000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.main_tb.
+[treeopen] top.main_tb.b1.
+[treeopen] top.main_tb.n.
+[treeopen] top.main_tb.n.b3.
+[sst_width] 198
+[signals_width] 124
+[sst_expanded] 1
+[sst_vpaned_height] 170
+@28
+top.main_tb.n.clock
+top.main_tb.n.b3.reset
+@22
+#{top.main_tb.n.b3.a[9:0]} top.main_tb.n.b3.a[0]
+@28
+top.main_tb.n.b3.a_empty
+top.main_tb.n.b3.a_rd
+@22
+#{top.main_tb.n.b3.h[0][3:0]} top.main_tb.n.b3.h[0][3] top.main_tb.n.b3.h[0][2] top.main_tb.n.b3.h[0][1] top.main_tb.n.b3.h[0][0]
+@23
+#{top.main_tb.n.b3.h[1][3:0]} top.main_tb.n.b3.h[1][3] top.main_tb.n.b3.h[1][2] top.main_tb.n.b3.h[1][1] top.main_tb.n.b3.h[1][0]
+@22
+#{top.main_tb.n.b3.n_h[0][3:0]} top.main_tb.n.b3.n_h[0][3] top.main_tb.n.b3.n_h[0][2] top.main_tb.n.b3.n_h[0][1] top.main_tb.n.b3.n_h[0][0]
+#{top.main_tb.n.b3.n_h[1][3:0]} top.main_tb.n.b3.n_h[1][3] top.main_tb.n.b3.n_h[1][2] top.main_tb.n.b3.n_h[1][1] top.main_tb.n.b3.n_h[1][0]
+@28
+top.main_tb.n.b3.en_h
+top.main_tb.n.b3.a_empty
+top.main_tb.n.b3.o_full
+[pattern_trace] 1
+[pattern_trace] 0

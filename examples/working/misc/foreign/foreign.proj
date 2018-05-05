@@ -1,0 +1,8 @@
+DOT_OPTS = -I $(CAPHLIB) 
+SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors -sim_extra extfns.ml
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 400 -sc_abbrev_dc_ctors -sc_extra extfns.cpp 
+VHDL_OPTS = -I $(CAPHLIB)  -vhdl_extra extfns.vhd
+GHDL_RUN_OPTS = --stop-time=200ns 
+
+CXXFLAGS = -I ..
+

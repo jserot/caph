@@ -1,0 +1,19 @@
+-- cmps[k](<p_1,...,p_n>) = true iff p_i=k for all i=1..n
+-- 2012-11-03, JS
+
+#include "dc.cph"
+
+actor cmps (k:$t)
+  in (a:$t dc)
+  out (c:bool)
+var t : bool
+rules
+| a:'< -> t:true
+| a:'> -> c:t
+| a:'p -> t:t && p=k
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:bool to "result.txt";
+
+net o = cmps 1 i;

@@ -1,0 +1,4 @@
+This directory contains the "standard libraries" for the CAPH distribution.
+The individual files should be included with "#include" directive in your source code and the
+CAPH compiler should be invoked with the "-I <dir>" option, where <dir> is the actual location of the libraries.
+Updated for v2.7.2, 2016-03-01, JS.

@@ -1,0 +1,20 @@
+-- This example illustrates the use of global functions and constants
+
+#include "dc.cph"
+
+function mult (x,y)=  x*y : signed<s> * signed<s> -> signed<s>;
+
+const z = 2 : signed<8>;
+
+actor scale (k:signed<s>)
+  in (a:signed<s> dc)
+  out (c:signed<s> dc)
+rules a -> c
+| '< -> '<
+| 'p -> '(mult(p,k))
+| '> -> '>;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+net o = scale z i ;

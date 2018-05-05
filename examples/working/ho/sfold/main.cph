@@ -1,0 +1,22 @@
+-- The [sfold] actor, defined in [lib/caph/dc.cph] applies a reduction fonction [f] to each
+-- list of its input stream. Formally : 
+--   sfold(f,z) : < x11 x12 ... x1n > < x21 ... x2n > ... = y1 y2 ...
+--   where yi = f (f (f (f z xi1) xi2) ... xin)
+-- For ex: ffold(+,0) : < 1 2 > < 3 4 5 > < 6 7 8 9 > ... = (1+2) (3+4+5) (6+7+8+9+) ... = 3 12 30 ..
+--     or: ffold(*,1) : < 1 2 3 > < 4 5 6 > < 7 8 9 > ... = (1*2*3) (4*5*6) (7*8*9) ... = 6 120 504
+-- 2016-05-26, JS
+
+#include "dc.cph"
+
+-- Two examples of reduction functions
+
+function add (x,y) = x+y : signed<8> * signed<8> -> signed<8>;
+function mult (x,y) = x*y : unsigned<16> * unsigned<16> -> unsigned<16>;
+
+stream i1:signed<8> dc from "sample1.txt";
+stream o1:signed<8> to "result1.txt";
+stream i2:unsigned<16> dc from "sample2.txt";
+stream o2:unsigned<16> to "result2.txt";
+
+net o1 = sfold (add,0) i1;   -- as given in the example above
+net o2 = sfold (mult,1) i2;  -- as given in the example above

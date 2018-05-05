@@ -1,0 +1,5 @@
+DOT_OPTS = -I $(CAPHLIB) -suppress_cast_warnings 
+SIM_OPTS = -I $(CAPHLIB)  -suppress_cast_warnings -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB)  -suppress_cast_warnings -sc_dump_fifo_stats -sc_stop_time 48000 -sc_abbrev_dc_ctors
+VHDL_OPTS = -I $(CAPHLIB) -suppress_cast_warnings  
+GHDL_RUN_OPTS = --stop-time=160000ns

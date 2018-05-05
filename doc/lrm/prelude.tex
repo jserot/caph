@@ -1,0 +1,63 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{The \caph standard libraries}
+\label{cha:stdlib}
+
+The \caph distribution comes with a small set of ``libraries'' containing definitions of actors and
+functions which are likely to be frequently used in signal or image processing applications :
+
+\begin{itemize}
+\item \verb|dc.cph| contains the definition of the \verb|dc| type (see Sec.~\ref{sec:type-declarations}),
+\item \verb|list_ops.cph| contains the definitions of actors performing back and forward delays on lists of values,
+\item \verb|img_ops.cph| contains the definitions of actors and wiring functions for manipulating images
+  (horizontal and vertical delays, neighborhood generation, \ldots),
+\item \verb|convol.cph| contains the definitions of actors performing convolutions on lists and images,
+\item \verb|stream_ops.cph| contains the definitions of actors performing various operations on
+  \emph{unstructured} streams.
+\end{itemize}
+
+Most of the actors (resp. functions) are polymorphic and accept parameters making them sufficiently
+generic to be used in a large variety of contexts.
+
+To use a library, one simply has to include it in the program, using the \verb|#include| directive
+described in Sec.~\ref{sec:file-inclusion}. For example, a program using the \verb|dc| type
+will start with the following line :
+
+\begin{lstlisting}
+#include "dc.cph"
+\end{lstlisting}
+
+The location of the standard libraries must be specified with the \verb|-I| option (see Sec.~\ref{cha:compiler-options}). 
+
+\medskip
+The contents of the standard libraries is reproduced below.
+
+\lstinputlisting[language=Caph,basicstyle=\footnotesize,frame=single,caption={The library
+  dc.cph},label={lst:dc}]{../../lib/caph/dc.cph}
+
+\lstinputlisting[language=Caph,basicstyle=\footnotesize,frame=single,caption={The library list\_ops.cph},label={lst:listops}]{../../lib/caph/listops.cph}
+
+\lstinputlisting[language=Caph,basicstyle=\footnotesize,frame=single,caption={The library img\_ops.cph},label={lst:imgops}]{../../lib/caph/imgops.cph}
+
+\lstinputlisting[language=Caph,basicstyle=\footnotesize,frame=single,caption={The library
+  convol.cph},label={lst:convol}]{../../lib/caph/convol.cph}
+
+\lstinputlisting[language=Caph,basicstyle=\footnotesize,frame=single,caption={The library
+  stream\_ops.cph},label={lst:streamops}]{../../lib/caph/streamops.cph}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

@@ -1,0 +1,21 @@
+-- 3D (actually 1Dx1Dx1D) LookUp Table
+
+actor lut
+  in (a:unsigned<4>, b:unsigned<4>, c:unsigned<4>)
+  out (o:unsigned<8>)
+  var mem : unsigned<8> array[2][3][4] = [
+     [ [ 11, 12, 13, 14 ], 
+       [ 21, 22, 23, 24 ],
+       [ 31, 32, 33, 34 ] ],
+     [ [ 15, 16, 17, 18 ], 
+       [ 25, 26, 27, 28 ],
+       [ 35, 36, 37, 38 ] ]
+     ]
+rules (a,b,c) -> o
+| (i,j,k) -> mem[i mod 2][j mod 3][k mod 4]
+;
+
+stream i:unsigned<4> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = lut (i,i,i);

@@ -1,0 +1,31 @@
+-- Variable-size transpose actor
+-- Apr 11, 2013 - JS
+
+-- The input and output blocks are represented linearly (as a list)
+-- Transpose:<p11,...,p1n,p21,...,p2n,...,pm1,pmn> = <p11,p21,...,pm1,p12,p22,...,pm2,...,p1n,p2n,...,pmn>
+
+#include "dc.cph"
+
+actor transpose (nrows:int, ncols:int, nn:int, sample:$t) 
+  in (a:$t dc)
+  out (c:$t dc)
+var s : { S0, S1, S2, S3 } = S0
+var z : $t array[nn] = [ sample | i = 0 to nn-1]
+  -- The size of array [z] should really be [ncols*nrows] but this requires a richer
+  -- dependant type system than currently supported
+var i : int
+var j : int
+var k : int
+rules
+| (s:S0, a:'<)              -> (s:S1, i:0, j:0, k:0)                    -- Start of input block
+| (s:S1, a:'>) when k=nrows -> (s:S2, i:0, c:'<)                        -- End of input block, start output
+| (s:S1      ) when j=ncols -> (s:S1, i:k+1, j:0, k:k+1)                -- Store input block, next line
+| (s:S1, a:'v)              -> (s:S1, i:i+nrows, j:j+1, z[i]:v)         -- Store input block
+| (s:S2) when i=nn          -> (s:S0, c:'>)                             -- End of output block
+| (s:S2)                    -> (s:S2, i:i+1, c:'z[i])                   -- Output block value 
+;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:signed<8> dc to "result.txt";
+
+net o = transpose (4,6,24,0) i;

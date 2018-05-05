@@ -1,0 +1,17 @@
+-- Another example with the [napp] higher-order wiring primitive
+-- Here, the pair of wires [(i1,i2)] is broadcasted to a row of [n] (here n=2) [addm] actors,
+-- Dec 8, 2015, JS
+
+actor addm
+  in (i1:unsigned<8>, i2:unsigned<8>)
+  out (o:unsigned<8>)
+rules 
+| (i1:x1, i2:x2) -> o:x1+x2
+;
+
+stream i1:unsigned<8> from "sample.txt";
+stream i2:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+
+net (o1,o2) = napp 2 addm (i1,i2);

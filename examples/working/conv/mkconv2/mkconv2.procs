@@ -1,0 +1,7 @@
+PRE_PROC = pgm2txt -abbrev lena128.pgm lena128.txt
+PRE_PROC =	mkconv -o conv233.cph -mode shifted -dim 2 -h 3 -w 3 
+PRE_PROC =	mkconv -o conv213.cph -mode shifted -dim 2 -h 1 -w 3 
+PRE_PROC =	mkconv -o conv231.cph -mode shifted -dim 2 -h 3 -w 1 
+POST_PROC = txt2pgm -abbrev 255 sim/result1.txt sim/result1.pgm
+POST_PROC = txt2pgm -abbrev 255 sim/result2.txt sim/result2.pgm
+POST_PROC = txt2pgm -abbrev 255 sim/result3.txt sim/result3.pgm

@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper]{report}
+
+\usepackage{amsmath,amssymb,stmaryrd,latexsym}
+\usepackage{titlepic}
+\usepackage{syntax}
+\usepackage{alltt}
+\usepackage{graphicx}   % Including Graphics
+\usepackage{bcprules}   % Benjamin Pierce's Proof Rule Package
+\usepackage{semabbrev} 
+%\usepackage{verbatim} 
+\usepackage{spverbatim}
+\usepackage{alltt} 
+\usepackage{xspace} 
+\usepackage{listings} 
+\usepackage{ifthen}
+\usepackage{adjustbox}
+\usepackage{xhfill}% http://ctan.org/pkg/xhfill
+%\usepackage{color}
+\usepackage[multiple]{footmisc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newboolean{devel}
+\setboolean{devel}{false}
+
+\lstloadlanguages{C++,VHDL}
+\lstset{frameround=tttt} 
+\lstset{captionpos=t}
+\lstset{breaklines=true}
+%\lstset{aboveskip=2\medskipamount}
+%\lstset{belowskip=1.5\medskipamount}
+%\lstset{abovecaptionskip=\medskipamount}
+\lstdefinelanguage{Caph}{keywords={function,constant,actor,in,out,var,rules,stream,port,init,from,to,net,type,let,and,of,const,extern},morecomment=[l]{--}}
+\lstset{language=Caph}
+\lstset{frame=single}
+
+%\renewcommand\lstlistingname{Example}
+
+%%% Better hyphenation:
+%\sloppy
+\setlength{\topmargin}{0pt}
+\setlength{\oddsidemargin}{0pt}
+\setlength{\textheight}{600pt}
+\setlength{\textwidth}{448pt}
+
+%\Newcommand{\docdate}{\today} %%%!!!!
+
+\newcommand{\version}{2.8}
+%\ifthenelse{\boolean{devel}}{\newcommand{\version}{1.3}}{\newcommand{\version}{1.1}}
+%% This has to be fixed !
+
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\txt}[1]{\hbox{#1}}
+\newcommand{\emtxt}[1]{\hbox{\em{#1}}}
+\newcommand{\bftxt}[1]{\hbox{\bf{#1}}}
+\ifthenelse{\boolean{devel}}{\newcommand{\note}[1]{\marginpar{\tiny #1}}}{\newcommand{\note}[1]{}}
+\newcommand{\todo}[1]{\note{TODO: #1}}
+\ifthenelse{\boolean{devel}}{\newcommand{\tbw}[1]{$\spadesuit$ {\bf To be written\ldots}\xspace}}{\newcommand{\tbw}[1]{}}
+\ifthenelse{\boolean{devel}}{\newcommand{\tbc}[1]{$\spadesuit$ {\bf To be continued\ldots}\xspace}}{\newcommand{\tbc}[1]{}}
+
+\newcommand{\caph}{CAPH\xspace}
+\newcommand{\fgn}{{\sc fgn}\xspace}
+\newcommand{\ocaml}{{\sc Objective Caml}\xspace}
+
+\newenvironment{example}{\medskip\noindent{\it Example :}\begin{alltt}}{\end{alltt}}
+%\newenvironment{caphexample}{\begin{lstlisting}}{\end{lstlisting}}
+
+\algnewcommand\algorithmicforeach{\textbf{for each}}
+\algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+
+
+\title{CAPH Reference Manual - \version}
+
+\author{J. S\'erot}%\footnote{Universit\'e Clermont Auvergne, Clermont-Ferrand, France; %\texttt{jocelyn.serot@uca.fr}}}
+
+\titlepic{\includegraphics[width=0.5\textwidth]{figs/caph-logo}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\input{introduction}
+\input{overview}
+\input{syntax}
+\input{abssyn}
+\input{typing}
+\input{static}
+\input{dynamic}
+\input{moc}
+\input{interm}
+\input{using}
+\input{prelude}
+\input{foreign}
+\input{options}
+\input{variants}
+\appendix
+\input{txt2bin}
+\input{bin2txt}
+\input{pgm2txt}
+\input{txt2pgm}
+\input{pgm2bin}
+\input{bin2pgm}
+\input{mkdcimg}
+\input{mkconv}
+\input{caphmake}
+
+\bibliographystyle{plain}
+\bibliography{caph}
+
+\end{document}
+

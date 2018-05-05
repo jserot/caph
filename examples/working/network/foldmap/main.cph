@@ -1,0 +1,35 @@
+-- An example showing how to define higher-order network building functions
+-- The [foldmap] function takes a stream, generates a bunch of streams with the [s] function,
+-- applies the [f] function to each stream and combines the result with the [g] function
+-- Invoke [make dot] to see the corresponding data-flow graph.
+-- Dec 1, 2015, JS
+
+actor spl4 
+  in (a:unsigned<8>)
+  out (c1:unsigned<8>,c2:unsigned<8>,c3:unsigned<8>,c4:unsigned<8>)
+rules a -> (c1,c2,c3,c4)
+| x -> (x,x,x,x)
+;
+
+actor foo 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> x
+;
+
+actor bar 
+  in (a1:unsigned<8>,a2:unsigned<8>)
+  out (c:unsigned<8>)
+rules (a1,a2) -> c
+| (x1,x2) -> x1+x2
+;
+
+net foldmap s f g x =
+  let xs = s x in
+  foldl g (map f xs);
+
+stream i:unsigned<8> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = foldmap spl4 foo bar i;

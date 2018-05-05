@@ -1,0 +1,79 @@
+-- Introducing the [while] HO wiring function for defining [while] constructs at the network level
+--
+--    WHILE P F x = IF P(x) THEN x else WHILE P F F(x) =
+-- 
+--       x0      +---------------------------+
+--       |       |                           |
+--       v       v                           |
+--   +---------------+                       |
+--    \  f       t  /                        |
+--     \           /<----------------+       |
+--      \  merge  /                  |       |
+--       +-------+         .......   |    .......
+--           |             .     .   |    .     .
+--         x +------------>.  P  .---+    .  F  .
+--           |             .     .   |    .     .
+--           |             .......   |    .......
+--       +-------+                   |       ^
+--      / switch  \                  |       |
+--     /           \<----------------+       |
+--    /  f       t  \                        |
+--   +---------------+                       |
+--       |       |                           |
+--       v       +---------------------------+
+--       y
+--
+-- Dec 27, 2012 - JS
+-- Updated with fully polymorphic actors Jun 13, 2013 - JS
+
+actor merge
+  in (c:bool, t:$a, f:$a)
+ out (x:$a)
+ var s: {S0, S1} = S0
+rules
+  ( s,     c, t, f) -> (x,  s)
+| (S0,     _, _, x) -> (x, S1)  -- initial firing
+| (S1,  true, x, _) -> (x, S1)
+| (S1, false, _, x) -> (x, S1)
+;
+
+actor switch
+  in (c:bool, x:$a)
+ out (t:$a, f:$a)
+rules
+  (    c, x) -> (t, f)
+| ( true, x) -> (x, _)
+| (false, x) -> (_, x)
+;
+
+net while p f x0 = 
+  let rec (xn,xf) = 
+    let rec (x, px) = 
+      let x = merge (px, f xn, x0) in
+      x, p x in
+    switch (px, x) in
+  xf
+;
+
+type uint == unsigned<8>;
+
+-- In this example P(x)=x<10 and F(x)=x+1
+
+actor test
+  in (a: uint)
+ out (c: bool)
+rules a -> c
+| x -> x<10 
+;
+
+actor inc
+  in (a: uint)
+ out (c: uint)
+rules a -> c
+| x -> x+1 
+;
+
+stream x:uint from "sample.txt";
+stream r:uint to "result.txt";
+
+net r = while test inc x;

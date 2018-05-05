@@ -1,0 +1,419 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Syntax}
+\label{chap:syntax}
+
+This appendix gives a BNF definition of the concrete syntax for \caph programs.  The meta-syntax is
+conventional.  Terminals are enclosed in double quotes {\tt "} $\ldots$ {\tt "}.  Non-terminals are
+enclosed in angle brackets {\tt <} $\ldots$ {\tt >}.  Vertical bars {\tt |} are used to indicate
+alternatives.  Constructs enclosed in brackets {\tt [} $\ldots$ {\tt ]} are optional.  Parentheses
+{\tt (} $\ldots$ {\tt )} are used to indicate grouping.  Ellipses ({\tt ...}) indicate obvious
+repetitions.  An asterisk ({\tt *}) indicates zero or more repetitions of the previous element, and
+a plus ({\tt +}) indicates one or more repetitions.
+
+% \medskip While the rules given below sometimes place limits on which types can be used in a given
+% context -- for example, the fact that "structured streams" types (\verb|t dc|) can only be assigned
+% to actor or stream i/os -- many type-related constraints are not reflected at this level and would
+% be handled by the type-checker. For instance, whereas it is \emph{syntactically} correct to declare
+% a external function with an enumerated type as input, this declaration would be rejected by the
+% type-checker.  We believe that this approach leads to error messages which are less ambiguous for
+% the programmer.  The exact type constraints are given formally in Appendix~\ref{app:typing}. Most of
+% them are recalled informally in this section, between the formal rules.
+
+\setlength{\grammarindent}{6em} % increase separation between LHS/RHS 
+\renewcommand{\litleft}{\texttt{"}}
+\renewcommand{\litright}{\texttt{"}}
+
+\section*{Programs}
+
+\begin{grammar}
+<program> ::= <decl>*
+
+<decl> ::= <type_decl> \lit{;}
+          \alt <val_decl> \lit{;}
+          \alt <io_decl> \lit{;}
+          \alt <actor_decl> \lit{;}
+          \alt <net_decl> \lit{;}
+          \alt <pragma_decl>
+\end{grammar}
+
+\section*{Type declarations}
+
+\begin{grammar}
+<type_decl> ::= <abbrev_type_decl>
+              \alt <variant_type_decl>
+
+<abbrev_type_decl> ::= \lit{type} <id> \lit{==} <type>
+
+<variant_type_decl> ::= \lit{type} [<ty_params>] <id> [<sz_params>] \lit{=} <constr_decls>
+
+<ty_params> ::= <ty_var> 
+              \alt \lit{(} <ty_var> \lit{,} \texttt{...} \lit{,} <ty_var> \lit{)}
+
+<sz_params> ::= \lit{\verb|<|} <sz_var> \lit{\verb|>|}
+              \alt \lit{\verb|<|} <sz_var> \lit{,} \texttt{...} \lit{,} <sz_var> \lit{\verb|>|}
+
+<constr_decls> ::= <constr_decl> [ "|" <constr_decls> ]
+
+<constr_decl> ::= <con_id> [ <impl_tag> ] [ \lit{of} <constr_args> ]
+
+<constr_args> ::= <type>
+             \alt <type> \lit{*} \texttt{...} \lit{*} <type>
+
+<impl_tag> ::= \lit{\%} <intconst>
+\end{grammar}
+
+\section*{Global  value declarations}
+
+\begin{grammar}
+<value_decl> ::= \lit{const} <id> \lit{=} <expr> [ \lit{:} <type> ]
+               \alt \lit{const} <id> \lit{=} <array_init> [ \lit{:} <type> ]
+                \alt \lit{function} <id> <fun_pattern> \lit{=} <expr> [ \lit{:} <type> ]
+                \alt \lit{function} <id> \lit{=} \lit{extern}
+                   <vhdl_fn_name> \lit{,} <c_fn_name> \lit{,} <caml_fn_name> \lit{:} <type>
+
+<fun_pattern> ::= <id>
+                \alt \lit{(} <id> \lit{,} \texttt{...} \lit{,} <id> \lit{)}
+
+<vhdl_fn_name> ::= <string>
+
+<c_fn_name> ::= <string>
+
+<caml_fn_name> ::= <string>
+\end{grammar}
+
+\section*{Actor declarations}
+
+\begin{grammar}
+<actor_decl> ::= \lit{actor} <id> <actor_intf> <actor_body>
+\end{grammar}
+
+\subsection*{Actor interface}
+
+\begin{grammar}
+<actor_intf> ::= [ \lit{(} <actor_params> \lit{)} ]
+                 \lit{in} \lit{(} <actor_ins> \lit{)} \lit{out} \lit{(} <actor_outs> \lit{)}
+
+<actor_params> ::= <actor_param> [ \lit{,} <actor_params> ]
+
+<actor_param> ::= <id> \lit{:} <type>
+
+<actor_ins> ::= <actor_ios>
+
+<actor_outs> ::= <actor_ios>
+
+<actor_ios> ::= <actor_io> [ \lit{,} <actor_ios> ]
+
+<actor_io> ::= <id> \lit{:} <type>
+\end{grammar}
+
+\subsection*{Actor body}
+
+\begin{grammar}
+<actor_body> ::= <actor_var>* \lit{rules} <actor_rules>
+
+<actor_rules> ::= <rule_schema> <unqual_rule>+
+                \alt <qual_rule>+
+
+<actor_var> ::= \lit{var} <id> \lit{:} <var_type> [ \lit{=} <var_init> ]
+
+<var_init> ::= <expr>
+             \alt <array_init>
+\end{grammar}
+
+\begin{grammar}
+<rule_schema> ::= <qualifiers> \lit{\texttt{->}} <qualifiers>
+
+<qualifiers> ::= <qualifier>
+                    \alt \lit{(} <qualifier> \lit{,} \texttt{...} \lit{,} <qualifier> \lit{)}
+
+<qualifier> ::= <id>
+  \alt <id> \lit{[} <simple_array_index> \lit{]}
+  \alt <id> \lit{[} <simple_array_index> \lit{]} \lit{[} <simple_array_index> \lit{]}
+
+<unqual_rule> ::= \lit{|} <unqual_rule_lhs> [ <rule_guard> ] \lit{\texttt{->}} <unqual_rule_rhs>
+
+<unqual_rule_lhs> ::= <rule_pattern> 
+             \alt \lit{(} <rule_pattern> \lit{,} \texttt{...} \lit{,} <rule_pattern> \lit{)}
+
+<qual_rule> ::= \lit{|} <qual_rule_lhs> [ <rule_guard> ] \lit{\texttt{->}} <qual_rule_rhs>
+
+<qual_rule_lhs> ::= <qual_rule_pattern> 
+             \alt \lit{(} <qual_rule_pattern> \lit{,} \texttt{...} \lit{,} <qual_rule_pattern> \lit{)}
+
+<qual_rule_pattern> ::= <qualifier> \lit{:} <rule_pattern>
+
+<rule_pattern> ::= <simple_rule_pattern> 
+                 \alt <con_id> [ <simple_rule_pattern> ]
+                 \alt <con_id> \lit{(} <simple_rule_pattern> \lit{,} \texttt{...} \lit{,} <simple_rule_pattern> \lit{)}
+                 \alt \lit{\verb|'<|}\footnote{\label{fn:sos}Synonym for the builtin constructor \texttt{SoS}.}
+                 \alt \lit{\verb|'>|}\footnote{\label{fn:eos}Synonym for the builtin constructor \texttt{EoS}.}
+                 \alt \lit{\verb|'|} <simple_rule_pattern>\footnote{\label{fn:data}Synonym for the builtin constructor \texttt{Data}.}
+                 \alt \lit{_}                         %\mbox{\it -- Ignore}
+
+<simple_rule_pattern> ::= <var>               
+                 \alt <scalar_constant>           
+                 \alt \lit{_}                         
+
+<rule_guard> ::= \lit{when} <rule_guard_exprs>
+
+<rule_guard_exprs> ::= < rule_guard_expr> [ \lit{and}  <rule_guard_exprs> ]
+
+<rule_guard_expr> ::= <simple_rule_expr>
+
+<unqual_rule_rhs> ::= <rule_expr>
+             \alt \lit{(} <rule_expr> \lit{,} \texttt{...} \lit{,} <rule_expr> \lit{)}
+
+<qual_rule_rhs> ::= <qual_rule_expr>
+             \alt \lit{(} <qual_rule_expr> \lit{,} \texttt{...} \lit{,} <qual_rule_expr> \lit{)}
+
+<qual_rule_expr> ::= <qualifier> \lit{:} <rule_expr>
+\end{grammar}
+
+\begin{grammar}
+<rule_expr> ::= <simple_rule_expr>
+              \alt <con_id> [<simple_rule_expr>]
+              \alt <con_id> \lit{(} <simple_rule_expr> \lit{,} \texttt{...} \lit{,} <simple_rule_expr> \lit{)}
+              \alt \lit{\verb|'<|}%\footnotemark[\ref{fn:sos}]
+              \alt \lit{\verb|'>|}%\footnotemark[\ref{fn:eos}]
+               \alt \lit{\verb|'|} <simple_rule_expr>%\footnotemark[\ref{fn:data}]
+              \alt \lit{_}                      
+
+<simple_rule_expr> ::= <expr>
+\end{grammar}
+
+\section*{IO declarations}
+
+\begin{grammar}
+<io_decl> ::= \lit{stream} <id> \lit{:} <type> (\lit{from} | \lit{to}) <device>
+             \alt \lit{port} <id> \lit{:} <type> [\lit{from} <device>] \lit{init} <simple_net_expr>
+             \alt \lit{port} <id> \lit{:} <type> \lit{to} <device>]
+
+<device> ::= <string>
+\end{grammar}
+
+\section*{Network declarations}
+
+\begin{grammar}
+<net_decl> ::= \lit{net} [\lit{rec}] <net_bindings>
+
+<net_bindings> ::= <net_binding> [\lit{and} <net_bindings>]
+
+<net_binding> ::= <net_pattern> \lit{=} <net_expr>              %\mbox{\it wire(s)}
+                \alt <id> <net_pattern>+ \lit{=} <net_expr>    %\mbox{\it wiring function}
+
+<net_pattern> ::= <var>
+                \alt \lit{(} <net_pattern> \lit{,} \texttt{...} \lit{,} <net_pattern> \lit{)}
+%                \alt "{" net_bundle_pattern "}" 
+
+%<net_tuple_pattern> ::= <simple_net_pattern> [ \lit{,} <net_tuple_pattern> ]
+%<net_bundle_pattern> ::= <simple_net_pattern> [ \lit{,} <net_bundle_pattern> ]
+             
+<net_expr> ::=
+   <simple_net_expr>
+ \alt <simple_net_expr> <simple_net_expr>+                   %\mbox{\it -- application}
+ \alt <net_exprs>                                            %\mbox{\it -- t-uple}
+ \alt \lit{let} [ \lit{rec} ] <net_bindings> \lit{in} <net_expr>         %\mbox{\it -- local definition}
+ \alt \lit{function} <net_pattern> \lit{\texttt{->}} <net_expr>               %\mbox{\it -- function definition}
+
+<simple_net_expr> ::=
+    <var>                                     %\mbox{\it -- network or expr-level var}
+  \alt \lit{(} <net_expr> \lit{)}
+  \alt \lit{(} <simple_net_expr> \lit{:} <type> \lit{)}
+  \alt <param_value>
+
+<param_value> ::=
+    <var> 
+  \alt <scalar_constant>
+  \alt <array1_constant>                         
+  \alt <array2_constant>                         
+  \alt \lit{(} <var> \lit{[} <simple_array_index> \lit{]} \lit{)}
+  \alt \lit{(} <var> \lit{[} <simple_array_index> \lit{]} \lit{[} <simple_array_index> \lit{]} \lit{)}
+  \alt \lit{(} <param_value> \lit{:} <type> \lit{)}
+
+<net_exprs> ::= <net_expr> [ \lit{,} <net_exprs> ]
+\end{grammar}
+
+\section*{Pragma  declarations}
+
+\begin{grammar}
+<pragma_decl> ::= \lit{\#pragma} <id> [ \lit{(} <id> \lit{,} \texttt{...} \lit{,} <id> \lit{)} ]
+\end{grammar}
+
+\section*{Expressions}
+
+\begin{grammar}
+<expr> ::=
+           <scalar_constant>                          %\mbox{\it -- constant}
+         \alt <var>                                      %\mbox{\it -- variable}
+         \alt <var> \lit{\`} <attr>                   %\mbox{\it -- variable}
+%         \alt <con_id>                                   %\mbox{\it -- value constructor}
+         \alt <expr> <binop> <expr>                      %\mbox{\it -- binary operator}
+         \alt <unop> <expr>                              %\mbox{\it -- unary operator}
+         \alt <var> \lit{(} <expr> \lit{,} \texttt{...} \lit{,} <expr> \lit{)}    %\mbox{\it -- function application}
+         \alt \lit{let} <var> \lit{=} <expr> \lit{in} <expr>         %\mbox{\it -- local definition}
+         \alt \lit{if} <expr> \lit{then} <expr> \lit{else} <expr>    %\mbox{\it -- conditional}
+         \alt <var> \lit{[} <array_index> \lit{]}                  %\mbox{\it -- array indexing}
+         \alt <var> \lit{[} <array_index> \lit{]} \lit{[} <array_index> \lit{]}        %\mbox{\it -- array indexing}
+         \alt <var> \lit{[} <array_index> \lit{]} \lit{[} <array_index> \lit{]} \lit{[} <array_index> \lit{]}       %\mbox{\it -- array indexing}
+         \alt \lit{(} <expr> \lit{:} <type> \lit{)}                  %\mbox{\it -- type coercion}
+         \alt \lit{(} <expr> \lit{)}
+
+<array_index> ::= <expr>
+
+<simple_array_index> ::= <scalar_constant> 
+         \alt <var>
+
+<array_init> ::= <array_ext1>
+               \alt <array_ext2>
+               \alt <array_ext3>
+               \alt \lit{[} <array_comprehension> \lit{]}
+
+<array_ext1> ::= \lit{[} <expr> \lit{,} \texttt{...} \lit{,} <expr> \lit{]}              
+
+<array_ext2> ::= \lit{[} <array_ext1> \lit{,} \texttt{...} \lit{,} <array_ext1> \lit{]}              
+
+<array_ext3> ::= \lit{[} <array_ext2> \lit{,} \texttt{...} \lit{,} <array_ext2> \lit{]}              
+
+<array_comprehension> ::= \lit{[} <expr> \lit{|} <index_range>, \lit{,} \texttt{...} \lit{,} <index_range> \lit{]}
+
+<index_range> ::= <id> \lit{=} <array_index> \lit{to} <array_index>
+
+\end{grammar}
+
+\section*{Constants}
+
+\begin{grammar}
+<scalar_constant> ::= <intconst>
+                    \alt <boolconst>
+                    \alt <floatconst>
+
+<array1_constant> ::= \lit{[} <scalar_constant> \lit{,} \texttt{...} \lit{,} <scalar_constant> \lit{]}
+
+<array2_constant> ::= \lit{[} <array1_constant> \lit{,} \texttt{...} \lit{,} <array1_constant> \lit{]}
+\end{grammar}
+
+\section*{Type expressions}
+
+\begin{grammar}
+<type> ::= <simple_type>
+         \alt <type_product>
+         \alt <type> \lit{\texttt{->}} <type>
+
+<type_product> ::= <simple_type> [ \lit{*} <type_product> ]
+
+<simple_type> ::= \lit{signed} \lit{\verb|<|} <size> \lit{\verb|>|}
+                \alt \lit{unsigned} \lit{\verb|<|} <size> \lit{\verb|>|}
+                \alt \lit{int}
+                \alt \lit{int} [\lit{\verb|<|} <size> \lit{\verb|>|}]
+                \alt \lit{int} [\lit{\verb|<|} <sign> \lit{,} <size> \lit{\verb|>|}]
+                \alt [<simple_types>] <id> [\lit{\verb|<|} <size> \lit{\verb|>|}]
+                \alt <ty_var>
+                \alt <simple_type> \lit{array} \lit{[} <size> \lit{]}
+                \alt <simple_type> \lit{array} \lit{[} <size> \lit{]} \lit{[} <size>
+                \lit{]}\footnote{\texttt{t array[m][n]} is actually syntactic sugar for \texttt{t
+                    array[n] array[m]}.}
+                \alt \lit{(} <type> \lit{)}
+    
+<simple_types> ::= <simple_type>
+                 \alt \lit{(} <simple_type> \lit{,} \texttt{...} \lit{,} <simple_type> \lit{)}
+
+<size> ::= <int_const>
+             \alt <sz_var>
+
+<sign>   ::= \lit{_signed} | \lit{_unsigned}
+
+<array_size> ::= <int_const>
+
+<var_type> ::= <type>
+             \alt \lit{\{} <ctors> \lit{\}}      %\mbox{\it -- Local enumerated type}
+             \alt \lit{\{} <intrange> \lit{\}}   
+
+<ctors> ::= <con_id> [ \lit{,} <ctors> ]
+
+<intrange> ::= <intconst>  \lit{,..,} <intconst>
+\end{grammar}
+
+\section*{Lexical Syntax}
+
+\begin{grammar}
+<var> ::= <id>
+
+<attr> ::= <id>
+
+<id> ::= <letter> ( <letter> | <digit> | "_" | "'" )*
+
+<letter> ::= \lit{a} | \texttt{...} | \lit{z}
+
+<con_id> ::= <uid>       %\mbox{\it -- Variant constructors (enum values or builtin Data, Sos, EoS)}
+
+<ty_var> ::= \lit{\$} <id>
+
+<sz_var> ::= <id>
+
+<uid> ::= <uletter> ( <letter> | <digit> | "_" | "'" )*
+
+<uletter> ::= \lit{A} | \texttt{...} | \lit{Z}
+
+<binop> ::= \lit{+} | \lit{-} | \lit{*} | \lit{/} | \lit{mod} 
+          | \lit{+.} | \lit{-.} | \lit{*.} | \lit{/.} 
+          | \lit{\verb|<|} | \lit{\verb|>|} | \lit{\verb|<=|} | \lit{\verb|>=|} | \lit{=} | \lit{!=}
+          | \lit{\&\&} | \lit{||} 
+          | \lit{land} | \lit{lor} | \lit{lxor} \lit{\verb|<<|} | \lit{\verb|>>|}
+
+<unop> ::= \lit{-} | \lit{!}
+
+<intconst>    ::= [\lit{-}]<digit>+
+
+<fixintconst>    ::= [ <radix> ] <digit>+ 
+
+<radix>  ::= \lit{Ox} | \lit{Ob}
+
+<boolconst>   ::= \lit{true} | \lit{false}
+
+<floatconst>  ::= [\lit{-}]<digit>+[\lit{.}<digit>*][[\lit{e}|\lit{E}][\lit{+}|\lit{-}]<digit>+]
+
+<string> ::= \lit{\"} <char>* \lit{\"}
+\end{grammar}
+
+The following characters are considered as blanks: space, newline, horizontal tabulation, carriage
+return, line feed and form feed.Comments are written in Java-style. They are single-line and start
+with ``\texttt{--}''.
+
+\medskip
+The following identifiers are reserved as keywords, and cannot be employed otherwise:
+
+\begin{tabular}[c]{llllll}
+\texttt{type} & \texttt{of} & \texttt{net} & \texttt{let} & \texttt{in} & \texttt{rec} \\
+\texttt{if} & \texttt{then} & \texttt{else} & \texttt{actor} & \texttt{out} & \texttt{var} \\
+\texttt{rules} & \texttt{stream} & \texttt{to} & \texttt{from} & \texttt{when} & \texttt{and} \\
+\texttt{function} & \texttt{const} & \texttt{extern} & \texttt{implemented} & \texttt{systemc} & \texttt{vhdl} \\
+\texttt{true} & \texttt{false} & \texttt{or} & \texttt{not} & \texttt{lnot} & \texttt{signed} \\
+\texttt{unsigned} & \texttt{array} & \texttt{port} & \texttt{init}
+\end{tabular}
+
+\medskip
+The following character sequences are also keywords:
+
+\begin{tabular}[c]{cccccccc}
+\texttt{'<} & \texttt{'>} & \texttt{->} & \texttt{<-} & \texttt{..} & \texttt{<<} & \texttt{>>} & \texttt{\&\&} \\
+\texttt{||} & \texttt{>=} & \texttt{<=} & \texttt{!=} & \texttt{+.} & \texttt{-.} & \texttt{*.} & \texttt{\.} \\
+\texttt{=.} &\texttt{!=.} &\texttt{>.} &\texttt{<.} &\texttt{>=.} &\texttt{<=.}
+\end{tabular}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: \lit{caph}
+%%% End: 

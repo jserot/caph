@@ -1,0 +1,9 @@
+DOT_OPTS = -I $(CAPHLIB)  -D ifile=lena64.pgm -D arg2=120S
+SIM_OPTS = -I $(CAPHLIB) -chan_cap 130 -suppress_cast_warnings -D ifile=lena64.pgm -D arg2=120S -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB) -suppress_cast_warnings -D ifile=lena64.pgm -D arg2=120S -sc_default_fifo_capacity 256 -sc_stop_time 200000 -sc_abbrev_dc_ctors -sc_dump_fifo_stats
+VHDL_OPTS = -I $(CAPHLIB) -D ifile=lena64.pgm -D arg2=120S -vhdl_annot_file binimg_fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=400000ns
+XDF_OPTS = -I $(CAPHLIB)  -D ifile=lena64.pgm -D arg2=120S
+
+binimg_fifo_stats.dat: systemc.run
+

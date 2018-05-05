@@ -1,0 +1,43 @@
+=encoding utf8
+
+=head1 NAME
+
+caphmake - Makefile generator for CAPH projects
+
+=head1 SYNOPSIS
+
+caphmake [-main name] [-caph_dir path] [-o file]
+
+=head1 DESCRIPTION
+
+This program reads I<.proj> and I<.cph> files and generates top-level Makefiles for CAPH projects.
+
+=head1 OPTIONS
+
+=over
+
+=item -main name
+
+set name of the top-level CAPH source file (default is the first I<.cph> file found in the directory)
+
+=item -caph_dir path
+
+set path to the CAPH install directory (default: got from the CAPH environment variable)
+
+=item -o file
+
+write result in file I<file> (default is to write on I<Makefile>)
+
+=back
+
+=head1 EXIT STATUS
+
+The program returns a zero exist status if it succeeds and a non zero value in case of failure. In
+the latter case, an error message is printed to stderr.
+
+=head1 AUTHOR
+
+Jocelyn SE<eacute>rot (jocelyn.serot@univ-bpclermont.fr)
+
+This program appeared in version 2.8.1 of the CAPH distribution.
+

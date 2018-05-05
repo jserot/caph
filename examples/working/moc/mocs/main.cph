@@ -1,0 +1,51 @@
+-- This program is simply to show how the model of computation of actors can be infered by the compiler
+-- The boxes resulting from the instanciation of actors [merge], [switch], [sample] and [bswitch]
+-- will be classified as SDF, CSDF, CSDF and DDF respectively.
+-- Since vers 2.8.4, Jul 2017, JS.
+
+actor merge 
+  in (i1: $t, i2:$t)
+  out (o:$t)
+var st : {Left,Right} = Left
+rules
+| (st:Left, i1:x, i2:y) -> (o:x, st:Right)
+| (st:Right, i1:x, i2:y) -> (o:y, st:Left)
+;
+
+actor switch
+  in (i:$t)
+  out (o1:$t, o2:$t)
+var st : {Left,Right} = Left
+rules
+| (st:Left, i:x) -> (o1:x, st:Right)
+| (st:Right, i:x) -> (o2:x, st:Left)
+;
+
+actor bswitch
+  in (i1:$t, i2:bool)
+  out (o1:$t, o2:$t)
+  rules
+  | (i1:x, i2:true) -> o1:x
+  | (i1:x, i2:false) -> o2:x
+;
+
+actor sample (n: int)
+  in (i: $t)
+  out (o: $t)
+var k : {1,..,n} = 1
+rules
+| i:x when k<n -> k:k+1
+| i:x when k=n -> (k:1, o:x)
+;
+
+stream i1:signed<8> from "sample1.txt";
+stream i2:bool from "sample2.txt";
+stream o1:signed<8> to "result1.txt";
+stream o2:signed<8> to "result2.txt";
+stream o3:signed<8> to "result3.txt";
+
+net (s1,s2) = switch i1;
+net o1 = sample 2 s1;
+net o2 = sample 4 s2;
+net (s3,s4) = bswitch (i1,i2);
+net o3 = merge (s3,s4);

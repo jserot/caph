@@ -1,0 +1,20 @@
+-- 1D 1x3 convolution - with explicit neighborhood generation
+
+#include "neigh.cph"
+
+actor maddn (k:int<s,n> array[3], m:int)
+  in (a:int<s,n> dc, b:int<s,n> dc, c:int<s,n> dc)
+  out (s:int<s,n> dc)
+rules (a,b,c) -> s
+| (  '<,  '<,  '<) -> '<
+| ('zzp, 'zp,  'p) -> '(k[2]*zzp+k[1]*zp+k[0]*p)>>m
+| (  '>,  '>,  '>) -> '>
+;
+
+stream x1:unsigned<8> dc from "sample1.txt";
+stream x2:signed<10> dc from "sample2.txt";
+stream r1:unsigned<8> dc to "result1.txt";
+stream r2:signed<10> dc to "result2.txt";
+
+net r1 = maddn([1,2,1],2) (neigh13 0  x1);
+net r2 = maddn([-1,2,-1],0) (neigh13 0 x2);

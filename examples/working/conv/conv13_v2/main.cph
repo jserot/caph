@@ -1,0 +1,11 @@
+-- 1D 1x3 convolution - mono-actor version
+
+#include "convol.cph"
+
+stream x1:unsigned<10> dc from "sample1.txt";
+stream r1:unsigned<10> dc to "result1.txt";
+stream x2:signed<8> dc from "sample2.txt";
+stream r2:signed<8> dc to "result2.txt";
+
+net r1 = conv113 ([1,2,1],2,0) x1;
+net r2 = conv113 ([-1,2,-1],0,0) x2;

@@ -1,0 +1,17 @@
+-- 2D (actually 1Dx1D) LookUp Table
+
+actor lut2 ()
+  in (a:unsigned<4>, b:unsigned<4>)
+  out (c:unsigned<8>)
+  var mem : unsigned<8> array[4][4] = [ [ 11, 12, 13, 14 ], 
+                                        [ 21, 22, 23, 24 ],
+                                        [ 31, 32, 33, 34 ],
+                                        [ 41, 42, 43, 44 ] ]
+rules (a,b) -> c
+| (i,j) -> mem[i][j]
+;
+
+stream i:unsigned<4> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = lut2 (i,i);

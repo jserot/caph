@@ -1,0 +1,4 @@
+SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors -split_output_frames
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 2000 -sc_abbrev_dc_ctors -sc_istream_hblank 2 -sc_istream_vblank 4 -split_output_frames # -sc_trace
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_istream_blanking -split_output_frames
+GHDL_RUN_OPTS = --stop-time=4000ns --vcd=main_tb.vcd 

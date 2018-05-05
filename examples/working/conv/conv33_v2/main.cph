@@ -1,0 +1,20 @@
+-- 2D 3x3 convolution implemented as a single actor 
+
+#include "convol.cph"
+
+actor abs
+  in (a:signed<s> dc)
+ out (c:signed<s> dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'x when x<0 -> '-x
+| 'x -> 'x
+;
+
+stream x:signed<16> dc from %ifile;
+stream r1:signed<16> dc to "result1.txt"; 
+stream r2:signed<16> dc to "result2.txt"; 
+
+net r1 = conv233 ([[1,2,1],[2,4,2],[1,2,1]],4,0) x;            -- Gaussian smoothing
+net r2 = abs (conv233 ([[0,-1,0],[-1,4,-1],[0,-1,0]],0,0) x);  -- Laplace filtering

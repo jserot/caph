@@ -1,0 +1,33 @@
+-- This is another example showing how to use automatically generated convolution actors 
+-- Here, we compute the gaussian blurred of an image using two methods :
+--   - in one pass, with a 3x3 kernel
+--   - in two passes, using two separated 1x3 and 3x1 kernels
+--   We check the results by computing their difference.
+-- Also note the use of the [compose] higher order function 
+-- Feb 19, 2016 - JS
+
+#include "conv233.cph"  -- 2D 3x3 convolution (automatically generated)
+#include "conv213.cph"  -- 2D 1x3 convolution (automatically generated)
+#include "conv231.cph"  -- 2D 3x1 convolution (automatically generated)
+
+stream i:signed<16> dc from "lena128.pgm";
+stream o1:signed<16> dc to "result1.pgm";
+stream o2:signed<16> dc to "result2.pgm";
+stream o3:signed<16> dc to "result3.pgm";
+
+actor diff
+  in ( i1:signed<s> dc, i2:signed<s> dc)
+  out( o:signed<s> dc)
+rules (i1,i2) -> o
+| ('<,'<) -> '<
+| ('>,'>) -> '>
+| ('p,'q) -> '(p-q)
+;
+
+net compose f g x = f (g x);
+
+net i1 = conv233 ([[1,2,1],[2,4,2],[1,2,1]],4,0) i;
+net i2 = compose (conv231 ([[1],[2],[1]],2,0)) (conv213 ([[1,2,1]],2,0)) i;
+net o1 = i1;
+net o2 = i2;
+net o3 = diff (i1,i2);

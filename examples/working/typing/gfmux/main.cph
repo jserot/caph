@@ -1,0 +1,24 @@
+-- This example illustrates generic functions and actors
+-- 2013-04-03, JS
+
+function fmux (c,x,y) = if c then x else y; -- : bool * $t * $t -> $t;
+
+actor mux ()
+  in (a:$t, b:$t, c:bool)
+  out (d:$t)
+rules (a,b,c) -> d
+| (x,y,s) -> fmux(s,x,y)
+;
+
+stream i11:signed<8> from "sample11.txt";
+stream i12:signed<8> from "sample12.txt";
+stream i3:bool from "sample3.txt";
+stream o1:signed<8> to "result1.txt";
+stream i21:unsigned<4> from "sample21.txt";
+stream i22:unsigned<4> from "sample22.txt";
+stream o2:unsigned<4> to "result2.txt";
+
+-- definition section
+
+net o1 = mux (i11,i12,i3) ;  -- Two instanciations of the [mux] actor (and hence [fmux] function)
+net o2 = mux (i21,i22,i3) ;  -- with different types

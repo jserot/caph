@@ -1,0 +1,51 @@
+------------------------------------
+-- Basic operations on unstructured streams
+-- 2015-07-17, JS
+------------------------------------
+
+--------------------------------------------------
+-- D - One-sample delay
+-- D(v):x1,x2,... = v,x1,x2,...
+--------------------------------------------------
+
+actor d (v:$t)                     
+  in (a:$t)
+  out (c:$t)
+var z : $t = v
+rules
+| a:x -> (c:z, z:x)
+;
+
+--------------------------------------------------
+-- Dk - k-sample delay on unstructured streams
+-- Dk(k,v):x1,x2,..., = v,...,v,x1,x2,...
+--                      \--k--/
+--------------------------------------------------
+
+actor dka (k:int, v:$t)
+  in (a:$t, b:$t)
+  out (c:$t)
+var s : {S0,S1} = S0
+var i : int = 0
+rules
+| (s:S0, a:x) when i<k-1 -> (c:v, i:i+1)
+| (s:S0, a:x)            -> (c:v, s:S1)
+| (s:S1, a:x, b:y)       -> c:y
+;
+
+net dk k v i = dka (k,v) (i,i);
+
+--------------------------------------------------
+-- sample - n->1 subsampling on unstructured streams
+-- sample(n):x_1,x_2,..., = x_n,x_2n,...
+--------------------------------------------------
+
+actor sample (n: int)
+  in (i:$t)
+  out (o:$t)
+var k : int = 0
+rules
+| i:x when k<n-1 -> k:k+1
+| i:x when k=n-1 -> (o:x, k:0)
+;
+

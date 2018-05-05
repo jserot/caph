@@ -1,0 +1,47 @@
+-- Combining and testing a run-length encoder a decoder
+-- The output should be constantly true since [rld o rle = identity]
+-- For this to work, wire W1 must have a capacity >= max_i(k_i)
+-- Jun 12, 2010 - JS
+-- Revised Aug 24, 2015 - JS
+-- 
+--    i 
+--    | p1,...,p1,p2,...,p2,...
+--    | \--k1--/  \--k2--/  ...
+--    |
+--    +------------------------------+
+--    V                           W1 |
+-- +-----+                           |
+-- | RLE |                           |
+-- +-----+                           |
+--    | RL(p1,k1),RL(p2,k2),...      |
+--    V                              |
+-- +-----+                           |
+-- | RLD |                           |
+-- +-----+                           |
+--    | p1,...,p1,p2,...,p2,...      |
+--    | \--k1--/  \--k2--/  ...      |
+--    |                              |
+--    |  +---------------------------+
+--    |  |
+--    V  V
+--  +------+   
+--  |  =   | 
+--  +------+   
+--     | true,true,...
+--     V
+--     o
+
+#include "../rle/rle.cph"   -- actor rle
+#include "../rld/rld.cph"   -- actor rld
+
+actor eq 
+  in (a:$t, b:$t)
+  out (c:bool)
+rules 
+| (a:x, b:y) -> c:x=y
+;
+
+stream i:signed<8> from "sample.txt";
+stream o:bool to "result.txt";
+
+net o = eq (i, rld 4 (rle 4 i));

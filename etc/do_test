@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# A script for automated testing 
+
+function try_make
+{
+make $1
+case $? in
+0) echo "OK";;
+*) echo "FAILED";
+esac
+}
+
+TMP=/tmp/do_test.out
+
+if [ $1 = "-show" ]
+then
+	shift
+	echo "Running test $1 in $2... "
+        (cd $2; make clobber; make $1.makefile; make $1; make show; make clobber) 2>&1 | grep "Result"
+elif [ $1 = "-verbose" ]
+then
+	shift
+	echo "Running test $1 in $2... "
+        (cd $2; make clobber; make $1.makefile; make $1; make show; make clobber) 2>&1
+else 
+	echo -n "Testing $1 in $2... "
+ 	(cd $2; make clobber; make $1.makefile) > $TMP 2>&1
+    	(cd $2; try_make $1; make clobber) > $TMP 2>&1
+    	grep "OK\|FAILED" $TMP 
+    	grep "OK" $TMP >/dev/null && exit 1
+    	exit 0
+fi

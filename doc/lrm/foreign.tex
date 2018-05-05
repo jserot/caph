@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Foreign function interfacing}
+\label{cha:foreign-funct-interf}
+
+This chapter describes how to make use of foreign functions in \caph program using a simple example.
+
+Consider the following program, in which the multiplication in the \texttt{scale} actor is performed
+by calling a foreign (external) function\footnote{The purpose of the example is only to
+  demonstrate how to use the foreign function facilities; the \texttt{scale} can of course be
+  written in a more straightforward manner using the builtin multiplication operator, like
+  exemplified in Sec.~\ref{sec:actor-examples} for example.} : 
+
+\begin{example}
+function mult = extern "mult", "mult", "mult" :
+  signed<s> * signed<s> -> signed<s>;
+
+actor scale (k:signed<8>)
+  in (a:signed<8>)
+  out (c:signed<8>)
+rules
+| a:v -> c:mult(v,k)
+
+stream i:signed<8> from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+net o = scale [2] i;
+\end{example}
+
+\medskip
+Compiling this program with the \textbf{SystemC} back-end, with :
+
+\begin{center}
+  \begin{alltt}
+   caph -systemc scale.cph
+  \end{alltt}
+\end{center}
+
+will produce (among others -- see Chap.~\ref{cha:using-caph-compiler}) a file
+\texttt{scale\_act.cpp} containing the implementation of the SystemC module describing
+the \texttt{scale} actor and containing a call to a function
+\texttt{sc\_int<8> mult(sc\_int<8> x, sc\_int<8> y)}.
+This function must be
+declared (resp. defined) in a file named \texttt{extfns.h} (resp. \texttt{extfns.cpp}). These two
+files must be accessible when compiling the SystemC executable. Here's a possible (and obvious)
+contents for these files :
+
+\begin{lstlisting}[language=C,title=File extfns.h]
+#ifndef _extfns_h
+#define _extfns_h
+
+sc_int<8> mult(sc_int<8> x, sc_int<8> y);
+
+#endif
+\end{lstlisting}
+
+\begin{lstlisting}[language=C,title=File extfns.cpp]
+#include <systemc.h>
+
+sc_int<8> mult(sc_int<8> x, sc_int<8> y) 
+{
+  sc_int<8> res = x*y;
+  return res;
+}
+\end{lstlisting}
+
+\medskip
+Things are similar for the \textbf{VHDL} backend. Here the generated file \texttt{scale\_act.vhd}
+will refer to package named \texttt{work.extfns} which is supposed to contain the definition of the
+\texttt{mult} function. Here's a possible definition for the corresponding file :
+
+\begin{lstlisting}[language=vhdl,title=File extfns.vhd]
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+package extfns is
+  function mult(a, b: signed(7 downto 0)) return signed;
+end extfns;
+
+package body extfns is
+  function mult(a, b: signed(7 downto 0)) return signed is
+    variable res : signed(15 downto 0);
+  begin
+     res := a * b;
+     return res(7 downto 0);
+  end;
+end package body extfns;
+\end{lstlisting}
+
+\medskip
+Programs making using of external functions have to provide a Caml implementation of the
+corresponding functions in order to be simulated\footnote{In theory, the simulator could use the C++
+implementation but this is currently not implemented.}. Integration of this code within the
+simulator is done is done using the dynamic linking facilities offered by the Caml runtime\footnote{simply
+because the simulator itself is written \ldots in Caml.}. For this a file \texttt{extfns.ml} must be
+written (and accessible from the directory from which the simulator is run), ``registering'' the
+corresponding functions. Here's the contents of this file for the \texttt{scale} example :
+
+\begin{lstlisting}[language=caml,title=File extfns.ml]
+let mult [x;y] = x * y
+let _ = Foreign.register "mult" mult
+\end{lstlisting}
+
+The first argument to the function \texttt{Foreign.register} is the name by which the \texttt{mult}
+function will be called in the \caph program (same name here, but another name could be used in case
+of name conflicts).
+
+Due to technical limitations, interfacing of foreign functions at the simulator level is limited to
+functions taking and returning integer type(s).
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

@@ -1,0 +1,13 @@
+-- The compose higher-order wiring function
+
+type byte == unsigned<8>;
+
+actor add1 in (a:byte) out (c:byte) rules | a:x -> c:x+1;
+actor mul2 in (a:byte) out (c:byte) rules | a:x -> c:(x*2:unsigned<8>);
+
+stream i : byte from "sample.txt";
+stream o : byte to "result.txt";
+
+net compose f g x = g (f x);
+
+net o = compose add1 mul2 i;

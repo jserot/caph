@@ -1,0 +1,12 @@
+actor histo
+  in (a:unsigned<1>)
+  out (o:unsigned<4>)
+var h : unsigned<4> array[2] = [ 0 | i=0 to 1 ]
+rules
+| a:i        -> (h[i]:h[i]+1, o:h[0])
+;
+
+stream i:unsigned<1> from "sample.txt";
+stream o:unsigned<4> to "result.txt";
+
+net o = histo i;

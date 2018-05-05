@@ -1,0 +1,14 @@
+-- A basic example with the [pipe] higher-order wiring primitive
+-- Jul 31, 2015, JS
+
+actor double 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> 2*x
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = pipe 4 double i;

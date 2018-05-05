@@ -1,0 +1,27 @@
+<RCC>
+    <qresource>
+        <file>img/compilegraph.png</file>
+        <file>img/compileSystemC.png</file>
+        <file>img/compileVHDL.png</file>
+        <file>img/compileXDF.png</file>
+        <file>img/new.png</file>
+        <file>img/open.png</file>
+        <file>img/save.png</file>
+        <file>img/saveall.png</file>
+        <file>img/simu.png</file>
+        <file>img/exit.png</file>
+        <file>img/icon.png</file>
+        <file>img/copier.png</file>
+        <file>img/coller.png</file>
+        <file>img/couper.png</file>
+        <file>img/select_all.png</file>
+        <file>img/color.png</file>
+        <file>img/preferences.png</file>
+        <file>img/closeproject.png</file>
+        <file>img/closefile.png</file>
+        <file>img/preferencescompil.png</file>
+    </qresource>
+    <qresource>
+        <file>optdesc/options_spec.txt</file>
+    </qresource>
+</RCC>

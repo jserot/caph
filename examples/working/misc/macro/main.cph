@@ -1,0 +1,20 @@
+-- This illustrates the use of macros to pass command-line arguments to programs
+-- Here both the name of the input file and the parameter of the [scale] actor
+-- will be passed on the command line when compiling the program
+
+#include "dc.cph"
+
+actor scale (k:unsigned<8>)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<8> dc)
+rules a -> c
+| '< -> '<
+| 'p -> 'p*k
+| '> -> '>
+;
+
+stream i:unsigned<8> dc from %ifile;
+stream o:unsigned<8> dc to "result.txt";
+
+net o = scale %thr i;
+

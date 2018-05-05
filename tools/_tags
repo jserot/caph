@@ -1,0 +1,5 @@
+true:   annot, explain
+<mkconv.ml>: syntax(camlp4o), package(camlp4.listcomprehension)
+<caphmake.{native,byte}> : use_unix
+<mkconv.{native,byte}> : use_unix
+<mkproject.{native,byte}> : use_dynlink, use_str, use_unix

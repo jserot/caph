@@ -1,0 +1,6 @@
+DOT_OPTS = 
+SIM_OPTS =
+SC_OPTS = -sc_stop_time 200 -sc_abbrev_dc_ctors -sc_dump_fifo_stats
+VHDL_OPTS =
+XDF_OPTS = -xdf_package mypack
+GHDL_RUN_OPTS = --stop-time=300ns  --wave=main_tb.ghw 

@@ -1,0 +1,5 @@
+DOT_OPTS = -I $(CAPHLIB) -D period=4
+SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors -D period=4
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 200 -sc_abbrev_dc_ctors -D period=4 
+VHDL_OPTS = -I $(CAPHLIB) -D period=4
+GHDL_RUN_OPTS = --stop-time=400ns  

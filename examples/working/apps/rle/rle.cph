@@ -1,0 +1,20 @@
+-- Run-length encoder
+-- RLE:p1,...,p1,p2,...,p2,... = RL(p1,k1),RL(p2,k2),...
+--     \--k1--/  \--k2--/  ...
+-- Initial version: Jun 12, 2010 - JS
+-- Revised : Aug 4, 2015 - JS
+--
+
+#include "rl_type.cph"
+
+actor rle (n: int)
+  in (i:$t)
+  out (o:$t rl<n>)
+var st : {S0,S1} = S0
+var c : $t            -- current symbol
+var k : unsigned<n>   -- length of current run
+rules 
+| (st:S0, i:v)          -> (st:S1, c:v, k:1)
+| (st:S1, i:v) when v=c -> (st:S1, k:k+1)
+| (st:S1, i:v)          -> (st:S1, o:RL(c,k), c:v, k:1)
+;

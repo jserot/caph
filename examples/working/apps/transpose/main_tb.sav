@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Thu Oct  8 14:32:16 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/apps/transpose/main_tb.ghw"
+[dumpfile_mtime] "Thu Oct  8 14:30:09 2015"
+[dumpfile_size] 12739
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/apps/transpose/main_tb.sav"
+[timestart] 0
+[size] 1000 600
+[pos] 67 27
+*-26.833418 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.main_tb.
+[treeopen] top.main_tb.n.
+[treeopen] top.main_tb.n.b3.
+[sst_width] 198
+[signals_width] 81
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@22
+#{top.main_tb.n.b3.a[9:0]} top.main_tb.n.b3.a[9] top.main_tb.n.b3.a[8] top.main_tb.n.b3.a[7] top.main_tb.n.b3.a[6] top.main_tb.n.b3.a[5] top.main_tb.n.b3.a[4] top.main_tb.n.b3.a[3] top.main_tb.n.b3.a[2] top.main_tb.n.b3.a[1] top.main_tb.n.b3.a[0]
+#{top.main_tb.n.b3.c[9:0]} top.main_tb.n.b3.c[9] top.main_tb.n.b3.c[8] top.main_tb.n.b3.c[7] top.main_tb.n.b3.c[6] top.main_tb.n.b3.c[5] top.main_tb.n.b3.c[4] top.main_tb.n.b3.c[3] top.main_tb.n.b3.c[2] top.main_tb.n.b3.c[1] top.main_tb.n.b3.c[0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,16 @@
+-- A basic example with the [napp] higher-order wiring primitive
+-- Dec 8, 2015, JS
+
+actor double 
+  in (i:unsigned<8>)
+  out (o:unsigned<8>)
+rules 
+| i:x -> o:2*x
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+stream o3:unsigned<8> to "result3.txt";
+
+net (o1,o2,o3) = napp 3 double i;

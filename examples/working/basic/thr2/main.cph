@@ -1,0 +1,19 @@
+-- Another formulation of the [thr] actor using guarded rules
+
+#include "dc.cph"
+
+actor thr (k:signed<8>)
+  in (a:signed<8> dc)
+  out (c:unsigned<1> dc)
+rules a -> c
+| '< -> '<
+| 'p when p > k -> '1
+| 'p -> '0
+| '> -> '>
+;
+
+stream i:signed<8> dc from "sample.txt";
+stream o:unsigned<1> dc to "result.txt";
+
+net o = thr 2 i;
+

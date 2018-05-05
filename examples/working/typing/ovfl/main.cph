@@ -1,0 +1,30 @@
+-- This example shows how type casting operations can be used to avoid overflow
+-- Note that in the current version, overflow effects will only be detected when using the VHDL backend.
+-- The simulator uses a fixed, 31-bit repr for [un]signed types
+-- The SystemC backend translates signed (resp. unsigned) types to [sc_int] (resp. [sc_uint]) but truncation to
+-- the specified width occurs when an expression value is assigned to its LHS; all intermediate computations are
+-- carried out on fixed, 64-bit internal representation..
+-- 2013-04-26, JS (thx to CB for the idea)
+
+actor add_nok
+ in ( a:unsigned<4>, b:unsigned<4>)
+ out ( c:unsigned<5>)
+rules 
+| (a: p, b:q) -> c: (p+q:unsigned<5>)
+;
+
+actor add_ok
+ in ( a:unsigned<4>, b:unsigned<4>)
+ out ( c:unsigned<5>)
+rules 
+| (a: p, b:q) -> c: (p:unsigned<5>)+(q:unsigned<5>)
+;
+
+stream i1:unsigned<4> from "sample.txt";
+stream i2:unsigned<4> from "sample.txt";
+stream o1:unsigned<5> to "result1.txt";
+stream o2:unsigned<5> to "result2.txt";
+
+net o1 = add_nok (i1,i2);
+net o2 = add_ok (i1,i2);
+

@@ -1,0 +1,218 @@
+\ProvidesPackage{semabbrev}[]
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{ifthen,xspace,calc}
+
+\newcommand{\env}{\text{E}}
+\newcommand{\VE}{\text{VE}}
+\newcommand{\TE}{\text{TE}}
+\newcommand{\NE}{\text{NE}}
+\newcommand{\SE}{\text{SE}}
+\newcommand{\DE}{\text{DE}}
+\newcommand{\RE}{\text{RE}}
+\newcommand{\IE}{\text{IE}}
+\newcommand{\grph}{\text{G}}
+\newcommand{\EE}{\text{EE}}
+\newcommand{\GG}{\text{G}}
+\newcommand{\HH}{\text{C}}
+\newcommand{\BB}{\text{B}}
+\newcommand{\WW}{\text{W}}
+\newcommand{\PP}{\text{P}}
+\newcommand{\II}{\text{I}}
+\newcommand{\UU}{\text{U}}
+\newcommand{\pp}{\text{p}}
+\renewcommand{\AA}{\text{A}}
+\newcommand{\vv}{\text{v}}
+\newcommand{\ww}{\text{w}}
+\newcommand{\emptyenv}{\varnothing}
+
+\newcommand{\Tuple}{\textsf{Tuple}}
+\newcommand{\Clos}{\mathsf{Clos}}
+\newcommand{\Cons}{\mathsf{Cons}}
+\newcommand{\Nil}{\langle\rangle}
+\newcommand{\semantical}[1]{\mathsf{#1}}
+\newcommand{\Var}{\mathsf{Var}}
+\newcommand{\Loc}{\mathsf{Loc}}
+\newcommand{\Id}{\mathsf{Id}}
+\newcommand{\PrimOp}{\mathsf{Op}}
+\newcommand{\tyInt}{\mathsf{int}\xspace}
+\newcommand{\tyBool}{\mathsf{bool}\xspace}
+\newcommand{\NConst}{\mathtt{NConst}}
+\newcommand{\NInp}{\mathtt{NInp}}
+\newcommand{\NOut}{\mathtt{NOut}}
+\newcommand{\NBox}{\mathtt{NBox}}
+\newcommand{\NDummy}{\mathtt{NDummy}}
+\newcommand{\Node}{\mathcal{N}}
+\newcommand{\Edge}{\mathcal{E}}
+\newcommand{\Prim}{\mathsf{Prim}}
+\newcommand{\Int}{\mathsf{MInt}}
+\newcommand{\Bool}{\mathsf{MBool}}
+\newcommand{\prim}{\mathsf{p}}
+
+\newcommand{\newnode}[1]{\textsc{New}_\textsc{n}(#1)}
+\newcommand{\newedge}[1]{\textsc{New}_\textsc{e}(#1)}
+
+\newcommand{\id}{\mathit{id}}       % ranging over identifiers
+\newcommand{\op}{\textit{op}}       % ranging over primitve operators
+
+\newcommand{\notype}[2]{#1\not\::#2} %%% It does not type.
+
+\newcommand{\unify}[2]{\mathnormal{unify}(#1,#2)}
+
+\newcommand{\tyint}[1]{\mathtt{int}\langle#1\rangle}
+\newcommand{\tysigned}[1]{\mathtt{signed}\langle#1\rangle}
+\newcommand{\tyunsigned}[1]{\mathtt{signed}\langle#1\rangle}
+
+\newcommand{\emptytuple}{\langle\rangle}
+\newcommand{\tuple}[1]{\langle#1\rangle}
+\newcommand{\ttuple}[2]{\langle#1, #2\rangle}
+\newcommand{\tttuple}[3]{\langle#1, #2, #3\rangle}
+\newcommand{\ttttuple}[4]{\langle#1, #2, #3, #4\rangle}
+\newcommand{\tttttuple}[5]{\langle#1, #2, #3, #4, #5\rangle}
+\newcommand{\ttttttuple}[6]{\langle#1, #2, #3, #4, #5, #6\rangle}
+\newcommand{\tttttttuple}[7]{\langle#1, #2, #3, #4, #5, #6, #7\rangle}
+\newcommand{\tuplen}[1]{\langle#1_1, \ldots, #1_n\rangle}
+\newcommand{\tuplek}[2]{\langle#1_1, \ldots, #1_#2\rangle}
+\newcommand{\binding}[2]{\emtxt{#1} \tm{=} \emtxt{#2}}
+\newcommand{\ibinding}[3]{\emtxt{#1}_#3 \tm{=} \emtxt{#2}_#3}
+
+\newcommand{\mapset}[3]{[#1_1 \mapsto #2_1, \ldots, #1_#3 \mapsto #2_#3]}
+\newcommand{\bindings}[3]{\langle \emtxt{#1}_1 \tm{=} \emtxt{#2}_1, \ldots, \emtxt{#1}_#3 \tm{=} \emtxt{#2}_#3 \rangle} 
+
+\newcommand{\parenn}[1]{\leftp#1_1, \ldots, #1_n\rightp}
+\newcommand{\setn}[1]{\{#1_1, \ldots, #1_n\}}
+\newcommand{\seqn}[1]{#1_1, \ldots, #1_n}
+\newcommand{\mapn}[2]{\{#1_1 \mapsto #2_1, \ldots, #1_n \mapsto #2_n\}}
+\newcommand{\seqopn}[2]{#1_1~#2 \ldots #2~#1_n}
+\newcommand{\seqopin}[4]{#1_#3~#2 \ldots #2~#1_#4}
+
+\newcommand{\sialorsinon}[3]{\text{if}~#1~\text{then}~#2~\text{else}~#3}
+
+\newcommand{\emptylist}{\ensuremath{[\,]}}
+\DeclareMathOperator{\listconc}{\mathtt{+\!\!+}}
+\newcommand{\append}[2]{#1 \listconc [#2]} %% Postpending of an Element to a List
+%\newcommand{\pp}[2]{#1@#2} %% Postpending of an Element to a List
+\newcommand{\prepend}[2]{#1::#2}
+
+% Syntactic keywords
+
+% \newcommand{\intt}[1]{\mathtt{int}(#1)}
+% \newcommand{\booll}[1]{\mathtt{bool}(#1)}
+\newcommand{\intt}{\mathtt{int}}
+\newcommand{\booll}{\mathtt{bool}}
+\newcommand{\soss}{\mathtt{<}}
+\newcommand{\eoss}{\mathtt{>}}
+\newcommand{\truee}{\ensuremath{\mathtt{true}}}
+\newcommand{\falsee}{\ensuremath{\mathtt{false}}}
+\newcommand{\unitt}{\langle\rangle}
+\newcommand{\actorr}{\mathtt{actor}\ }
+\newcommand{\keywordd}{\mathtt{keyword}\ }
+\newcommand{\externall}{\mathtt{external}\ }
+\newcommand{\streamm}{\mathtt{stream}\ }
+\newcommand{\ifff}{\mathtt{if}\ }
+\newcommand{\thenn}{\mathtt{then}}
+\newcommand{\elsee}{\mathtt{else}}
+\newcommand{\funn}{\mathtt{function}\ }
+\newcommand{\functionn}{\mathtt{function}\ }
+\newcommand{\matchh}{\mathtt{match}\ }
+\newcommand{\withh}{\mathtt{with}\ }
+\newcommand{\signedd}{\mathtt{signed}\ }
+\newcommand{\unsignedd}{\mathtt{unsigned}\ }
+\newcommand{\enumm}{\mathtt{enum}\ }
+\newcommand{\arrayy}{\mathtt{array}\ }
+\newcommand{\dcc}{\mathtt{dc}\ }
+\newcommand{\arroww}{\ \mathtt{\rightarrow}\ }
+\newcommand{\larroww}{\ \mathtt{\leftarrow}\ }
+\newcommand{\lparenn}{\ \mathtt{(}\ }
+\newcommand{\rparenn}{\ \mathtt{)}\ }
+\newcommand{\lbrackett}{\ \mathtt{[}\ }
+\newcommand{\rbrackett}{\ \mathtt{]}\ }
+\newcommand{\barr}{\texttt{|}}
+\newcommand{\starr}{\texttt{*}}
+\newcommand{\semic}{\texttt{;}}
+\newcommand{\commaa}{\texttt{,}}
+\newcommand{\leftb}{\texttt{<}}
+\newcommand{\rightb}{\texttt{>}}
+\newcommand{\leftp}{\texttt{(}}
+\newcommand{\rightp}{\texttt{)}}
+\newcommand{\lett}{\mathtt{let}\ }
+\newcommand{\recc}{\mathtt{rec}\ }
+\newcommand{\andd}{\mathtt{and}\ }
+\newcommand{\inn}{\ \mathtt{in}\ }
+\newcommand{\eqq}{\ \mathtt{=}\ }
+\newcommand{\colcoll}{\mathtt{::}}
+\newcommand{\programm}{\mathtt{program}\ }
+\newcommand{\typee}{\mathtt{type}\ }
+\newcommand{\inputt}{\mathtt{input}\ }
+\newcommand{\outputt}{\mathtt{output}\ }
+\newcommand{\dataa}{\mathtt{data}\ }
+\newcommand{\listt}[1]{\mathtt{list}(#1)\ }
+\newcommand{\listtt}[2]{\mathtt{list}(#1,#2)\ }
+\newcommand{\conss}[2]{\mathtt{cons}(#1,#2)\ }
+\newcommand{\nill}{\mathtt{nil}\ }
+\newcommand{\opp}{\mathtt{op}\ }
+\newcommand{\consp}[2]{\mathtt{cons}(#1,#2)\ }
+\newcommand{\nilp}{\mathtt{nil}\ }
+\newcommand{\ignorep}{\mathtt{\_}\ }
+\newcommand{\efunn}{\mathtt{external}\ }
+\newcommand{\nn}{\mathtt{n}}
+\newcommand{\bb}{\mathtt{bb}}
+\newcommand{\nil}{\mathtt{()}}
+\newcommand{\colonn}{\mathtt{:}}
+\newcommand{\equall}{\mathtt{=}}
+\newcommand{\underscoree}{\mathtt{\_}}
+\newcommand{\fst}{\ensuremath{\mathtt{fst}}}%{\pi_{\mathtt{1}}}
+\newcommand{\snd}{\ensuremath{\mathtt{snd}}}%{\pi_{\mathtt{2}}}
+\newcommand{\leftbbb}{\texttt{[[}}
+\newcommand{\rightbbb}{\texttt{]]}}
+
+% Operators and special symbols
+
+\newcommand{\replace}{\stackrel{\rightarrow}{\oplus}}
+\newcommand{\combine}{\oplus}
+\newcommand{\combineall}{\bigoplus}
+\newcommand{\remove}{\ominus}
+\newcommand{\vtxt}[1]{\hbox{\tt #1}}
+\newcommand{\fatbar}{\framebox[0.3em]{\rule{0em}{1ex}}}
+\newcommand{\intersect}{\cap}
+\newcommand{\union}{\cup}
+\newcommand{\unionall}{\bigcup}
+\newcommand{\lazypat}{\sim}
+\newcommand{\txtar}{\hbox{\tt ->}}
+\newcommand{\U}[3]{\displaystyle{\unionall_{#1}^{#2}}~#3}
+\newcommand{\Uin}[1]{\U{i=1}{n}{#1}}
+\newcommand{\C}[3]{\displaystyle{\combineall_{#1}^{#2}}~#3}
+\newcommand{\Cin}[1]{\O{i=1}{n}{#1}}
+\newcommand{\forallin}[3]{\ensuremath{\forall #1.\ #2 \leq #1 \leq #3}}
+\newcommand{\existsin}[3]{\ensuremath{\exists #1.\ #2 \leq #1 \leq #3}}
+\newcommand{\concat}{++}
+
+\newcommand{\step}{\triangleright}
+\newcommand{\gives}{\Rightarrow}
+\newcommand{\evalsto}{\rightsquigarrow}
+\newcommand{\mevalsto}{\triangleright}
+
+% Rule meta-vars
+
+\newcommand{\ty}{\emtxt{ty}}
+\newcommand{\expp}{\emtxt{exp}}
+\newcommand{\patt}{\emtxt{pat}}
+\newcommand{\tydecll}{\emtxt{tydecl}}
+\newcommand{\decll}{\emtxt{decl}}
+\newcommand{\defnn}{\emtxt{defn}}
+\newcommand{\defnns}{\emtxt{defns}}
+\newcommand{\extdeclls}{\emtxt{ext\_decls}}
+\newcommand{\actdeclls}{\emtxt{act\_decls}}
+\newcommand{\strdeclls}{\emtxt{str\_decls}}
+\newcommand{\indecll}{\emtxt{indecl}}
+\newcommand{\indeclls}{\emtxt{indecls}}
+\newcommand{\outdecll}{\emtxt{outdecl}}
+\newcommand{\outdeclls}{\emtxt{outdecls}}
+\newcommand{\opdecll}{\emtxt{opdecl}}
+\newcommand{\opdeclls}{\emtxt{opdecls}}
+
+\newcommand{\ruleheader}[1]{\vspace{2ex}\begin{flushright} \fbox{\Large $#1$} \end{flushright}}
+
+%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 

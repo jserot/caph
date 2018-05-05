@@ -1,0 +1,103 @@
+=encoding utf8
+
+=head1 NAME
+
+bin2txt - convert CAPH text-encoded binary format to text format
+
+=head1 SYNOPSIS
+
+txt2bin [-dc] [-abbrev] [-out <file>] [-split_frames] format bitwidth file
+
+=head1 DESCRIPTION
+
+This program can be used to convert the F<.bin> files read or produced by the VHDL backend of the
+CAPH compiler to text format
+
+=head1 ARGUMENTS
+
+=over
+
+=item format
+
+type of data tokens (C<uint>, C<sint>, C<float> or C<bool>)
+
+=item bitwidth
+
+size, in bits, of the data words to read in the input file
+
+=item file
+
+name of the input file
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item -dc
+
+decode tokens having type C<t dc> with the following convention: C<11xxxxxx> for C<Data v>, C<01xxxxxx> for C<SoS> and C<10xxxxxx> for C<SoS>
+
+=item -abbrev
+
+for tokens having type C<t dc>, write the result using the abbreviated syntax in the
+output file (C<v> for C<Data(v)>, "C<<>" for C<SoS> and "C<>>" for C<EoS>)
+
+=item -out file
+
+write result in file F<file> (default is to write on F<stdout>)
+
+=item -split_frames
+
+if the sequence of input tokens, having type C<t dc>, represent a sequence of images (frames), write
+each result image in a separate file; the resulting files will be named I<xxx_1>, I<xxx_2>,
+etc.. where I<xxx> is the name given under the I<-out> option
+
+=back
+
+=head1 EXAMPLES
+
+The following command will convert the file F<result.bin>, containing the representation of a
+stream of type C<signed<16>>, writting the result in file F<result.txt> :
+
+ bin2txt -out result.txt sint 16 result.bin
+
+The following command will convert the file F<result.bin>, containing the representation of
+a sequence of 8 images, each encoded with the type C<unsigned<8>>C<dc>, writting the result in files
+F<result_1.txt>, ..., F<result_8.txt> :
+
+ txt2bin -dc -abbrev -out result.txt -split_frames uint 8 result.bin
+
+=head1 EXIT STATUS
+
+The program returns a zero exit status if it succeeds and a non zero value in case of failure. In
+the latter case, an error message is printed to stderr.
+
+=head1 CAVEAT
+
+The program can only convert files containing tokens with a scalar type (signed or unsigned int, float32 or boolean) or with type C<t dc>, where C<t> is a scalar type. Arrays and user-defined variant types are not supported.
+
+When converting tokens of type C<t dc>, the size in bits of individual words in the input file should I<n+2>, where I<n> is the specified bitwidth. The two extra bits are used to encode the tag.
+
+When using the I<float> format, the only accepted I<bitwidth> is 32. Moreover, the program may not
+work correctly in this case on platforms on which the size of C<unsigned int> and
+C<float> (as reported by the C operator C<sizeof> is not 4 bytes (32 bits).
+
+When using the I<bool> format, the only accepted I<bitwidth> is 1.
+
+The program cannot direcly write image file(s) in PGM format. To have a VHDL testbench generate PGM
+files, the I<txt2pgm> program has be used on each generated text file.
+
+When using the I<-split_frames> option, an extra, empty file is sometimes generated.
+
+The result of using the I<-split_frames> when the input file does not actually contains a sequence
+of dc-encoded images is undefined.
+
+=head1 AUTHOR
+
+Jocelyn SE<eacute>rot (jocelyn.serot@univ-bpclermont.fr)
+
+=head1 SEE ALSO
+
+L<pgm2txt(1)>, L<txt2pgm(1)>, L<txt2bin(1)>

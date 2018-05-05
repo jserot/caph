@@ -1,0 +1,42 @@
+-- Basic gradient computing
+-- This is the example given in reference manual at the end of Section 2
+-- An alternate version, using HO actors is given in [../ho/grad]
+
+#include "img_ops.cph"  -- to get the [d1p] and [d1l] actors
+
+function f_abs x = if x < 0 then -x else x : signed<s> -> signed<s>;
+
+actor add (n:unsigned<4>)
+  in (a:signed<s> dc, b:signed<s> dc)
+  out (c:signed<s> dc)
+rules (a,b) -> c
+| ('<,'<) -> '<
+| ('>,'>) -> '>
+| ('p1,'p2) -> '(p1+p2)>>n
+;
+
+actor asub
+  in (a:signed<s> dc, b:signed<s> dc)
+  out (c:signed<s> dc)
+rules (a,b) -> c
+| ('<,'<) -> '<
+| ('>,'>) -> '>
+| ('p1,'p2) -> 'f_abs(p1-p2)
+;
+
+actor thr (t:signed<s>)
+  in (a:signed<s> dc)
+  out (c:unsigned<8> dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'p -> if p > t then '255 else '0
+;
+
+net dx i = asub (i, d1p 0 i);
+net dy i = asub (i, d1l 0 i);
+
+stream inp:signed<10> dc from %ifile;
+stream res:unsigned<8> dc to "result.pgm";
+
+net res = thr %arg2 (add 0 (dx inp, dy inp));

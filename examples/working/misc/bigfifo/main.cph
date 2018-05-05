@@ -1,0 +1,46 @@
+-- The [thr] actor applies a threshold value on a image, returning a binary image.
+-- The threshold value is computed dynamically on the source image by the [maxp] actor.
+-- Because this value is not available before the end of the image, a FIFO with a capacity of
+-- at least one image must be inserted on the path connected to the first input of the [thr] actor.
+-- The size of this FIFO can be estimated using the [-sc_dump_fifo_stats] option and used to
+-- back-annotate the VHDL with the [-vhdl_annot_file] (see Makefile.local)
+-- 2012-12-22, JS
+
+#include "dc.cph"
+
+actor maxp (p:unsigned<8>)
+  -- This actor computes the maximum value of an image divided by 2^p
+  in (a:unsigned<8> dc)
+  out (c:unsigned<8>)
+var s: {S0,S1,S2} = S0
+var m: unsigned<8>
+rules
+  (a,   s) -> (c,     s,                      m)
+| ('<, S0) -> (_,    S1,                      0)
+| ('>, S1) -> (m>>p, S0,                      _)
+| ('<, S1) -> (_,    S2,                      _)
+| ('p, S2) -> (_,    S2, if p > m then p else m)
+| ('>, S2) -> (_,    S1,                      _)
+;
+
+actor thr
+  -- This actor apply a threshold value on a image, returning a binary image.
+  -- One threshold value must be provided for each new image 
+  in (a:unsigned<8> dc, t:unsigned<8>)
+  out (c:unsigned<1> dc)
+var s: {S0,S1,S2} = S0
+var th:unsigned<8>
+rules
+  (a,   s, t) -> (                        c,  s, th)
+| ('<, S0, t) -> (                       '<, S1,  t)
+| ('>, S1, _) -> (                       '>, S0,  _)
+| ('<, S1, _) -> (                       '<, S2,  _)
+| ('p, S2, _) -> (if p > th then '1 else '0, S2,  _)
+| ('>, S2, _) -> (                       '>, S1,  _)
+;
+
+stream i:unsigned<8> dc from %ifile;
+stream o:unsigned<1> dc to "result.pgm";
+
+net o = thr (i, maxp 1 i);
+

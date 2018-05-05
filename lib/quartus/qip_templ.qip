@@ -1,0 +1,17 @@
+set module_name "main_net"
+set lib_path "../lib/"
+set module_path "./"
+set lib_files {
+	caph.vhd
+	single_clock_ram.vhd
+}
+post_message -type extra_info "Module: $module_name (path: $module_path)"
+set_global_assignment -name IP_TOOL_NAME $module_name
+foreach lib_file $lib_files {
+post_message -type extra_info "  VHDL file: $lib_file" 
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) $lib_path$lib_file ]
+}
+foreach module_file $module_files {
+post_message -type extra_info "  VHDL file: $module_file" 
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) $module_path$module_file ]
+}

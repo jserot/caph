@@ -1,0 +1,21 @@
+-- This example shows to use the "#pragma implemented" directive to insert pre-written VHDL
+-- code into CAPH programs.
+-- Warning : use of this feature is not encouraged as it may break out code portability
+
+#ifdef OPT_DIV
+#pragma implemented(div,vhdl,my_div)
+#endif
+
+actor div
+  in (a:unsigned<8>, b:unsigned<8>)
+  out (c:unsigned<8>)
+rules
+| (a:x, b:y) -> c:x/y
+;
+
+
+stream i1:unsigned<8> from "sample1.txt";
+stream i2:unsigned<8> from "sample2.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = div (i1,i2);

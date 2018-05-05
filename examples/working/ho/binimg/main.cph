@@ -1,0 +1,11 @@
+-- Rewritting of the [../apps/binimg] application with the [smap] higher-order actor
+-- 2016-05-27, JS
+
+#include "dc.cph"
+
+function f_thr(x) = if x > %th then (1:unsigned<1>) else (0:unsigned<1>) : signed<m> -> unsigned<1>;
+
+stream inp:signed<10> dc from %ifile;
+stream res:unsigned<1> dc to "result.txt";
+
+net res = smap f_thr inp;

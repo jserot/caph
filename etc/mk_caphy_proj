@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# set CAPHDIR env var, cd to target dir and run
+
+DOTTY=/Users/jserot/bin/graphviz
+
+$CAPHDIR/bin/caphmake -caph_dir $CAPHDIR > /dev/null
+make clobber > /dev/null 
+rm Makefile
+$CAPHDIR/bin/mkproject -D CAPHLIB=$CAPHDIR/lib/caph -caphc $CAPHDIR/bin/caph -dotty $DOTTY *.proj

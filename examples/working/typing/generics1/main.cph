@@ -1,0 +1,23 @@
+-- This example illustrate the use of generic actors
+-- Here, the [id] actor is instanciated twice, with a different type for its IOs
+-- The [cmp] actor is generic wrt the size of its input
+-- 2013-04-25, JS
+
+actor id
+  in (a:$t)
+  out (c:$t)
+rules
+| a: x -> c: x
+;
+
+actor cmp (v:unsigned<s>)
+  in (a:unsigned<s>)
+  out (c:bool)
+rules
+| a: x -> c: x>v
+;
+
+stream i:unsigned<4> from "sample.txt";
+stream o:bool to "result.txt";
+
+net o = id (cmp 2 (id i));

@@ -1,0 +1,129 @@
+This directory contains examples of CAPH programs, stored in distinct subdirectories to facilitate navigation.
+
+To run an example :
+- add the caph bin directory to your PATH. Ex (for bash) : "PATH=<prefix>/bin:$PATH; export PATH"  (where <prefix>
+  is the path passed to the configure script when installing) 
+- cd to the example directory (ex: "cd basic/scale")
+- build makefiles: "caphmake <prefix>"  (where, again, <prefix> is the path passed to the configure script when installing) 
+- "make dot.show" for viewing the graph representation (using the .dot viewer passed to the configure script)
+- "make sim.run" for running the simulator representation
+- "make systemc.run" for generating SystemC code, compiling and running it
+- "make vhdl.run" for generating VHDL code, compiling and running it
+
+Following is a brief description of each subdirectory and its contents.
+
+basic : small, simple examples, showing the basic language features
+   simple : the simplest possible example : the identity actor reading and writting unstructured stream
+   scale : a simple actor multiplying each value of a structured stream by a given constant (given as a parameter)
+   scale2 : cascading two [scale] actors
+   mux : (polymorphic) multiplexor
+   bitop : a simple actor showing bitwise operations
+   cmp : a simple  comparator, showing the use of the [bool] type
+   cmps : another comparator, operating on lists
+   globals : illustrates the use of global functions and constants
+   let : shows how to use the "let ... in" construct to break computations in smaller parts
+   lut[1-4] : four variants of a lookup table (1D read-only, rw, 2D r-o and 3D r-o)
+   thr1 : an thresholfing actor, for binarizing a structured stream
+   thr2 : another formulation of the [thr] actor, using guarded rules
+
+fir : a few examples of finite impulse filters (FIR)
+   fir12 : 1D (1x2) on structured streams 
+   fir22 : 2D (2x2) on structured streams
+   fir33sep : 2D (3x3) as a composition of a 1x3 and a 3x1 filter (mono and multi actor versions)
+
+conv : various 1D and 2D convolutions
+   conv13_v[12] : 1x3 convolution (mono and multi-actor versions)
+   conv33_v[123] : 3x3 convolution (mono and multi-actor versions, shifted or centered)
+   conv_bank : another formulation of 3x3 2D convolution and an illustration of 3D arrays
+   mkconv{1,2}: examples showing the use of the [mkconv] utility program
+
+float : examples illustrating the [float] type [warning: see ../../INSTALL for VHDL support]
+   fscale : a float version of the basic/scale
+   heron : iterative computing of [\sqrt(x)] using Heron's algorithm
+
+network : examples illustrating the network description language (NDL) 
+   compose{1,2} : the [compose] higher-order wiring function (HOWF)
+   cond : the [cond] HO wiring function for defining [if..then..else] constructs at the network level
+   diamond[s] : the diamond higher-order wiring function
+   msfl33 : example showing how to use the [neigh33] higher-order wiring function defined in the standard library
+   map_[1-3] : several examples illustrating the [map] higher-order wiring primitive
+   scm{2} : using the [map] higher-order wiring primitive to describe a split-compute-merge parallel graph pattern
+   mapi : an example illustrating the [mapi] higher-order wiring primitive
+   filter_bank : another, more realistic example illustrating the [mapi] higher-order wiring primitive
+   map2i : an example illustrating the [map2i] higher-order wiring primitive
+   fold{l,li,t} : examples showing the [foldl], [foldli] and [foldlt] higher-order wiring primitives
+   napp{1,2} : two examples illustrating the [napp] higher-order wiring primitive
+   nappi : an example illustrating the [nappi] higher-order wiring primitive
+   pipe : example showing the [pipe] higher-order wiring primitives
+   while : the [while] HO wiring function for defining [while] constructs at the network level
+   mutrec : how to use mutually recursive definition to describe cyclic graphs
+
+io : examples illustrating some specific features of the IO system
+   portio : shows how to use [ports] (as opposed as [streams]) to perform asynchronous I/O.
+   fglob[12] : shows how to use the file globbing and input blanking facilities {*}
+
+typing : examples illustrating various features of the type system
+   cast : shows how type casting operations can be used to avoid overflow
+   generics1 : a very simple example showing how to define and generic actors
+   generics2 : an example showing how to combine generic actors and higher-order network-forming functions
+   gfmux : anoter example showing how to combine generic actors and global functions
+   gensz : illustrates the use of size-generic actors
+   option : shows how to define and use variant types
+   tydecl1 : shows how to define type and size-polymorphic type constructors
+   tydecl2 : shows how to define type and size-polymorphic n-ary type and value constructors 
+   mixedarithm1 : shows the use of a variant type to define an actor performing "mixed" (signed/unsigned) arithmetic
+   mixedarithm[23] : generalizations of the [mixedarithm1] example with type size parameters
+   resize : a basic example illustrating the use of dependent typing
+
+misc : other various examples
+   fact[rec] : two versions of an actor computing the factorial of integers
+   foreign : how to use external functions in CAPH programs {*}
+   ccond : illustrates the use conditional compilation directives
+   macros : illustrates the use of macros to pass command-line arguments to programs
+   mhume : computes the squares of integers by summation
+   suml[rec] : computes the sum of list (recursive and non recursive versions)
+   sumn : computes the sliding sum on  a unstructured stream
+   moc : an example the [sample] actor introduced in the chapter "Model of Computation" of the LRM
+   thrd : illustrates the use of "dynamic" parameters
+   bigfifo : illustrates the use of the [-sc_dump_fifo_stats] option to back-annotate the VHDL code
+   implemented : how to use the "#pragma implemented" directive
+
+moc: examples illustrating the use of MoC-based features (as described in the corresponding chapter of the LRM)
+   mocs: using the [-infer_mocs] option to infer the model of computation of various actors
+   sdfsz: using the [-dump_sdf_fifo_sizes] option to statically infer FIFO sizes for SDF graphs
+     
+apps: small "applications"
+   histol : computing histograms of lists
+   histof : computing histograms of images (frames)
+   histo2d : computing 2d-histograms
+   median12 : 1x3 median filter
+   rle : run-length encoder
+   rld : run-length decoder
+   rl : combining and testing a run-length encoder and decoder
+   transpose : variable-size transpose actor
+   binimg : binarisation of  images by thresholding
+   dx_v[12] : computing the horizontal derivative of images (two versions)
+   dy : computing the vertical derivative of images
+   grad[2] : computing the gradient of images (two versions)
+   hproj : computing the horizontal projection of images
+   vproj : computing the vertical projection of images
+   blob : using [hproj] and [vproj] to detect "blobs" in images
+   
+ho: examples illustrating the use of higher-order actors
+   fmap : applying a function to a unstructured stream
+   smap : applying a function to a structured stream
+   smap2 : applying a function to a pair of structured streams
+   foldn : reducing an unstructured stream with a function
+   sfold : reducing an sequence of structured stream with a function
+   ssfold : reducing an structured stream with a function
+   binimg : rewriting of [../apps/binimg] using the [smap] HO actor
+   grad : rewriting of [../apps/grad] using the [smap] and [smap2] HO actors
+
+primer: examples described in the "Caph Primer" tutorial
+  simple : as in chapter 1
+  invimg : image negation, as in chapter 2
+  sobel : edge extraction on images using Sobel filter, as in chapter 3
+  sobel2 : variant of the previous one using centered convolution actors (as described in chapter 3) 
+
+cal: examples related to the CAL language
+  suml: translation of the [misc/suml] examples 

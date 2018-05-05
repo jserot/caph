@@ -1,0 +1,21 @@
+-- 1x3 Finite Impulse Response filter on unstructured streams - mono-actor version
+-- FIR(a,v):x_0,x_1,x_2,x_3,... = y_0,y_1,y_2,y_3,...
+-- where
+--   y_i=a_0*y_{i-2}+a_1*x_{i-1}+a_2*x_i
+--   x_{-1}=x_{-2}=v
+-- Jul 15, 2015 - JS
+
+actor fir (a:int<s,m> array[3], v:int<s,m>)
+  in (i:int<s,m>)
+  out (o:int<s,m>)
+var z : int<s,m> array[2] = [ v  | i=0 to 1 ]
+rules
+| i:x -> (o:a[0]*z[0]+a[1]*z[1]+a[2]*x, z[0]:z[1], z[1]:x)
+;
+
+stream i:signed<8> from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+net o = fir ([1,2,1],0) i;
+--net o = fir ([1,0,0],0) i;
+

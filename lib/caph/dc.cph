@@ -1,0 +1,87 @@
+-- The [dc] type is used for encoding structured streams of values.
+--
+-- The "SoS" and "EoS" constructors respectively encode the "Start of Structure" and
+-- "End of Structure" control token.
+-- The "Data" constructor encodes the data tokens (where the data has type $t).
+-- For example, a list of boolean values can be represented with the following stream
+-- of tokens, of type [bool dc]:
+--    SoS true false true ... EoS
+-- and a mxn image of 8-bit pixels, with the following stream, of type [unsigned<8> dc]:
+--    SoS SoS p11 p12 ... p1n EoS SoS p21 p22 ... p2n EoS ...
+--    ... SoS pm1 pm2 ... pmn EoS EoS
+--  where each inner list represents a line (row) of the image.
+-- When reading / printing tokens of type [dc], the values "SoS", "EoS" and "Data v"
+-- can be respectively abbreviated as "'<", "'>" and "'v" by invoking the compiler
+-- with the [-abbrev_dc_ctors].  
+-- Note : the numeric encoding of the constructor tags (see LRM, chap 14) ultimately
+-- depends on the hardware testbench; the value specified here (%1, %2, %3) match
+-- the hardware specifications of the DreamCam platform. Do not change them if you
+-- target this platform.
+--
+-- This file appeared in vers 2.6.2. Previously, the  [dc] type was builtin.
+
+type $t dc =
+  SoS %1
+| EoS %2
+| Data %3 of $t
+;
+
+-- SMAP higher order actor operating on DC structured streams
+-- smap(f) : < x1 x2 ... xn > = < f(x1) f(x2) ... f(xn) >
+-- Ex : smap(inc) : < 1 2 3 .. > = < 2 3 4 .. >  if inc(x)=x+1
+
+actor smap (f:$t1->$t2)
+  in (i:$t1 dc)
+ out (o:$t2 dc)
+rules
+| i:SoS    -> o:SoS
+| i:Data x -> o:Data (f(x))
+| i:EoS    -> o:EoS
+;
+
+-- SMAP2 higher order actor operating on DC structured streams
+-- Generalisation of SMAP to two input streams
+-- smap2(f) : (< x1 x2 ... xn >, <y1 y2 ... yn >) = < f(x1,y1) f(x2,y2) ... f(xn,yn) >
+-- Ex : smap2(+) : (< 1 2 3 .. >, < 10 20 30 ... >) = < 11 22 33 .. > 
+
+actor smap2 (f:$t11*$t12->$t2)
+  in (i1:$t11 dc, i2:$t12 dc)
+ out (o:$t2 dc)
+rules
+| (i1:SoS, i2:SoS)       -> o:SoS
+| (i1:Data x, i2:Data y) -> o:Data (f(x,y))
+| (i1:EoS, i2:EoS)       -> o:EoS
+;
+
+-- SFOLD higher order actor operating on DC structured streams
+-- sfold(f,z) : < x11 x12 ... x1n > < x21 ... x2n > ... = y1 y2 ...
+--   where yi = f (f (f (f (z,xi1), xi2)) ..., xin)
+-- Ex: sfold(+,0) : < 1 2 > < 3 4 5 > < 6 7 8 9 > ... = (1+2) (3+4+5) (6+7+8+9+) ... = 3 12 30 ..
+
+actor sfold (f:$t*$t->$t, z:$t)
+  in (i:$t dc)
+ out (o:$t)
+var st : {S0, S1} = S0
+var acc: $t = z
+rules
+| (st:S0, i:SoS) -> (acc:z, st:S1)
+| (st:S1, i:EoS) -> (o:acc, st:S0)
+| (st:S1, i:Data x) -> acc:f(acc,x)
+;
+
+-- SSFOLD higher order actor operating on DC structured streams
+-- ssfold(f,z) : < l1 l2 ... ln > = < sfold(f,z)(l1) sfold(f,z)(l2) ... sfold(f,z)(ln) >
+-- Ex: sffold(+,0) : < < 1 2 3 > < 4 5 6 > < 7 8 9 > > = < (1+2+3) (4+5+6) (7+8+9) > = < 6 15 24 >
+
+actor ssfold (f:$t*$t->$t, z:$t)
+  in (i:$t dc)
+ out (o:$t dc)
+var st : {S0, S1, S2} = S0
+var acc: $t = z
+rules
+| (st:S0, i:SoS) -> (o:SoS, st:S1)
+| (st:S1, i:EoS) -> (o:EoS, st:S0)
+| (st:S1, i:SoS) -> (acc:z, st:S2)
+| (st:S2, i:EoS) -> (o:Data acc, st:S1)
+| (st:S2, i:Data x) -> acc:f(acc,x)
+;

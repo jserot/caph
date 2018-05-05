@@ -1,0 +1,7 @@
+1. Launch CAPH (go to the installation directory and click the application icon or use the Task Bar)
+2. Open an example project (File menu > Open Project or Ctl-P, then select the .cphpro file in the project directory)
+3. To view the dataflow graph hit the "Graph" button
+3. To simulate the design hit the "Simu" button
+4. To generate the SystemC code hit the "SystemC" button
+5. To generate the VHDL code hit the "VHDL" button
+6. The generated code is written in the "systemc" (resp. "vhdl") sub-directory 

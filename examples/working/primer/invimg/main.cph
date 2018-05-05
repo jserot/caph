@@ -1,0 +1,15 @@
+#include "dc.cph"
+
+actor inv ()
+  in (i:unsigned<8> dc)
+  out (o:unsigned<8> dc)
+rules
+| i:'< -> o:'<
+| i:'> -> o:'>
+| i:'x -> o:'255-x
+;
+
+stream inp:unsigned<8> dc from "lena128.pgm"; 
+stream outp:unsigned<8> dc to "result.pgm";  
+
+net outp = inv inp;

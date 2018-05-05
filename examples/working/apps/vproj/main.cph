@@ -1,0 +1,35 @@
+-- VPROJ - Vertical projection 
+-- VPROJ:<<p11,...,p1n>,<p21,...,p2n>, ..., <pm1,pm2,...,pmn>> = <p21+...+pmn, ..., p2n+...+pmn> 
+-- Note: the pixels of the first line are _not_ added
+-- Mar 7, 2011 - JS
+--
+
+#include "dc.cph"
+
+actor vproj (nslots: int)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<16> dc)
+var s : {S0,S1,S2,S3,S4,S5}=S0
+var z : unsigned<16> array[nslots] = [ 0 | i=0 to nslots-1 ]
+-- Note : ideally, we should declare [a] with type [unsigned<n>] and [z] with type [unsigned<16> array[2**n]].
+-- but this goes beyond the possibility of the current type system...
+-- Having to declare and pass [nslots] is a workaround
+var i : int
+var w : int
+rules
+| (s:S0, a:'<) -> (s:S1)
+| (s:S1, a:'>) -> (s:S0)
+| (s:S1, a:'<) -> (s:S2, i:0)
+| (s:S2, a:'p) -> (s:S2, z[i]:0, i:i+1)
+| (s:S2, a:'>) -> (s:S3, w:i)
+| (s:S3, a:'<) -> (s:S4, i:0)
+| (s:S3, a:'>) -> (s:S5, c:'<, i:0)
+| (s:S4, a:'p) -> (s:S4, z[i]:z[i]+(p:unsigned<16>), i:i+1)
+| (s:S4, a:'>) -> (s:S3)
+| (s:S5)       -> (s:if i<w then S5 else S0, c:if i<w then 'z[i] else '>, i:i+1)
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:unsigned<16> dc to "result.txt";
+
+net o = vproj 256 i;

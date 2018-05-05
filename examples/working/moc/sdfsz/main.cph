@@ -1,0 +1,31 @@
+-- This is the program given at the end of the "Model of Computation" chapter
+-- in the LRM to illustrate the static computation of FIFO sizes for pure SDF graphs.
+-- Note the actual computations (as opposed to their "external behavior") is irrelevant here.
+-- Jul 2017, JS
+
+actor foo
+  in (i:signed<8>)
+  out (o:signed<8>)
+rules
+|  i:x -> o:x
+;
+
+actor bar
+  in (i1:signed<8>, i2:signed<8>)
+  out (o:signed<8>)
+rules
+|  (i1:x1, i2:x2)-> o:x1+x2
+;
+
+actor zib
+  in (i:signed<8>)
+  out (o1:signed<8>, o2:signed<8>)
+rules
+|  i:x-> (o1:x, o2:x)
+;
+
+stream inp:signed<8> from "sample.txt";
+stream outp:signed<8> to "result.txt";
+
+net (x2,x3) = zib inp;
+net outp = bar (foo inp, bar (foo x2, foo (foo x3)));

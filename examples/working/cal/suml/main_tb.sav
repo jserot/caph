@@ -1,0 +1,70 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Wed Oct  7 12:04:03 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/misc/suml/main_tb.ghw"
+[dumpfile_mtime] "Wed Oct  7 12:03:05 2015"
+[dumpfile_size] 2928
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/misc/suml/main_tb.sav"
+[timestart] 8600000
+[size] 896 663
+[pos] 236 -1
+*-24.437922 40000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.main_tb.
+[treeopen] top.main_tb.n.
+[treeopen] top.main_tb.n.b3.
+[sst_width] 198
+[signals_width] 98
+[sst_expanded] 1
+[sst_vpaned_height] 187
+@28
+top.main_tb.reset
+top.main_tb.clock
+@22
+#{top.main_tb.w3[9:0]} top.main_tb.w3[9] top.main_tb.w3[8] top.main_tb.w3[7] top.main_tb.w3[6] top.main_tb.w3[5] top.main_tb.w3[4] top.main_tb.w3[3] top.main_tb.w3[2] top.main_tb.w3[1] top.main_tb.w3[0]
+@28
+top.main_tb.w3_wr
+top.main_tb.w3_f
+@24
+#{top.main_tb.w6[7:0]} top.main_tb.w6[7] top.main_tb.w6[6] top.main_tb.w6[5] top.main_tb.w6[4] top.main_tb.w6[3] top.main_tb.w6[2] top.main_tb.w6[1] top.main_tb.w6[0]
+@28
+top.main_tb.w6_rd
+top.main_tb.w6_e
+@c00022
+#{top.main_tb.n.b3.a[9:0]} top.main_tb.n.b3.a[9] top.main_tb.n.b3.a[8] top.main_tb.n.b3.a[7] top.main_tb.n.b3.a[6] top.main_tb.n.b3.a[5] top.main_tb.n.b3.a[4] top.main_tb.n.b3.a[3] top.main_tb.n.b3.a[2] top.main_tb.n.b3.a[1] top.main_tb.n.b3.a[0]
+@28
+top.main_tb.n.b3.a[9]
+top.main_tb.n.b3.a[8]
+top.main_tb.n.b3.a[7]
+top.main_tb.n.b3.a[6]
+top.main_tb.n.b3.a[5]
+top.main_tb.n.b3.a[4]
+top.main_tb.n.b3.a[3]
+top.main_tb.n.b3.a[2]
+top.main_tb.n.b3.a[1]
+top.main_tb.n.b3.a[0]
+@1401200
+-group_end
+@c00023
+#{top.main_tb.n.b3.c[7:0]} top.main_tb.n.b3.c[7] top.main_tb.n.b3.c[6] top.main_tb.n.b3.c[5] top.main_tb.n.b3.c[4] top.main_tb.n.b3.c[3] top.main_tb.n.b3.c[2] top.main_tb.n.b3.c[1] top.main_tb.n.b3.c[0]
+@28
+top.main_tb.n.b3.c[7]
+top.main_tb.n.b3.c[6]
+top.main_tb.n.b3.c[5]
+top.main_tb.n.b3.c[4]
+top.main_tb.n.b3.c[3]
+top.main_tb.n.b3.c[2]
+top.main_tb.n.b3.c[1]
+top.main_tb.n.b3.c[0]
+@1401201
+-group_end
+@22
+#{top.main_tb.n.b3.s[7:0]} top.main_tb.n.b3.s[7] top.main_tb.n.b3.s[6] top.main_tb.n.b3.s[5] top.main_tb.n.b3.s[4] top.main_tb.n.b3.s[3] top.main_tb.n.b3.s[2] top.main_tb.n.b3.s[1] top.main_tb.n.b3.s[0]
+#{top.main_tb.n.b3.n_s[7:0]} top.main_tb.n.b3.n_s[7] top.main_tb.n.b3.n_s[6] top.main_tb.n.b3.n_s[5] top.main_tb.n.b3.n_s[4] top.main_tb.n.b3.n_s[3] top.main_tb.n.b3.n_s[2] top.main_tb.n.b3.n_s[1] top.main_tb.n.b3.n_s[0]
+@28
+top.main_tb.n.b3.a_empty
+top.main_tb.n.b3.c_full
+top.main_tb.n.b3.st
+[pattern_trace] 1
+[pattern_trace] 0

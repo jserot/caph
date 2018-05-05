@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process name="main_net" description="">
+  <files>
+    <file name="main_net.qip" path="main_net.qip" type="qip"/>
+    <file name="scale_act.vhd" path="./scale_act.vhd" type="vhd"/>
+    <file name="portio_types.vhd" path="./portio_types.vhd" type="vhd"/>
+    <file name="portio_net.vhd" path="./portio_net.vhd" type="vhd"/>
+  </files>
+  <stream>
+    <flow name="i1" type="in" size="12"/>
+    <flow name="o1" type="out" size="12"/>
+  </stream>
+  <ports>
+    <flow name="i2" type="in" size="10"/>
+    <flow name="o2" type="out" size="10"/>
+  </ports>
+</process>

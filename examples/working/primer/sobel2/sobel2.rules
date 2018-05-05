@@ -1,0 +1,2 @@
+pcb.bin: pcb.pgm
+	$(PGM2BIN) -hblank 4 -vblank 140 12 $< $@

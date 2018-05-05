@@ -1,0 +1,137 @@
+--------------------------------------------------------------------------------------------------
+-- An basic application for detecting a "blob" in image and centering a window on it
+-- Detection is carried on by computing (and thresholding) the horizontal and vertical projections
+-- Windowing is done by masking
+-- v1.0 - Mar 8, 2011 - JS
+--------------------------------------------------------------------------------------------------
+
+#include "dc.cph"
+
+----------------------
+-- ACTORS
+----------------------
+
+----------------------------------------------------------------------------------
+-- HPROJ - Horizontal projection 
+-- HPROJ:<<p11,...,p1n>, ..., <pm1,pm2,...,pmn>> = <p11+...+p1n, ..., pm1+...+pmn> 
+----------------------------------------------------------------------------------
+
+actor hproj
+  in (a:unsigned<8> dc)
+  out (c:unsigned<16> dc)
+var s : unsigned<16>
+var st : {S0,S1,S2} = S0
+rules (st,a) -> (c,s,st)
+| (S0,'<) -> ('<,_,S1)
+| (S1,'>) -> ('>,_,S0)
+| (S1,'<) -> (_,0,S2)
+| (S2,'>) -> ('s,_,S1)
+| (S2,'v) -> (_,s+(v:unsigned<16>),S2)
+;
+
+-----------------------------------------------------------------------------------------------------------------
+-- VMSK - Vertical masking 
+-- VMSK:<q1,...,qn>,<<p11,...,p1n>,...,<pm1,...,pmn>> = <<f(p11,q1),...,f(p1n,q1)>,...,<f(pm1,qm),...,f(pmn,qn)>>
+--    where f(p,q) = q = 1 ? p : 0
+-----------------------------------------------------------------------------------------------------------------
+
+actor vmsk
+  in (a:unsigned<8> dc, b:unsigned<1> dc)
+  out (c:unsigned<8> dc)
+var st : {S0,S1,S2,S3} = S0
+rules (st,a,b) -> (c,st)
+| (S0,'<,'<) -> ('<,S1)
+| (S1,'>,'>) -> ('>,S0)
+| (S1,'<,'0) -> ('<,S2)
+| (S2,'p,_) -> ('0,S2)
+| (S2,'>,_) -> ('>,S1)
+| (S1,'<,'1) -> ('<,S3)
+| (S3,'p,_) -> ('p,S3)
+| (S3,'>,_) -> ('>,S1)
+;
+
+------------------------------------------------------------------------------------------------
+-- VPROJ - Vertical projection 
+-- VPROJ:<<p11,...,p1n>,<p21,...,p2n>, ..., <pm1,pm2,...,pmn>> = <p21+...+pmn, ..., p2n+...+pmn> 
+-- Note: the pixels of the first line are _not_ added
+------------------------------------------------------------------------------------------------
+
+actor vproj (maxwidth: int)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<16> dc)
+var s : {S0,S1,S2,S3,S4,S5}=S0
+var z : unsigned<16> array[maxwidth] = [ 0 | i=0 to maxwidth-1 ]
+var i : int
+var w : int
+rules
+| (s:S0, a:'<) -> s:S1
+| (s:S1, a:'>) -> (s:S0)
+| (s:S1, a:'<) -> (s:S2, i:0)
+| (s:S2, a:'p) -> (s:S2, z[i]:0, i:i+1)
+| (s:S2, a:'>) -> (s:S3, w:i)
+| (s:S3, a:'<) -> (s:S4, i:0)
+| (s:S3, a:'>) -> (s:S5, c:'<, i:0)
+| (s:S4, a:'p) -> (s:S4, z[i]:z[i]+(p:unsigned<16>), i:i+1)
+| (s:S4, a:'>) -> (s:S3)
+| (s:S5, a: _) -> (s:if i<w then S5 else S0, c:if i<w then 'z[i] else '>, i:i+1)
+;
+
+-----------------------------------------------------------------------------------------------------------------------
+-- HMSK - Horizontal masking 
+-- HMSK:<q1,...,qn>,<<p11,...,p1n>,...,<pm1,...,pmn>> = <<f(p11,q1),...,f(p1n,qn)>,...,<f(pm1,q1),...,f(pmn,qn)>>
+--    where f(p,q) = p if q=1, 0 otherwise
+-----------------------------------------------------------------------------------------------------------------------
+
+actor hmsk (maxwidth: int)
+  in (a:unsigned<1> dc, b:unsigned<8> dc)
+  out (c:unsigned<8> dc)
+var s : {S0,S1,S2,S3,S4}=S0
+var z : unsigned<1> array[maxwidth] = [ 0 | i=0 to maxwidth-1 ]
+var i : int
+rules
+| (s:S0, a:_,  b:'<) -> (s:S1, c:'<)
+| (s:S1, a:_,  b:'>) -> (s:S0, c:'>)
+| (s:S1, a:'<, b:'<) -> (s:S2, c:'<, i:0)
+| (s:S2, a:'1, b:'p) -> (s:S2, c:'p , z[i]:1, i:i+1)
+| (s:S2, a:'0, b:'p) -> (s:S2, c:'0, z[i]:0, i:i+1)
+| (s:S2, a:'>, b:'>) -> (s:S3, c:'>)
+| (s:S3, a:_,  b:'>) -> (s:S0, c:'>)
+| (s:S3, a:_,  b:'<) -> (s:S4, c:'<, i:0)
+| (s:S4, a:_,  b:'p) -> (s:S4, c:'(z[i]:unsigned<8>)*p, i:i+1)
+| (s:S4, a:_,  b:'>) -> (s:S3, c:'>)
+;
+
+-------------------------------------------------------------------
+-- THR - Thresholding
+-- THR(t):<p1,...,pn> = <b1,...,bn> where bi=1 if pi>t, 0 otherwise
+-------------------------------------------------------------------
+
+actor thr (k:unsigned<16>)
+  in (a:unsigned<16> dc)
+  out (c:unsigned<1> dc)
+rules a -> c
+| '< -> '<
+| 'p -> if p > k then '1 else '0
+| '> -> '>
+;
+
+------------------------
+-- IOS
+------------------------
+
+stream i:unsigned<8> dc from "sample.txt"; -- input image
+stream o1:unsigned<16> dc to "result1.txt"; -- horizontal projection
+stream o2:unsigned<16> dc to "result2.txt"; -- vertical projection
+stream o3:unsigned<8> dc to "result3.txt"; -- output image 
+
+--------------------------
+-- NETWORK
+--------------------------
+
+net hp = hproj i;
+net o1 = hp;
+net vw = vmsk (i, thr %arg1 hp);
+net vp = vproj 512 vw; 
+net o2 = vp;
+net hw = hmsk 512 (thr %arg2 vp, vw);
+net o3 = hw;

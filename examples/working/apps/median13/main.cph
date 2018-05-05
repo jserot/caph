@@ -1,0 +1,38 @@
+-- 1x3 median filter implemented as a single actor
+-- MEDIAN:<x_1,x_2,...,x_n> = <f(x_1),f(x_2),...,f(x_n)>
+-- where
+--   f(x_i)=median(x_{i-2},x_{i_1},x_i), i>=2
+--   f(x_1)=min(x0,x1)
+--   f(x_0)=x0
+-- Ex: input : < 1 2 6 4 9 8 12 5 >
+--    output : < 1 1 2 4 6 8  9 8 >
+-- Jul 05, 2012 - JS
+
+#include "dc.cph"
+
+type uint == unsigned<8>;
+
+function min_fn(x,y) = if x < y then x else y : unsigned<s> * unsigned<s> -> unsigned<s>;
+function max_fn(x,y) = if x > y then x else y : unsigned<s> * unsigned<s> -> unsigned<s>;
+function med_fn(x,y,z) =  min_fn (max_fn (x,y), min_fn (max_fn (y,z), max_fn(x,z)));
+
+actor median ()
+   in (a:uint dc)
+  out (c:uint dc)
+var s : {S0,S1,S2,S3} = S0
+var z : uint
+var zz : uint
+rules
+  (s,   a) -> (s,                c, z, zz)
+| (S0, '<) -> (S1,              '<, 0,  0)
+| (S1, '>) -> (S0,              '>, _,  _)
+| (S1, 'p) -> (S2,              'p, p,  z)
+| (S2, 'p) -> (S3,    'min_fn(z,p), p,  z)
+| (S3, 'p) -> (S3, 'med_fn(zz,z,p), p,  z)
+| (S3, '>) -> (S1,              '>, _,  _)
+;
+
+stream x:uint dc from "sample.txt";
+stream r:uint dc to "result.txt";
+
+net r = median x;

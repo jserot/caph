@@ -1,0 +1,44 @@
+-- Mutually recursive definitions
+-- Apr 12, 2013 - JS
+
+--   i1                   i2
+--   |    +-------+        |
+--   |    |    +- | ---+   |
+--   |    |    |  |    |   |
+--   v    v    |  |    v   v
+-- +--------+  |  |  +--------+
+-- | a   b  |  |  |  | a   b  | 
+-- |   F    |  |  |  |   G    |  
+-- | c   d  |  |  |  | c   d  |
+-- +--------+  |  |  +--------+
+--   |   |     |  |    |   |
+--   |   +-----+  +----+   |
+--   v                     v
+--   o1                    o2
+
+actor f 
+  in (a:signed<8>, b:signed<8>)
+ out (c:signed<8>, d:signed<8>)
+var s: {S0,S1} = S0
+rules
+| (s:S0, a:n) -> (s:S1, d:n)
+| (s:S1, b:m) -> (s:S0, c:m)
+;
+
+actor g 
+  in (a:signed<8>, b:signed<8>)
+ out (c:signed<8>, d:signed<8>)
+var s: {S0,S1} = S0
+rules
+| (s:S0, b:m) -> (s:S1, c:m)
+| (s:S1, a:n) -> (s:S0, d:n)
+;
+
+stream i1 : signed<8> from "sample1.txt";
+stream i2 : signed<8> from "sample2.txt";
+stream o1 : signed<8> to "result1.txt";
+stream o2 : signed<8> to "result2.txt";
+
+net rec (o1,z1) = f (i1,z2)
+and     (z2,o2) = g (z1,i2);
+

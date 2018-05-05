@@ -1,0 +1,20 @@
+-- The typical example demonstrating the interest of dependent types.
+-- Here, the size of the result for the actor [resize] is specified using the its parameter [k].
+-- 2015-05-28, JS
+
+actor resize (k:int)
+  in (a:int<s,n>)
+ out (c:int<s,k>)
+var z:signed<k>  -- not used, just put here to show that the type of a local variable can also depend on a parameter
+rules
+| a:x -> c:(x:int<s,k>)
+;
+
+stream i1:signed<8> from "sample1.txt";
+stream o1:signed<4> to "result1.txt";
+stream i2:unsigned<10> from "sample2.txt";
+stream o2:unsigned<4> to "result2.txt";
+
+net o1 = resize 4 i1;
+net o2 = resize 4 i2;
+

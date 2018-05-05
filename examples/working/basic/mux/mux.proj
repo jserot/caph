@@ -1,0 +1,4 @@
+SIM_OPTS = -abbrev_dc_ctors
+SC_OPTS = -sc_stop_time 800 -sc_abbrev_dc_ctors -sc_dump_fifo_stats 
+VHDL_OPTS = -vhdl_annot_file mux_fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=200ns  

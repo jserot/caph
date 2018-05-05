@@ -1,0 +1,21 @@
+-- A basic example with the [mapi] higher-order wiring primitive
+-- May 16, 2014, JS
+
+const coeff = [2,4,8,16] : unsigned<8> array[4];
+
+actor scale (k:unsigned<8>) 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> k*x
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+stream o3:unsigned<8> to "result3.txt";
+stream o4:unsigned<8> to "result4.txt";
+
+net f i x = scale (coeff[i]) x;
+
+net (o1,o2,o3,o4) = mapi f (i,i,i,i);

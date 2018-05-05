@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>631</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Caph</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="newFileButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/new.png</normaloff>:/img/new.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>55</width>
+            <height>55</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="openFileButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/open.png</normaloff>:/img/open.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>43</width>
+            <height>43</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveFileButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/save.png</normaloff>:/img/save.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveAllButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/saveall.png</normaloff>:/img/saveall.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="compileDotButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/compilegraph.png</normaloff>:/img/compilegraph.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="runSimButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/simu.png</normaloff>:/img/simu.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="compileSystemcButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/compileSystemC.png</normaloff>:/img/compileSystemC.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="compileVhdlButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/compileVHDL.png</normaloff>:/img/compileVHDL.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="compileXdfButton">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources.qrc">
+            <normaloff>:/img/compileXDF.png</normaloff>:/img/compileXDF.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QSplitter" name="splitter_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="QSplitter" name="splitter">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>300</height>
+          </size>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QTreeView" name="projectTreeview">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
+          </property>
+         </widget>
+         <widget class="QTabWidget" name="inpFilesTab">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>3</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="src1">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <attribute name="title">
+            <string>src1</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="src2">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <attribute name="title">
+            <string>src2</string>
+           </attribute>
+          </widget>
+         </widget>
+         <widget class="QTabWidget" name="outFilesTab">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>3</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="documentMode">
+           <bool>false</bool>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="res1">
+           <attribute name="title">
+            <string>res1</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="res2">
+           <attribute name="title">
+            <string>res2</string>
+           </attribute>
+          </widget>
+         </widget>
+        </widget>
+        <widget class="QTextEdit" name="logText">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <action name="actionNouveau_fichier">
+   <property name="text">
+    <string>Nouveau fichier</string>
+   </property>
+  </action>
+  <action name="actionOuvrir_fichier">
+   <property name="text">
+    <string>Ouvrir fichier</string>
+   </property>
+  </action>
+  <action name="actionFichiers_r_cents">
+   <property name="text">
+    <string>Fichiers récents ...</string>
+   </property>
+  </action>
+  <action name="actionEnregistrer_fichier">
+   <property name="text">
+    <string>Enregistrer fichier</string>
+   </property>
+  </action>
+  <action name="actionEnregistrer_fichier_sous">
+   <property name="text">
+    <string>Enregistrer fichier sous ...</string>
+   </property>
+  </action>
+  <action name="actionTout_enregistrer">
+   <property name="text">
+    <string>Tout enregistrer</string>
+   </property>
+  </action>
+  <action name="actionTout_enregistrer_sous">
+   <property name="text">
+    <string>Tout enregistrer sous ...</string>
+   </property>
+  </action>
+  <action name="actionFermer_fichier">
+   <property name="text">
+    <string>Fermer fichier</string>
+   </property>
+  </action>
+  <action name="actionTout_fermer">
+   <property name="text">
+    <string>Tout fermer</string>
+   </property>
+  </action>
+  <action name="actionQuitter_CaphIDE">
+   <property name="text">
+    <string>Quitter CaphIDE</string>
+   </property>
+  </action>
+  <action name="actionFichiers_ouverts">
+   <property name="text">
+    <string>Fichiers ouverts</string>
+   </property>
+  </action>
+  <action name="actionFichiers_d_entr_e">
+   <property name="text">
+    <string>Fichiers d'entrée</string>
+   </property>
+  </action>
+  <action name="actionSystemC">
+   <property name="text">
+    <string>SystemC</string>
+   </property>
+  </action>
+  <action name="actionVHDL">
+   <property name="text">
+    <string>VHDL</string>
+   </property>
+  </action>
+  <action name="actionGraphe">
+   <property name="text">
+    <string>Graphe</string>
+   </property>
+  </action>
+  <action name="actionAvertissements_Erreurs">
+   <property name="text">
+    <string>Avertissements / Erreurs</string>
+   </property>
+  </action>
+  <action name="actionConsole">
+   <property name="text">
+    <string>Console</string>
+   </property>
+  </action>
+  <action name="actionOuvrir_exemple1">
+   <property name="text">
+    <string>Ouvrir exemple1</string>
+   </property>
+  </action>
+  <action name="actionOuvrir_exemple2">
+   <property name="text">
+    <string>Ouvrir exemple2</string>
+   </property>
+  </action>
+  <action name="actionOuvrir_exemple3">
+   <property name="text">
+    <string>Ouvrir exemple3</string>
+   </property>
+  </action>
+  <action name="actionSystemC_2">
+   <property name="text">
+    <string>SystemC</string>
+   </property>
+  </action>
+  <action name="actionVHDL_2">
+   <property name="text">
+    <string>VHDL</string>
+   </property>
+  </action>
+  <action name="actionGraphe_2">
+   <property name="text">
+    <string>Graphe</string>
+   </property>
+  </action>
+  <action name="actionOuvrirFenOptGen">
+   <property name="text">
+    <string>ouvrirFenOptGen</string>
+   </property>
+   <property name="toolTip">
+    <string>General</string>
+   </property>
+  </action>
+  <action name="actionOuvrirFenOptVHDL">
+   <property name="text">
+    <string>ouvrirFenOptVHDL</string>
+   </property>
+  </action>
+  <action name="actionOuvrirFenOptSystemC">
+   <property name="text">
+    <string>ouvrirFenOptSystemC</string>
+   </property>
+  </action>
+  <action name="actionOuvrirFenOptSimulation">
+   <property name="text">
+    <string>ouvrirFenOptSimulation</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

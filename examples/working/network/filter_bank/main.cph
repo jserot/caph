@@ -1,0 +1,25 @@
+#include "convol.cph"
+
+const kernels = [
+  [1,2,1],
+  [1,3,1],
+  [1,4,1],
+  [1,5,1]
+  ] : unsigned<8> array[4][3];
+
+actor combine
+  in (i1:unsigned<8> dc, i2:unsigned<8> dc, i3:unsigned<8> dc, i4:unsigned<8> dc)
+ out (o:unsigned<8> dc)
+rules (i1,i2,i3,i4) -> o
+| ('<,'<,'<,'<) -> '<
+| ('>,'>,'>,'>) -> '>
+| ('x1,'x2,'x3,'x4) -> '(x1+x2+x3+x3)>>2  -- More clever combination strategies should be used in practice !
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:unsigned<8> dc to "result.txt";
+
+net f i x = conv113 ((kernels[i]),2,0) x; -- the [conv113a] actor is defined in "convol.cph" 
+
+net o = combine (mapi f (i,i,i,i));
+

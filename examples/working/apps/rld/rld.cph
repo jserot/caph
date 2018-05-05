@@ -1,0 +1,19 @@
+-- Run-length decoder
+-- RLD:RL(p1,k1),RL(p2,k2),...= p1,...,p1,p2,...,p2,...
+--                              \--k1--/  \--k2--/  ...
+-- Initial version: Jun 12, 2010 - JS
+-- Revised : Aug 9, 2015 - JS
+
+#include "../rle/rl_type.cph"
+
+actor rld (n: int)
+  in (i:$t rl<n>)
+  out (o:$t)
+var st : {WaitRun,WriteRun} = WaitRun
+var v : $t
+var k : unsigned<n> = 0
+rules
+| (st:WaitRun, i:RL(p,m)) -> (st:WriteRun, o:p, v:p, k:m-1)
+| st:WriteRun when k=0 -> st:WaitRun
+| st:WriteRun          -> (o:v, k:k-1) 
+;

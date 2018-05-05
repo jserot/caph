@@ -1,0 +1,44 @@
+-- Computes the squares of integers by summation
+-- This examples is inspired from A. Al Zain et al. "mHume for parallel FPGA"
+--    Draft proceedings of 22nd Int. Symp. on Implementation and Application of Functional Languages
+--    Amsterdam, September, 2010
+-- Two versions of the [square] actor are given : a stateful one, using local variables, 
+-- and a stateless one, using recursive wiring
+-- Updated 2013-01-03, JS
+
+type uint8 == unsigned<8>;
+
+actor square_v () -- Stateful version
+  in (i:uint8)
+  out (o:uint8)
+var s: uint8 = 0
+var c: uint8 = 0
+var v: uint8 = 0
+var st: {S0,S1} = S0
+rules
+| (st:S0, i:x) -> (st:S1, s:0,  c:x, v:x)
+| (st:S1, c:0) -> (st:S0, o:s)
+| (st:S1) -> (st:S1, s:s+v, c:c-1)
+;
+
+
+actor square_r () -- Stateless version
+  in (i:uint8, s:uint8, c:uint8, v:uint8)
+  out (o:uint8, ss:uint8, cc:uint8, vv:uint8)
+rules
+  (i, s, c, v) -> (o,  ss,  cc, vv)
+| (_, s, 0, v) -> (s,   _,   _,  _)
+| (_, s, c, v) -> (_, s+v, c-1,  v)
+| (i, _, _, _) -> (_,   0,   i,  i)
+;
+
+stream i1:uint8 from "sample.txt";
+stream i2:uint8 from "sample.txt";
+stream o1:uint8 to "result1.txt";
+stream o2:uint8 to "result2.txt";
+
+net o1 = square_v i1;
+
+net o2 = 
+  let rec (o,s,c,v) = square_r (i2,s,c,v) in
+  o;

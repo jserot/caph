@@ -1,0 +1,5 @@
+DOT_OPTS =
+SIM_OPTS = -I $(CAPHLIB) 
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 100 
+VHDL_OPTS =
+GHDL_RUN_OPTS = --stop-time=200ns  

@@ -1,0 +1,44 @@
+-- This is a generalization of the [mixedarithm1] example in which the size of the [signed/unsigned]
+-- values embedded in the [us] type constructor is specified as a parameter of the type constructor.
+-- This kind of extension has been introduced in vers 2.6
+
+type us<n> =
+  Signed of signed<n>
+| Unsigned of unsigned<n>
+;
+
+-- [add8] is a monomorphic specialisation 
+
+actor add8
+  in (a:us<8>, b:us<8>)
+ out (c: us<8>)
+rules 
+| (a:Signed s1, b:Signed s2) -> c:Signed (s1+s2)
+| (a:Signed s, b:Unsigned u) -> c:Signed (s+(u:signed<8>))
+| (a:Unsigned u, b:Signed s) -> c:Signed ((u:signed<8>)+s)
+| (a:Unsigned u1, b:Unsigned u2) -> c:Signed ((u1:signed<8>)+(u2:signed<8>))
+;
+
+-- ... here's a fully generic version 
+
+actor add
+  in (a:us<n>, b:us<n>)
+ out (c: us<n>)
+rules 
+| (a:Signed s1, b:Signed s2) -> c:Signed (s1+s2)
+| (a:Signed s, b:Unsigned u) -> c:Signed (s+(u:signed<n>))
+| (a:Unsigned u, b:Signed s) -> c:Signed ((u:signed<n>)+s)
+| (a:Unsigned u1, b:Unsigned u2) -> c:Signed ((u1:signed<n>)+(u2:signed<n>))
+;
+
+stream i11:us<8> from "sample11.txt";
+stream i12:us<8> from "sample12.txt";
+stream o11:us<8> to "result11.txt";
+stream o12:us<8> to "result12.txt";
+stream i21:us<16> from "sample21.txt";
+stream i22:us<16> from "sample22.txt";
+stream o21:us<16> to "result21.txt";
+
+net o11 = add8 (i11,i12);  -- mono
+net o12 = add (i11,i12);   -- poly
+net o21 = add (i21,i22);   -- poly bis

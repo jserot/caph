@@ -1,0 +1,18 @@
+-- This example shows how to use automatically generated convolution actors 
+-- Feb 19, 2016 - JS
+
+#include "conv233.cph"  -- This file will be automatically generated 
+#include "conv255.cph"  -- This file will be automatically generated 
+
+stream i:signed<24> dc from "lena128.pgm";
+stream o1:signed<24> dc to "result1.pgm";
+stream o2:signed<24> dc to "result2.pgm";
+
+net o1 = cconv233 ([[1,2,1],
+                   [2,4,2],
+                   [1,2,1]],4,0) i;
+net o2 = cconv255 ([[1,4,6,4,1],
+                   [4,16,24,16,4],
+                   [6,24,36,24,6],
+                   [4,16,24,16,4],
+                   [1,4,6,4,1]],8,0) i;

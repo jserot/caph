@@ -1,0 +1,36 @@
+-- A slightly more interesting example, showing how to define and use generic actors
+-- and higher-order network-forming functions
+-- 2013-04-25, JS
+
+#include "dc.cph"
+
+actor dp (v: $t)       -- One pixel delay
+  in (a:$t dc)         -- This actor is generic wrt to the type of delayed data
+  out (c:$t dc)
+var s : {S0,S1} = S0
+var z : $t
+rules
+  (s,   a, z) -> (s,   c, z)
+| (S0, '<, _) -> (S1, '<, v)
+| (S1, 'p, z) -> (S1, 'z, p)
+| (S1, '>, _) -> (S0, '>, _)
+;
+
+actor sub             -- This actor is generic wrt to the pixel size
+  in (a:signed<s> dc, b:signed<s> dc)
+  out (c:signed<s> dc)
+rules (a,b) -> c
+| ('<, '<) -> '<
+| ('v1, 'v2) -> '(v1-v2)
+| ('>, '>) -> '>;
+
+net dx z x = sub (x, dp z x);    -- This the higher-order, generic wiring function
+
+stream i1:signed<8> dc from "sample1.txt";
+stream i2:signed<16> dc from "sample2.txt";
+stream o1:signed<8> dc to "result1.txt";
+stream o2:signed<16> dc to "result2.txt";
+
+net o1 = dx 0 i1;              -- It is applied twice, with different pixel size
+net o2 = dx 0 i2;
+

@@ -1,0 +1,16 @@
+include ../config 
+
+all: 
+	@echo "Nothing to do"
+
+install: 
+	$(INSTALL) -d $(DOCDIR)
+	(for f in *.pdf; do $(CP) $$f $(DOCDIR); done)
+
+clean:
+	@echo "Nothing to clean"
+
+realclean: 
+	rm -f *.pdf
+
+clobber: realclean

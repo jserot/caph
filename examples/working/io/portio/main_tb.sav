@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Sun Sep 20 17:22:23 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/io/portio/main_tb.vcd"
+[dumpfile_mtime] "Sun Sep 20 17:19:54 2015"
+[dumpfile_size] 19417
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/io/portio/main_tb.sav"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-26.495905 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] n.
+[sst_width] 198
+[signals_width] 116
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@28
+b1.clk
+@22
+b1.dout[11:0]
+@25
+b2.dout[9:0]
+[pattern_trace] 1
+[pattern_trace] 0

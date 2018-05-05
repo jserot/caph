@@ -1,0 +1,12 @@
+-- Run-length decoder
+-- RLD:RL(p1,k1),RL(p2,k2),...= p1,...,p1,p2,...,p2,...
+--                              \--k1--/  \--k2--/  ...
+-- Initial version: Jun 12, 2010 - JS
+-- Revised : Aug 9, 2015 - JS
+
+#include "rld.cph"
+
+stream i:signed<8> rl<4> from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+net o = rld 4 i;

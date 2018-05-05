@@ -1,0 +1,32 @@
+-- This example shows how to define an actor performing "mixed" (signed/unsigned) 
+-- arithmetic using a variant type.
+-- The [add] actor accepts both signed and unsigned 8-bit values and produces a sum as
+-- a signed 8-bit value, performing type coercion as needed.
+-- For example, if the input streams on are resp
+--   Signed 1,  Signed 2,   Signed 3, Signed -1, Signed -2,  Signed -3, Unsigned 1, Unsigned 2, Unsigned 3
+-- and
+--   Signed 1, Signed -1, Unsigned 2,  Signed 1, Signed -1, Unsigned 2,   Signed 1,  Signed -1, Unsigned 2,
+-- then the output stream will be
+--   Signed 2,  Signed 1,   Signed 5,  Signed 0, Signed -3,  Signed -1,   Signed 2,   Signed 1,   Signed 5
+
+
+type us8 =
+  Signed of signed<8>
+| Unsigned of unsigned<8>
+;
+
+actor add
+  in (a:us8, b:us8)
+ out (c: us8)
+rules 
+| (a:Signed s1, b:Signed s2) -> c:Signed (s1+s2)
+| (a:Signed s, b:Unsigned u) -> c:Signed (s+(u:signed<8>))
+| (a:Unsigned u, b:Signed s) -> c:Signed ((u:signed<8>)+s)
+| (a:Unsigned u1, b:Unsigned u2) -> c:Signed ((u1:signed<8>)+(u2:signed<8>))
+;
+
+stream i1:us8 from "sample1.txt";
+stream i2:us8 from "sample2.txt";
+stream o1:us8 to "result1.txt";
+
+net o1 = add (i1,i2);

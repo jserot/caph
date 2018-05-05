@@ -1,0 +1,24 @@
+-- An example with the [compose] higher-order wiring function showing that the 
+-- intermediate value does not have to have a scalar type
+-- Dec 1, 2015, JS
+
+actor foo 
+  in (a:unsigned<8>)
+  out (c1:unsigned<8>,c2:signed<4>)
+rules a -> (c1,c2)
+| x -> (2*x,(x+1:signed<4>))
+;
+
+actor bar 
+  in (a1:unsigned<8>, a2:signed<4>)
+  out (c:unsigned<8>)
+rules (a1,a2) -> c
+| (x,y) -> x+(y:unsigned<8>)
+;
+
+net compose f g x = g (f x);
+
+stream i:unsigned<8> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = compose foo bar i;

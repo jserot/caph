@@ -1,0 +1,23 @@
+-- This is another generalization of the [mixedarithm1] example in which the sizes of the [signed/unsigned]
+-- values embedded in the [us] type constructor are specified as two distinct parameters of the type constructor,
+
+type us<m,n> =
+  Signed of signed<m>
+| Unsigned of unsigned<n>
+;
+
+actor add
+  in (a:us<m,n>, b:us<m,n>)
+ out (c: us<m,n>)
+rules 
+| (a:Signed s1, b:Signed s2) -> c:Signed (s1+s2)
+| (a:Signed s, b:Unsigned u) -> c:Signed (s+(u:signed<m>))
+| (a:Unsigned u, b:Signed s) -> c:Signed ((u:signed<m>)+s)
+| (a:Unsigned u1, b:Unsigned u2) -> c:Signed ((u1:signed<m>)+(u2:signed<m>))
+;
+
+stream i11:us<12,8> from "sample11.txt";  -- 12 bits for signed quantities, 8 for unsigned
+stream i12:us<12,8> from "sample12.txt";
+stream o11:us<12,8> to "result11.txt";
+
+net o11 = add (i11,i12);

@@ -1,0 +1,21 @@
+#include "dc.cph"
+
+actor hproj ()
+  in (a:unsigned<8> dc)
+  out (c:unsigned<16> dc)
+var s : unsigned<16>
+var st : {S0,S1,S2} = S0
+rules
+| (st:S0, a:'<) -> (c:'<, st:S1)
+| (st:S1, a:'>) -> (c:'>, st:S0)
+| (st:S1, a:'<) -> (s:0, st:S2)
+| (st:S2, a:'>) -> (c:'s, st:S1)
+| (st:S2, a:'v) -> (s:s+(v:unsigned<16>), st:S2)
+  -- An explicit cast to unsigned<16> is required here since the "+" builtin operator
+  -- has type int<s> * int<s> -> int<s>  (and _not_ : int<s> * int<s'> -> int<s'> ... *)
+;
+
+stream i:unsigned<8> dc from "img.txt"; 
+stream o:unsigned<16> dc to "result.txt";
+
+net o = hproj i;

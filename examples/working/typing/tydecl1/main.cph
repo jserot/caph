@@ -1,0 +1,30 @@
+-- This example show how to define type and size-polymorphic type constructors
+-- 2015-05-29, JS
+
+type $t tau<s> =
+  UInt of unsigned<s>
+| Other of $t
+;
+
+-- A value of type [t tau<n>] is either an unsigned n-bits int or a value of type [t]
+-- The [sort] actor sends all values of the first kind on its [s1] output and all values
+-- of the second kind on its [s2] output.
+ 
+actor sort
+  in (e:$t tau<s>)
+ out (s1:unsigned<s>, s2:$t)
+rules
+| e:UInt u -> (s1:u, s2:_)
+| e:Other v -> (s1:_, s2:v)
+; 
+
+stream i1:bool tau<4> from "sample1.txt";
+stream o11:unsigned<4> to "result11.txt";
+stream o12:bool to "result12.txt";
+stream i2:signed<8> tau<2> from "sample2.txt";
+stream o21:unsigned<2> to "result21.txt";
+stream o22:signed<8> to "result22.txt";
+
+net (o11,o12) = sort i1;
+net (o21,o22) = sort i2;
+

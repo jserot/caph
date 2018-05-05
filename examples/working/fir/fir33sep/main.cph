@@ -1,0 +1,23 @@
+-- 3x3 Finite Impulse Response filter on images, with scaling and padding, separated  
+-- FIR33(a,p,s) = FIR31(a,p,s) o FIR13(a,p,s)
+-- For each separate filter we have two distinct implementations : mono and multi-actor.
+-- This gives four possible implementations for FIR33
+-- These implementations are selected by (un)commenting the corresponding [include] directives
+-- Aug 1, 2015. JS
+
+const coeff = [1,2,1] : signed<12> array[3];
+
+#include "xfir13_mono.cph"
+-- #include "xfir13_multi.cph"
+#include "xfir31_mono.cph"
+-- #include "xfir31_multi.cph"
+
+stream i:signed<12> dc from "sample.txt";
+stream o:signed<12> dc to "result.txt";
+
+net compose f g x = g (f x);
+
+net fir33 pad norm = compose (fir13 pad norm) (fir31 pad norm);
+
+net o = fir33 0 2 i;  
+

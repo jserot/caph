@@ -1,0 +1,33 @@
+-- 3x1 Finite Impulse Response filter on images, with scaling and padding - mono-actor version
+-- FIR(a,p,s):<L_1,L_2,L_3,L_4,...> = <L'_1,L'_2,f(L_3),f(L_4),...> 
+-- where
+--   L'_1 = L'_2 = <p,p,...,p>
+--   f(L_i) = f:<x_i_1,x_i_2,x_i_3,...> = <g(x_i_1),g(x_i_2),g(x_i_3),...>
+--   g(x_i_j) = (a_0*x_{i-2}_j+a_1*x_{i-1}_j+a_2*x_i_j)>>s  for i>2
+-- Aug 1, 2015 - JS
+
+#include "dc.cph"
+
+actor fir31_a (a:int<s,m> array[3], p:int<s,m>, s:unsigned<4>)
+  in (i:int<s,m> dc, z0:int<s,m> dc, z1:int<s,m> dc)
+  out (o:int<s,m> dc, zz0:int<s,m> dc, zz1:int<s,m> dc)
+var st : {WaitI, WaitL1, PadL1, WaitL2, PadL2, WaitL, ProcL, Flush} = WaitI
+rules
+| (st:WaitI, i:'<)                -> (o:'<, st:WaitL1)                                        -- Start image
+| (st:WaitL1, i:'<)               -> (o:'<, st:PadL1)                                         -- Read and pad first line
+| (st:PadL1, i:'x)                -> (o:'p, zz0:'x)                                           -- ...
+| (st:PadL1, i:'>)                -> (o:'>, zz0:'>, st:WaitL2)                                -- Read and pad second line
+| (st:WaitL2, i:'<)               -> (o:'<, st:PadL2)                                         -- Read and pad first line
+| (st:PadL2, i:'x)                -> (o:'p, zz1:'x)                                           -- ...
+| (st:PadL2, i:'>)                -> (o:'>, zz1:'>, st:WaitL)
+| (st:WaitL, i:'>)                -> (o:'>, st:Flush)                                         -- End image, flush fifos
+| (st:WaitL, i:'<)                -> (o:'<, st:ProcL)                                         -- Start line
+| (st:ProcL, z0:'x0, z1:'x1, i:'x2) -> (o:'(a[0]*x0+a[1]*x1+a[2]*x2)>>s, zz0:'x1, zz1:'x2)    -- Process line
+| (st:ProcL, z0:'>, z1:'>, i:'>)  -> (o:'>, st:WaitL, zz0:'>, zz1:'>)                         -- End line 
+| (st:Flush, z0:'x0, z1:'x1)      -> st:Flush     
+| (st:Flush, z0:'>, z1:'>)        -> st:WaitI     
+;
+
+net fir31 pad norm i =
+  let rec (o,z,zz) = fir31_a (coeff,pad,norm) (i,z,zz) in
+  o;

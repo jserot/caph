@@ -1,0 +1,25 @@
+This directory contains the Qt-based GUI to the Caph compiler.
+A brief introduction can be found in ../doc/primer/caph-primer.pdf
+This code is a recrafting of an initial version written by P. Arnold and D. Charette during an intership in 2013.
+Apr 26, 2017 - J. Sérot (jocelyn.serot@uca.fr)
+
+What can be done with the Caph GUI
+
+- writing/reading .cph source files (with syntax coloring)
+- writing/reading .txt sim i/o files 
+- grouping these files into "projects"
+- generating .dot files and viewing them (by running dotty)
+- running simulations (reading .txt inp files and writing .txt outp files)
+- generating SystemC code (and Makefile)
+- generating VHDL code (and Makefile)
+
+What can _not_ be done
+- compiling and running generated SystemC code (this is too much dependent on the actual platform)
+- compiling and running generated VHDL code (this is too much dependent on the actual platform)
+- in the two latter case, the idea is that the application is just a front-end used to generate code in a target directory
+  and that these files are latter exploited by a separate tool or set of tools 
+
+
+
+
+

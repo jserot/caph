@@ -1,0 +1,10 @@
+-- 2D 3x3 _centered_ convolution implemented as a single actor
+
+#include "convol.cph"
+
+stream i: signed<16> dc from %ifile;
+stream o: signed<16> dc to "result.pgm";
+
+net o = cconv233 ([[1,2,1],
+                   [2,4,2],
+                   [1,2,1]],4,0) i;

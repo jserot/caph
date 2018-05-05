@@ -1,0 +1,47 @@
+-- HISTOL - Line Histogram
+-- HISTOL[sz]:<p_1,...,p_n>=<h_0,...,h_{sz-1}> where h_i = Card { p_j | p_j = i }
+-- Jun 6, 2011 - JS
+-- Reformulated for v2.6 2015-05-29, JS
+--
+--               S0
+--               | / i:=0
+--               V 
+--               S1<--+
+--               |\   | i<sz / h[i]:=0, i:=i+1
+--          i=sz | \--+
+--               V 
+--            +->S2
+--            |  | a=< 
+--            |  v 
+--            |  S3<--+ 
+--            |  |\   | a=p / h[p]:=h[p]+1
+--            |  | \--+            
+-- i=sz, c:=> |  | a=> / c:=<, i:=0
+--            |  V
+--            +--S4<--+ 
+--                \   | i<sz / c:=h[i], h[i]:=0, i:=i+1
+--                 \--+            
+
+#include "dc.cph"
+
+actor histol (nbins:int, bindepth:int)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<bindepth> dc)
+var s : {S0,S1,S2,S3,S4}=S0
+var h : unsigned<bindepth> array[nbins] = [ 0 | i=0 to nbins-1 ]
+var i : int
+rules
+| (s:S0)              -> (s:S1, i:0)
+| (s:S1) when i=nbins -> (s:S2)
+| (s:S1)              -> (s:S1, h[i]:0, i:i+1)
+| (s:S2, a:'<)        -> (s:S3)
+| (s:S3, a:'p)        -> (s:S3, h[p]:h[p]+1)
+| (s:S3, a:'>)        -> (s:S4, c:'<, i:0)
+| (s:S4) when i=nbins -> (s:S2, c:'>)
+| (s:S4)              -> (s:S4, c:'h[i], h[i]:0, i:i+1)
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:unsigned<8> dc to "result.txt";
+
+net o = histol (16,8) i;

@@ -1,0 +1,40 @@
+-- 1x3 Finite Impulse Response filter on unstructured streams - multi-actor version, with [mapi] and [foldl] HOWPs
+-- FIR(a,v):x_0,x_1,x_2,x_3,... = y_0,y_1,y_2,y_3,...
+-- where
+--   y_i=(a_0*y_{i-2}+a_1*x_{i-1}+a_2*x_i)
+--   x_{-1}=x_{-2}=v
+-- Jul 15, 2015 - JS
+
+#include "stream_ops.cph"  -- for [d], one-sample delay actor
+
+const coeff = [1,2,1] : signed<8> array[3];
+
+actor mult (j:unsigned<4>)
+   in (i:int<s,m>)
+  out (o:int<s,m>)
+rules
+| i:x -> o:coeff[j]*x
+;
+
+actor add
+   in (i1:int<s,m>, i2:int<s,m>)
+  out (o:int<s,m>)
+rules
+| (i1:x,i2:y) -> o:x+y
+;
+
+net delay3 i =
+  let x3 =  i in
+  let x2 = d 0 x3 in
+  let x1 = d 0 x2 in
+  (x1,x2,x3);
+
+net fir3 x =
+  let xs = delay3 x in
+  let ys = mapi mult xs in
+  foldl add ys;
+
+stream i:signed<8> from "sample.txt";
+stream o:signed<8> to "result.txt";
+
+net o = fir3 i;  

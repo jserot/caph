@@ -1,0 +1,18 @@
+#include "convol.cph"
+
+function f_abs x = if x < 0 then -x else x : signed<12> -> signed<12>;
+
+const kernels = [
+  -- Each convolution kernel is a 2D (1Dx1D) array ...
+  -- ... so what we define here is a 3D (1Dx1Dx1D) array
+  [[0,1,0],[1,2,1],[0,1,0]],    -- Kernel 1
+  [[0,-1,0],[-1,4,-1],[0,-1,0]] -- Kernel 2
+  ] : signed<12> array[2][3][3];
+
+stream i:signed<12> dc from "lena64.txt";
+stream o1:signed<12> dc to "result1.txt";
+stream o2:signed<12> dc to "result2.txt";
+
+net o1 = conv233 ((kernels[0]),3,0) i; 
+net o2 = conv233 ((kernels[1]),0,0) i; 
+

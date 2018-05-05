@@ -1,0 +1,19 @@
+-- Computes the horizontal derivative on images
+-- This version uses the [d1p] actor defined in the standard library
+
+#include "img_ops.cph"
+
+type pixel == signed<8> dc;
+
+actor sub      -- SUB:<p1,...,pn>,<q1,...,qn> = <p1-p2,...,pn-qn>
+  in (a:pixel, b:pixel)
+  out (c:pixel)
+rules (a,b) -> c
+| ('<, '<) -> '<
+| ('v1, 'v2) -> '(v1-v2)
+| ('>, '>) -> '>;
+
+stream i:pixel from "sample.txt";
+stream o:pixel to "result.txt";
+
+net o = sub (i, d1p 0 i);

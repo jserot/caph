@@ -1,0 +1,16 @@
+#include "dc.cph"
+
+actor thr (k:unsigned<8>)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<1> dc)
+rules a -> c
+| '< -> '<
+| 'p -> if p > k then '1 else '0
+| '> -> '>
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:unsigned<1> dc to "result.txt";
+
+net o = thr 2 i;
+

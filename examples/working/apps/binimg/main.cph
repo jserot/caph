@@ -1,0 +1,20 @@
+-- Image binarization 
+-- All pixels with value greater than the specified threshold become 255, the others 0.
+-- The binarization threshold is here passed as a command line argument (arg2)
+-- An alternate version, using HO actors is given in [../ho/binimg]
+
+#include "dc.cph"
+
+actor thr (t:signed<s>)
+  in (a:signed<s> dc)
+  out (c:unsigned<8> dc)
+rules a -> c
+| '< -> '<
+| '> -> '>
+| 'p -> if p > t then '255 else '0
+;
+
+stream inp:signed<10> dc from %ifile;
+stream res:unsigned<8> dc to "result.txt";
+
+net res = thr %arg2 inp;

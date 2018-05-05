@@ -1,0 +1,18 @@
+-- Computes the vertical derivative on a image
+
+#include "img_ops.cph"
+
+type pixel == signed<8>;
+
+actor sub ()
+  in (a:pixel dc, b:pixel dc)
+  out (c:pixel dc)
+rules (a, b) -> c
+| ('<, '<) -> '<
+| ('p1, 'p2) -> '(p1-p2)
+| ('>, '>) -> '>;
+
+stream i:pixel dc from "sample.txt";
+stream o:pixel dc to "result.txt";
+
+net o = sub (i, d1l 0 i);  -- The one-line delay [d1l] actor is defined in "img_ops.cph"

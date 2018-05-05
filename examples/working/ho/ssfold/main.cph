@@ -1,0 +1,13 @@
+-- The [ssfold] actor, defined in [lib/caph/dc.cph] is a generalisation of [sfold] operating on lists of lists
+-- We use it here to compute the horizontal projection of an image.
+-- This formulation is to be compared to the one given in [examples/apps/hproj] ...
+-- 2016-05-26, JS
+
+#include "dc.cph"
+
+function add (x,y) = x+y : unsigned<16> * unsigned<16> -> unsigned<16>; -- the reduction function
+
+stream i:unsigned<16> dc from "img.txt";
+stream o:unsigned<16> dc to "result.txt";
+
+net o = ssfold (add,0) i;

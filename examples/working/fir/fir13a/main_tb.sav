@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Thu Oct  8 15:13:47 2015
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/caph/working/examples/working/fir/fir13a/main_tb.ghw"
+[dumpfile_mtime] "Thu Oct  8 15:08:22 2015"
+[dumpfile_size] 3096
+[savefile] "/Users/jserot/Dev/ml/caph/working/examples/working/fir/fir13a/main_tb.sav"
+[timestart] 0
+[size] 1000 600
+[pos] 103 34
+*-25.411926 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.main_tb.
+[treeopen] top.main_tb.n.
+[treeopen] top.main_tb.n.b3.
+[treeopen] top.main_tb.n.b3.n_z.
+[treeopen] top.main_tb.n.b3.z.
+[sst_width] 198
+[signals_width] 124
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@22
+#{top.main_tb.n.b3.i[7:0]} top.main_tb.n.b3.i[7] top.main_tb.n.b3.i[6] top.main_tb.n.b3.i[5] top.main_tb.n.b3.i[4] top.main_tb.n.b3.i[3] top.main_tb.n.b3.i[2] top.main_tb.n.b3.i[1] top.main_tb.n.b3.i[0]
+#{top.main_tb.n.b3.o[7:0]} top.main_tb.n.b3.o[7] top.main_tb.n.b3.o[6] top.main_tb.n.b3.o[5] top.main_tb.n.b3.o[4] top.main_tb.n.b3.o[3] top.main_tb.n.b3.o[2] top.main_tb.n.b3.o[1] top.main_tb.n.b3.o[0]
+@28
+top.main_tb.n.b3.clock
+top.main_tb.n.b3.reset
+top.main_tb.n.b3.i_rd
+top.main_tb.n.b3.i_empty
+top.main_tb.n.b3.o_wr
+top.main_tb.n.b3.o_full
+@22
+#{top.main_tb.n.b3.z[1][7:0]} top.main_tb.n.b3.z[1][7] top.main_tb.n.b3.z[1][6] top.main_tb.n.b3.z[1][5] top.main_tb.n.b3.z[1][4] top.main_tb.n.b3.z[1][3] top.main_tb.n.b3.z[1][2] top.main_tb.n.b3.z[1][1] top.main_tb.n.b3.z[1][0]
+#{top.main_tb.n.b3.z[0][7:0]} top.main_tb.n.b3.z[0][7] top.main_tb.n.b3.z[0][6] top.main_tb.n.b3.z[0][5] top.main_tb.n.b3.z[0][4] top.main_tb.n.b3.z[0][3] top.main_tb.n.b3.z[0][2] top.main_tb.n.b3.z[0][1] top.main_tb.n.b3.z[0][0]
+@800029
+#{top.main_tb.n.b3.en_z[0:1]} top.main_tb.n.b3.en_z[0] top.main_tb.n.b3.en_z[1]
+@29
+top.main_tb.n.b3.en_z[0]
+top.main_tb.n.b3.en_z[1]
+@1001201
+-group_end
+@22
+#{top.main_tb.n.b3.n_z[1][7:0]} top.main_tb.n.b3.n_z[1][7] top.main_tb.n.b3.n_z[1][6] top.main_tb.n.b3.n_z[1][5] top.main_tb.n.b3.n_z[1][4] top.main_tb.n.b3.n_z[1][3] top.main_tb.n.b3.n_z[1][2] top.main_tb.n.b3.n_z[1][1] top.main_tb.n.b3.n_z[1][0]
+#{top.main_tb.n.b3.n_z[0][7:0]} top.main_tb.n.b3.n_z[0][7] top.main_tb.n.b3.n_z[0][6] top.main_tb.n.b3.n_z[0][5] top.main_tb.n.b3.n_z[0][4] top.main_tb.n.b3.n_z[0][3] top.main_tb.n.b3.n_z[0][2] top.main_tb.n.b3.n_z[0][1] top.main_tb.n.b3.n_z[0][0]
+[pattern_trace] 1
+[pattern_trace] 0

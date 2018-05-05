@@ -1,0 +1,21 @@
+-- Example showing to use the [foldli] higher-order wiring primitive to describe
+-- an indexed dyadic reduction graph pattern
+-- For each quadruplet of inputs [(i1,i2,i3,i4)], the output is [((i1*c1+i2)*c2+i3)*c3+i4]
+-- Jul 15, 2015 - JS
+
+const c = [1,2,3] : unsigned<8> array[3];
+
+actor madd (k: unsigned<8>) 
+  in (i1:unsigned<8>, i2:unsigned<8>)
+  out (o:unsigned<8>)
+rules (i1,i2) -> o
+| (x,y) -> x*c[k]+y
+;
+
+stream i1:unsigned<8> from "sample.txt";
+stream i2:unsigned<8> from "sample.txt";
+stream i3:unsigned<8> from "sample.txt";
+stream i4:unsigned<8> from "sample.txt";
+stream o:unsigned<8> to "result.txt";
+
+net o = foldli madd (i1,i2,i3,i4);

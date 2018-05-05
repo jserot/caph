@@ -1,0 +1,7 @@
+# WARNING !!!! HORIZONTAL AND VERTICAL BLANKING REQUIRED HERE for the [CCONV] ACTORS !!!
+#
+DOT_OPTS = -I $(CAPHLIB)   -D ifile=lena128.pgm 
+SIM_OPTS = -I $(CAPHLIB)  -chan_cap 140 -D ifile=lena128.pgm -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB)  -sc_default_fifo_capacity 140 -sc_stop_time 240000 -sc_dump_fifo_stats -D ifile=lena128.pgm -sc_abbrev_dc_ctors -sc_istream_hblank 4 -sc_istream_vblank 140
+VHDL_OPTS = -I $(CAPHLIB)  -vhdl_annot_file conv33_v3_fifo_stats.dat -D ifile=lena128.pgm -vhdl_istream_blanking
+GHDL_RUN_OPTS = --stop-time=400000ns

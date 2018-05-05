@@ -1,0 +1,5 @@
+SIM_OPTS = -I $(CAPHLIB) -chan_cap 16
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 800 # -dump_ir -sc_dump_fifo_stats
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_float_support -vhdl_annot_file heron_fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=200ns 
+VHDL_FP_LIB=/Users/jserot/Dev/vhdl/fp-altera

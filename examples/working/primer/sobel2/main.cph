@@ -1,0 +1,39 @@
+-- This is a  variant of the [sobel] example
+-- It is also  described in Chapter 3 of the "Caph Primer" tutorial
+-- The only change is the replacement of the [conv233] convolution actors by their so-called
+-- "centered" counterpart [cconv233]
+
+#include "convol.cph"
+
+function fabs x = if x < 0 then -x else x : signed<s> -> signed<s>;
+
+actor asum
+  in ( i1:signed<s> dc, i2:signed<s> dc)
+  out( o:signed<s> dc)
+rules (i1,i2) -> o
+| ('<,'<) -> '<
+| ('>,'>) -> '>
+| ('p,'q) -> '(fabs(p)+fabs(q))>>1
+;
+
+actor thr (k:signed<s>)
+  in ( i:signed<s> dc)
+  out( o:unsigned<1> dc)
+rules i -> o
+| '< -> '<
+| '> -> '>
+| 'p -> if p>k then '1 else '0
+;
+
+
+stream i:signed<12> dc from %ifile;
+stream r:unsigned<1> dc to "result.pgm";
+
+net gx = cconv233 ([[1,0,-1],
+                   [2,0,-2],
+                   [1,0,-1]],0,0) i;    -- grad x component
+net gy = cconv233 ([[1,2,1],
+                   [0,0,0],
+                   [-1,-2,-1]],0,0) i;  -- grad y component
+net gm = asum (gx, gy);                 -- grad amplitude (approx)
+net r = thr %threshold gm;

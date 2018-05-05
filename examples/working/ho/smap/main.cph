@@ -1,0 +1,19 @@
+-- Another example of higher order actor, here the [smap] actor defined in [lib/caph/dc.cph]
+-- The [smap] actor takes a structured stream and applies its parameter [f] to each [Data] component
+-- of the stream, and simply copying the [SoS] and [EoS] tokens 
+-- Ex : smap f : < x1 x2 ... xn > = < f(x1) f(x2) ... f(xn) >
+--      smap f : < < x1 x2 ... xn > ... > = < < f(x1) f(x2) ... f(xn) > ... >
+-- 2016-05-26, JS
+
+#include "dc.cph"
+
+function f1 x = (2:signed<8>)*x : signed<8> -> signed<8>;
+function f2 x = x+(1:unsigned<16>) : unsigned<16> -> unsigned<16>;
+
+stream i1:signed<8> dc from "sample1.txt";
+stream o1:signed<8> dc to "result1.txt";
+stream i2:unsigned<16> dc from "sample2.txt";
+stream o2:unsigned<16> dc to "result2.txt";
+
+net o1 = smap f1 i1;
+net o2 = smap f2 i2;

@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                                     %%
+%%                This file is part of the CAPH Compiler distribution                  %%
+%%                            http:%/caph.univ-bpclermont.fr                           %%
+%%                                                                                     %%
+%%                                  Jocelyn SEROT                                      %%
+%%                         Jocelyn.Serot@univ-bpclermont.fr                            %%
+%%                                                                                     %%
+%%         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    %%
+%%  This file is distributed under the terms of the GNU Library General Public License %%
+%%      with the special exception on linking described in file ..%LICENSE.            %%
+%%                                                                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Core Abstract Syntax}
+\label{chap:abssyn}
+
+\newcommand{\tm}[1]{\mathtt{#1}}
+\newcommand{\ut}[1]{\emph{#1}}
+\newcommand{\cat}[1]{\text{#1}}
+
+This chapter gives the abstract syntax of a simplified version of the \caph language\footnote{
+  Called Core-Caph in the sequel.}. Compared to the ``full'' \caph language, this simplified version
+lacks :
+
+\begin{itemize}
+\item global type declarations,
+\item port declarations,
+\item external function declarations,
+\item rule formats (as defined in Sec.~\ref{sec:actor-body}), 
+\item guards in rules,
+\end{itemize}
+
+Moreover, types are limited to basic un-sized, un-signed, \texttt{int}s, 
+  \texttt{bool}s and builtin variants.  
+
+The omitted features are either classical, and
+hence not specific to \caph\footnote{This is the case for global type definitions for example, which
+  are handled exactly like in all other ML-like languages.}, or just introduce too
+much technical details in the definition of the typing rules and static and dynamic
+semantics\footnote{In Chap.~\ref{chap:typing}, \ref{chap:static} and \ref{chap:dynamic-semantics}
+  resp.} without interfering with the global soundness of the formal system.
+
+
+\bigskip
+$  \begin{array}{lll}
+    \ut{program} ::= & \tm{program}~\ut{valdecls}~\ut{actdecls}~\ut{iodecls}~\ut{netdefns} & \\
+    \\
+    \ut{valdecls}   ::= & \ut{valdecl}_1~\ldots~\ut{valdecl}_n & n \geq 0 \\
+    \ut{valdecl}  ::= & \tm{const}~\cat{id}~\tm{=}~\ut{expr}~[~\tm{:}~\ut{tyexpr}~] & \\
+                      & ~|\ \tm{fun}~\cat{id}~\tuplen{\cat{var}} ~\tm{\rightarrow}~\ut{expr}~[~\tm{:}~\ut{tyexpr}~]  & n \geq 1\\
+%                      & ~|\ \tm{extern}~\cat{id}~\ut{ext\_desc} & \\
+\\
+    \ut{actdecls}   ::= & \ut{actdecl}_1~\ldots~\ut{actdecl}_n & n \geq 1 \\
+    \ut{actdecl}  ::= & \tm{actor}~\cat{id}~\ut{actparams}~\ut{actins}~\ut{actouts}~\ut{actvars}~\ut{actrules} &\\
+    \ut{actparams}   ::= & \ut{param}_1~\ldots~\ut{param}_n & n \geq 0 \\
+  \end{array} $
+
+$  \begin{array}{lll}
+    \ut{actins},\ut{actouts}   ::= & \ut{actio}_1~\ldots~\ut{actio}_n & n \geq 0 \\
+    \ut{actvars}   ::= & \ut{actvar}_1~\ldots~\ut{actvar}_n & n \geq 0 \\
+    \ut{param},\ut{actio}  ::= &  \cat{id}~\tm{:}~\ut{tyexpr} & \\
+    \ut{actvar}  ::= &  \cat{id}~\tm{:}~\ut{tyexpr} & \\
+                 & ~|\ \cat{id}~\tm{:}~\ut{tyexpr}~\tm{=}~\ut{expr} & \\
+    \ut{rules}   ::= & \ut{rule}_1 \ldots \ut{rule}_n & n \geq 1 \\
+    \ut{rule}    ::= & \langle \ut{qpat}_1, \ldots, \ut{qpat}_m \rangle \tm{\rightarrow} \langle \ut{qexp}_1, \ldots, \ut{qexp}_n \rangle & m,n \geq 1 \\
+    \ut{qpat} ::=  & \ttuple{\ut{qual}}{\ut{rpat}} \\
+    \ut{rpat} ::= & \cat{scalar\_const} & \\
+                      & ~|\ \cat{var} & \\
+                      & ~|\ \tm{\_} & \\
+                      & ~|\ \cat{con}~\tuplen{\ut{rpat}} & n \geq 0 \\
+%    \ut{con} ::= & \cat{SoS} ~|~ \cat{EoS} ~|~ \cat{Data} & \\
+\\
+    \ut{qexp} ::=  & \ttuple{\ut{qual}}{\ut{expr}} \\
+    \ut{expr}  ::= & \ut{const} & \\
+                 & ~|\   \cat{var} & \\
+                 & ~|\ \ut{con}~\tuplen{\ut{expr}} & n \geq 0 \\
+                 & ~|\ \cat{id}~\tm{(}~\ut{expr}_1, \ldots,  \ut{expr}_n\tm{)} & n \geq 1 \\
+                 & ~|\ \tm{if}~\ut{expr}~\tm{then}~\ut{expr}~\tm{else}~\ut{expr} &  \\
+                 & ~|\ \tm{let}~\text{var}~\tm{=}~\ut{expr}~\tm{in}~\ut{expr} & \\
+                 & ~|\ \ut{expr}~\tm{:}~\ut{tyexpr} & \\
+                 & ~|\ \tm{\_} & \text{only in rule rhs}\\
+\\
+    \ut{qual} ::= & \cat{id} \\
+\\
+    \ut{iodecls}   ::= & \ut{iodecl}_1 \ldots \ut{iodecl}_n & n \geq 0 \\
+    \ut{iodecl}  ::= & \tm{stream}~\ut{id}~\ut{tyexpr}~\ut{dir}~\cat{string} &\\
+    \ut{dir} ::= & \tm{from} ~|~ \tm{to} & \\
+   \\
+    \ut{netdecls}   ::= & \ut{ndecl}_1 \ldots \ut{ndecl}_n & n \geq 1 \\
+    \ut{ndecl}    ::= & \tm{net}~[\tm{rec}]~\tuplen{\ut{n\_binding}} & \\
+    \ut{n\_binding} ::= & \ut{n\_pattern}~\tm{=}~\ut{n\_expr} & \\
+    \ut{n\_expr}  ::= & ~|\   \cat{var} & \\
+                 & ~|\   \ut{const} & \\
+                 & ~|\   \tm{(}~\ut{n\_expr}_1,\ldots,\ut{n\_expr}_n~\tm{)} & n \geq 1 \\
+                 & ~|\   \ut{n\_expr}_1~~\ut{n\_expr}_2 & \\
+                 & ~|\   \tm{function}~\ut{n\_pattern}~\tm{\rightarrow}~\ut{n\_expr} & \\
+%                 & ~|\   \tm{let}~\ut{recflag}~\tuplen{n\_binding}~\tm{in}~\ut{n\_expr} & \\
+                 & ~|\   \tm{let}~\tm{rec}~\tuplen{n\_binding}~\tm{in}~\ut{n\_expr} & \\
+    \ut{n\_pattern}  ::= & ~|\   \cat{var} & \\
+                 & ~|\   \tm{(}\ut{n\_pattern}_1,\ldots,\ut{n\_pattern}_n\tm{)} & n \geq 1 \\
+%    \ut{recflag} ::= & \tm{rec} ~| \tm{nonrec} \\
+    \\
+    \ut{tyexpr} ::= &     \ut{tyctor}~\tuplen{\ut{tyexpr}} & n \geq 0 \\
+                    & ~|\ \ut{tyexpr}_1 \times \ldots \times \ut{tyexpr}_n & n\geq 1 \\
+                    & ~|\ \ut{tyexpr}_1 \rightarrow \ut{tyexpr}_2 & \\
+  \end{array} $
+
+$  \begin{array}{lll}
+   \ut{const} ::= & \cat{int} ~|~ \cat{bool} & \\
+ \end{array} $
+
+\todo{nil/cons npatterns; nil, cons, let, match and if and nexprs}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "caph"
+%%% End: 

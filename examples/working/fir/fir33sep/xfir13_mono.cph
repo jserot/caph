@@ -1,0 +1,26 @@
+-- 1x3 Finite Impulse Response filter on images, with scaling and padding - mono-actor version
+-- FIR(a,p,s):<L_1,L_2,L_3,...> = <f(L1),f(L2),f(L3),...>
+-- where
+-- f(Li) = f:<x_i_1,x_i_2,x_i_3,x_i_4,...> = <y_i_1,y_i_2,y_i_3,y_i_4...>
+--   y_i_j = (a_0*x_i_{j-2}+a_1*x_i_{j-1}+a_2*x_i_j)>>s  for j>2
+--   y_i_1 = y_i_2 = p
+-- Aug 1, 2015 - JS
+
+#include "dc.cph"
+
+actor fir13_a (a:int<s,m> array[3], p:int<s,m>, s:unsigned<4>)
+  in (i:int<s,m> dc)
+  out (o:int<s,m> dc)
+var j : unsigned<4>
+var z : int<s,m> array[2]
+var st : {S0, S1, S2, S3} = S2
+rules
+| (st:S2, i:'<)          -> (o:'<, st:S0)                                           -- SoI
+| (st:S0, i:'<)          -> (o:'<, j:0, st:S1)                                      -- SoL
+| (st:S0, i:'>)          -> (o:'>, st:S2)                                           -- EoI
+| (st:S1, i:'x) when j<2 -> (o:'p, z[0]:z[1], z[1]:x, j:j+1)                        -- Initial padding
+| (st:S1, i:'x)          -> (o:'(a[0]*z[0]+a[1]*z[1]+a[2]*x)>>s, z[0]:z[1], z[1]:x) -- Compute
+| (st:S1, i:'>)          -> (o:'>, st:S0)                                           -- EoL
+;
+
+net fir13 pad norm i = fir13_a (coeff,pad,norm) i;

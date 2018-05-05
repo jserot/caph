@@ -1,0 +1,52 @@
+-- HISTOF - Frame Histogram
+-- HISTOF[sz]:<...,<p_1,...,p_n>,...>=<h_0,...,h_{sz-1}> where h_i = Card { p_jk | p_jk = i }
+-- Jun 12, 2011 - JS
+--
+--               S0
+--               | / i:=0
+--               V 
+--               S1<--+
+--               |\   | i<sz / h[i]:=0, i:=i+1
+--          i=sz | \--+
+--               V 
+-- +------------>S2
+-- |             | a=< 
+-- |             v        a=> / c:=<, i:=0
+-- |          +->S3--------------------------+
+-- |          |  | a=<                       |
+-- |      a=> |  v                           |
+-- |          +--S4<--+                      |
+-- |              \   | a=p / h[p]:=h[p]+1   |
+-- |               \--+                      |
+-- |                                         |
+-- |             +---------------------------+
+-- | i=sz / c:=> V
+-- +-------------S5<--+ 
+--                \   | i<sz / c:=h[i], h[i]:=0, i:=i+1
+--                 \--+            
+
+#include "dc.cph"
+
+actor histof (width:int, depth:int)
+  in (a:unsigned<8> dc)
+  out (c:unsigned<depth> dc)
+var s : {S0,S1,S2,S3,S4,S5}=S0
+var h : unsigned<depth> array[width] = [ 0 | i=0 to width-1 ]
+var i : int
+rules
+| (s:S0)       -> (s:S1, i:0)
+| (s:S1, i:16) -> (s:S2)
+| (s:S1)       -> (s:S1, h[i]:0, i:i+1)
+| (s:S2, a:'<) -> (s:S3)
+| (s:S3, a:'<) -> (s:S4)
+| (s:S3, a:'>) -> (s:S5, c:'<, i:0)
+| (s:S4, a:'p) -> (s:S4, h[p]:h[p]+1)
+| (s:S4, a:'>) -> (s:S3)
+| (s:S5, i:16) -> (s:S2, c:'>)
+| (s:S5)       -> (s:S5, c:'h[i],  h[i]:0, i:i+1)
+;
+
+stream i:unsigned<8> dc from "sample.txt";
+stream o:unsigned<8> dc to "result.txt";
+
+net o = histof (256,8) i;

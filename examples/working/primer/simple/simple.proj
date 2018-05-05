@@ -1,0 +1,2 @@
+SC_OPTS = -I $(CAPHLIB)  -sc_stop_time 200
+GHDL_RUN_OPTS = --stop-time=200ns --vcd=simple_tb.vcd 

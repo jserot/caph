@@ -1,0 +1,17 @@
+#include "dc.cph"
+
+actor scale 
+  in (a:unsigned<10> dc, s:unsigned<10>)
+  out (c:unsigned<10> dc, eol:unsigned<10>)
+rules 
+| a:'< -> c:'<
+| (a:'p, s:k) -> c:'p*k
+| a:'> -> (c:'>, eol:100)
+;
+
+stream i1:unsigned<10> dc from "sample.txt";
+port i2:unsigned<10> from "factors.txt" init 2;
+stream o1:unsigned<10> dc to "result1.txt";
+port o2:unsigned<10> to "result2.txt";
+
+net (o1,o2) = scale (i1,i2);

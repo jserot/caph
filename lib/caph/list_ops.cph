@@ -1,0 +1,80 @@
+------------------------------------
+-- Basic operations on lists
+-- 2014-11-05, JS
+------------------------------------
+
+#include "dc.cph"  -- the [dc] type
+
+--------------------------------------------------
+-- DL - One-pixel delay on lists
+-- DL(v):<x1,x2,...,xn> = <v,x1,...,xn-1>
+--------------------------------------------------
+
+actor dl (v:$t)                     
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1} = S0
+var z : $t
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<, z:v)
+| (s:S1, a:'p) -> (s:S1, c:'z, z:p)
+| (s:S1, a:'>) -> (s:S0, c:'>)
+;
+
+--------------------------------------------------
+-- DkL - k-pixel delay on lists
+-- DkL(k,v):<x1,x2,...,xn> = <v,...,v,x1,...,xn-k>
+--                           \--k--/
+--------------------------------------------------
+
+actor dkl (k:int, v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2} = S0
+var z : $t array[k] = [ v | i = 0 to k-1 ]
+var i : int
+rules
+| (s:S0, a:'<)            -> (s:S1, c:'<, i:0)
+| (s:S1, a:'p) when i<k-1 -> (s:S1, c:'v, i:i+1, z[i]:p)
+| (s:S1, a:'p)            -> (s:S2, c:'v, i:0, z[i]:p)
+| (s:S2, a:'p)            -> (s:S2, c:'z[i], i:if i<k-1 then i+1 else 0, z[i]:p)
+| (s:S2, a:'>)            -> (s:S0, c:'>)
+;
+
+--------------------------------------------------
+-- FL - One-pixel forward on lists
+-- FL(s:v):<x1,x2,...,xn> = <x2,...,xn,v>
+--------------------------------------------------
+
+actor fl (v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3} = S0
+rules
+| (s:S0, a:'<) -> (s:S1, c:'<)
+| (s:S1, a:'p) -> (s:S2      )
+| (s:S2, a:'p) -> (s:S2, c:'p)
+| (s:S2, a:'>) -> (s:S3, c:'v)
+| (s:S3      ) -> (s:S0, c:'>)
+;
+
+--------------------------------------------------
+-- FkL - k-pixel forward on list
+-- FkL(k,v):<x1,x2,...,xn> = <xk,...,xn-k,v,....,v>
+--                                        \--k--/
+--------------------------------------------------
+
+actor fkl (k:int, v:$t)
+  in (a:$t dc)
+  out (c:$t dc)
+var s : {S0,S1,S2,S3} = S0
+var i : int
+rules
+| (s:S0, a:'<)      -> (s:S1, c:'<, i:k)
+| (s:S1, a:'p, i:0) -> (s:S2, c:'p)
+| (s:S1, a:'p)      -> (s:S1, i:i-1)
+| (s:S2, a:'>)      -> (s:S3, c:'v, i:k-1)
+| (s:S2, a:'p)      -> (s:S2, c:'p)
+| (s:S3, i:0)       -> (s:S0, c:'>)
+| (s:S3)            -> (s:S3, c:'v, i:i-1)
+;

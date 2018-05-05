@@ -1,0 +1,5 @@
+DOT_OPTS = -I $(CAPHLIB) 
+SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors
+SC_OPTS = -I $(CAPHLIB) -sc_stop_time 600  -sc_abbrev_dc_ctors 
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_default_fifo_capacity 32
+GHDL_RUN_OPTS = --stop-time=600ns   --wave=histo_tb.ghw

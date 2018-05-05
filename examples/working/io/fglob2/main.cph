@@ -1,0 +1,15 @@
+#include "dc.cph"
+
+actor inv
+  in (a:unsigned<8> dc)
+  out (c:unsigned<8> dc)
+rules a -> c
+| '< -> '<
+| 'p -> '255-p
+| '> -> '>
+;
+
+stream i:unsigned<8> dc from "imgs/im-[1-4].pgm";
+stream o:unsigned<8> dc to "results/result-[1-4].pgm";
+
+net o = inv i;

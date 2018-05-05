@@ -1,0 +1,2 @@
+PRE_PROC = pgm2txt -abbrev lena128.pgm lena128.txt
+POST_PROC = txt2pgm -abbrev 255 sim/result.txt sim/result.pgm

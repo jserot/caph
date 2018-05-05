@@ -1,0 +1,27 @@
+-- A simple example showing how to define and use variant types
+-- The [count] actors produces the running sum of optional values
+-- When the input token is [Some v] the value [v] is added to the current sum [s]
+-- When the input token is [None] the current sum [s] is unchanged
+-- In both cases, the current sum is output 
+-- For example :
+--  if the token stream on input [a] is         : Some 1, None, Some 5, None, None, Some 9
+--  then the token stream on output [c] will be :      1,    1,      6,    6,    6,     15
+
+type $t option =
+  None
+| Some of $t
+;
+
+actor count
+  in (a:signed<8> option)
+  out (c: signed<8>)
+var s: signed<8> = 0
+rules 
+| a:None -> c:s
+| a:Some x -> (c:s+x, s:s+x)
+;
+
+stream i1:signed<8> option from "sample1.txt";
+stream o1:signed<8> to "result1.txt";
+
+net o1 = count i1;

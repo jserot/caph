@@ -1,0 +1,63 @@
+#######################################################################
+# This is a core makefile for CAPH projects
+# It should be included in all Makefiles related to CAPH projects     
+#######################################################################
+
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+-include $(SELF_DIR)/config
+#CURRENT_DIRNAME = $(notdir $(shell pwd))
+
+######################################### PLATFORM SPECIFIC DEFINITIONS
+# These definitions may have to be adjusted according to your platform
+
+# GENERAL
+TARGET_ARCH	= macosx
+
+# UTILITY PROGRAMS
+CONVERT     = convert
+GRAPHVIZ    = $(DOTVIEWER) # for displaying .dot files
+GTKWAVE     = PATH=/Applications/gtkwave.app/Contents/MacOS:$(PATH) gtkwave-bin  # for visualizing .ghw trace files
+DISPIMG     = $(PGMVIEWER) # for displaying  PGM files 
+
+# SYSTEMC
+# root of your SystemC installation
+SC_DIR		= /usr/local/systemc-2.3.1
+# c++ compiler used to compile systemc code
+SC_CXX      = g++
+# c++ compiler used to link systemc code
+SC_LD	 	= g++
+ifeq ($(CPPSTD),c++11)
+CXXFLAGS    += -std=$(CPPSTD) -I. -I$(CAPH_SYSC_LIB) -I$(SC_DIR)/include -Wno-deprecated -Wno-deprecated-writable-strings -Wno-parentheses-equality -D_CPP11 #-DSYSC_TRACE_BUFFERS  #-DTRACE_SYSC_IO
+else
+CXXFLAGS    += -std=$(CPPSTD) -I. -I$(CAPH_SYSC_LIB) -I$(SC_DIR)/include -Wno-deprecated -Wno-deprecated-writable-strings -Wno-parentheses-equality #-DSYSC_TRACE_BUFFERS  #-DTRACE_SYSC_IO
+endif
+#LDFLAGS	    =  -L$(CAPH_SYSC_LIB) -L$(SC_DIR)/lib-macosx64
+LDFLAGS	    = -L$(SC_DIR)/lib-macosx64
+
+# VHDL
+
+ifeq ($(USE_VHDL_FP_LIB),yes)
+GHDL_ELAB_OPTS 	= -P$(CAPH_VHDL_LIB) -P$(VHDL_FP_LIB)
+else
+GHDL_ELAB_OPTS 	= -P$(CAPH_VHDL_LIB)
+endif
+
+QUARTUS_DIR = /Users/jserot/Desktop/SF1/vhdl/caph
+
+# MISC
+
+CHECK_DIFF = diff --ignore-tab-expansion --ignore-space-change --ignore-blank-lines --strip-trailing-cr 
+
+######################################### PLATFORM INDEPENDANT DEFINITIONS
+# Nothing should need to be edited below this line
+
+CAPH=$(PREFIX)
+CAPHLIB=$(CAPH_CAPH_LIB)
+TXT2BIN=$(CAPH_TOOLS)/txt2bin
+BIN2TXT=$(CAPH_TOOLS)/bin2txt
+PGM2BIN=$(CAPH_TOOLS)/pgm2bin
+BIN2PGM=$(CAPH_TOOLS)/bin2pgm
+PGM2TXT=$(CAPH_TOOLS)/pgm2txt
+TXT2PGM=$(CAPH_TOOLS)/txt2pgm
+MKCONV=$(CAPH_TOOLS)/mkconv
+

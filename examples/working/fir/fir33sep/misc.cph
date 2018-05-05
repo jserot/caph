@@ -1,0 +1,29 @@
+-- Several actors used both by the 1x3 and 3x1 multi-actor versions of the FIRs
+
+actor mult (j:unsigned<4>)
+   in (i:int<s,m> dc)
+  out (o:int<s,m> dc)
+rules i -> o
+| '< -> '<
+| '> -> '>
+| 'x -> 'coeff[j]*x
+;
+
+actor add
+   in (i1:int<s,m> dc, i2:int<s,m> dc)
+  out (o:int<s,m> dc)
+rules (i1,i2) -> o
+| ('<,'<) -> '<
+| ('>,'>) -> '>
+| ('x,'y) -> 'x+y
+;
+
+actor shift (s:unsigned<4>)
+   in (i:int<s,m> dc)
+  out (o:int<s,m> dc)
+rules i -> o
+| '< -> '<
+| '> -> '>
+| 'x -> 'x>>s
+;
+

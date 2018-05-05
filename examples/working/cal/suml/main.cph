@@ -1,0 +1,22 @@
+-- This is a CAL-friendly reformulation of the example [../misc/suml] 
+-- The type [unsigned<n-2> dc] is implemented as [unsigned<n>] with the 2 MSBs acting as delimiters :
+--   '< (start of list) is encoded as 01 000...000
+--   '> (end od list) is encoded as 10 000...000
+--   'v (data) is encoded as 00 xxx...xxx
+-- Jul 20, 2017 - JS
+
+actor suml (n: unsigned<8>)
+  in (a:unsigned<n>)
+  out (c:unsigned<n>)
+var st : {S0,S1} = S0
+var s : unsigned<n>
+rules
+| (st:S0, a:x) when x land (1 << (n-2)) != 0 -> (st:S1, s:0) -- Start of list
+| (st:S1, a:x) when x land (1 << (n-1)) != 0 -> (st:S0, c:s) -- End of list
+| (st:S1, a:x) -> s:s+x
+;
+
+stream i:unsigned<10> from "sample.txt";
+stream o:unsigned<10> to "result.txt";
+
+net o = suml 10 i;
