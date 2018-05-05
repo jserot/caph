@@ -25,7 +25,7 @@ rules using pattern matching.
 DOCUMENTATION
 -------------
 
-[Project web page][caph.univ-bpclermont.fr].
+[Project web page](caph.univ-bpclermont.fr])
 
 [Tutorial](http://caph.univ-bpclermont.fr/dist/caph-primer.pdf) and [Reference
 manual](http://caph.univ-bpclermont.fr/dist/caph-lrm.pdf).
@@ -35,7 +35,7 @@ INSTALLATION
 
 ##### Using pre-built binaries
 
-Installers for MacOS and Windows are available from the [Project web page][caph.univ-bpclermont.fr].
+Installers for MacOS and Windows are available from the [Project web page](caph.univ-bpclermont.fr).
 
 ##### From source
 
