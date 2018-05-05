@@ -25,7 +25,7 @@ rules using pattern matching.
 DOCUMENTATION
 -------------
 
-[Project web page](http://caph.univ-bpclermont.fr])
+[Project web page](http://caph.univ-bpclermont.fr)
 
 [Tutorial](http://caph.univ-bpclermont.fr/dist/caph-primer.pdf) and [Reference
 manual](http://caph.univ-bpclermont.fr/dist/caph-lrm.pdf).
