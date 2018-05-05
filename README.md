@@ -18,8 +18,8 @@ rules using pattern matching.
 * _pattern-matching_ based description of actor behavior
 * _graphical visualisation_ of dataflow networks
 * _code simulation_ with trace facilities
-* **SystemC** back-end for simulation
-* **VHDL** backend, generating  _target-independant_, _ready-to-synthetize_, time and space-efficient VHDL code
+* _SystemC_ back-end for simulation
+* _VHDL_ backend, generating  _target-independant_, _ready-to-synthetize_, time and space-efficient VHDL code
 * a _foreign-function interface_ (FFI) to use existing SystemC or VHDL code
 
 DOCUMENTATION
@@ -39,7 +39,8 @@ Installers for MacOS and Windows are available from the [Project web page](http:
 
 ##### From source
 
-Download the source tree from the [Project web page][caph.univ-bpclermont.fr] or via [github](`git clone https://github.com/jserot/caph`).
+Download the source tree from the [Project web page](http://caph.univ-bpclermont.fr) or via
+[github](http://github.com/jserot/caph) (`git clone https://github.com/jserot/caph`).
 
 From the root of the source tree :
 
