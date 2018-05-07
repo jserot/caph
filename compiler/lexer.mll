@@ -331,6 +331,8 @@ rule main = parse
 and comment = parse
   | "\n"
       { () }
+  | eof
+      { () }
   | _
       { comment !Location.input_lexbuf }
 
