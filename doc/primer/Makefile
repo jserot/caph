@@ -15,7 +15,7 @@ endif
 
 caph-primer.pdf: caph-primer.tex
 	pdflatex caph-primer.tex > pdflatex.log
-#	pdflatex caph-primer.tex > pdflatex.log
+	pdflatex caph-primer.tex > pdflatex.log
 
 clean:
 	rm -f *.dvi *.log *.rel *.aux *.toc

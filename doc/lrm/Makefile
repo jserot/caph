@@ -18,7 +18,7 @@ endif
 
 $(DOC).pdf: $(SRCS) $(GENSRCS)
 	pdflatex $(DOC).tex > pdflatex.log
-#	pdflatex $(DOC).tex > pdflatex.log
+	pdflatex $(DOC).tex > pdflatex.log
 
 options-dot.tex:
 	(cd ../../compiler; make tex_doc)
