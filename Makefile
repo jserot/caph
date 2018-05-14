@@ -57,10 +57,10 @@ CHANGES: CHANGES.md
 	pandoc -f markdown-smart -t plain -o $@ $<
 
 KNOWN-BUGS: KNOWN-BUGS.md
-	pandoc -f markdown-smartquiet -t plain -o $@ $<
+	pandoc -f markdown-smart -t plain -o $@ $<
 
 README: README.md
-	pandoc -f markdown-smartquiet -t plain -o $@ $<
+	pandoc -f markdown-smart -t plain -o $@ $<
 
 clean:
 	(cd compiler;$(MAKE) -s clobber)
