@@ -1,0 +1,65 @@
+\begin{thebibliography}{10}
+
+\bibitem{graphivz}
+Graphviz - graph visualization software.
+
+\bibitem{Caml}
+The objective caml language.
+
+\bibitem{Davis82}
+A.~L. Davis and R.~M. Keller.
+\newblock Data flow program graphs.
+\newblock {\em Computer}, 15(2):26--41, 1982.
+
+\bibitem{DPN}
+T.M.~Parks E.A.~Lee.
+\newblock Dataflow process networks.
+\newblock {\em Proceedings of The IEEE}, 83:773--801, 1995.
+
+\bibitem{CAL}
+J.~Eker and J.~Janneck.
+\newblock Cal language report.
+\newblock Technical Report ERL Technical Memo UCB/ERL M03/48, University of
+  California at Berkeley, December 2003.
+
+\bibitem{Hume}
+Kevin Hammond and Greg Michaelson.
+\newblock Hume: a domain-specific language for real-time embedded systems.
+\newblock In {\em GPCE '03: Proceedings of the 2nd international conference on
+  Generative programming and component engineering}, pages 37--56, New York,
+  NY, USA, 2003. Springer-Verlag New York, Inc.
+
+\bibitem{Kahn74}
+Gilles Kahn.
+\newblock The semantics of simple language for parallel programming.
+\newblock In {\em IFIP Congress}, pages 471--475, 1974.
+
+\bibitem{North1994}
+S.~North and E.~Koutsofios.
+\newblock Applications of graph visualization.
+\newblock In {\em Graphics Interface}, Banff, Alberta, 1994.
+
+\bibitem{Parks1995}
+T.M. Parks.
+\newblock {\em Bounded Scheduling of Process Networks}.
+\newblock PhD thesis, UCB, 1995.
+
+\bibitem{FGN}
+J.~S\'erot.
+\newblock The semantics of a purely functional graph notation system.
+\newblock In {\em 9th Symposium on Trends in Functional Programming}, 2008.
+
+\bibitem{SerotQZ95}
+Jocelyn S{\'e}rot, Georges Qu{\'e}not, and Bertrand Zavidovique.
+\newblock A visual dataflow programming environment for a real time parallel
+  vision machine.
+\newblock {\em J. Vis. Lang. Comput.}, 6(4):327--347, 1995.
+
+\bibitem{Wipliez2012}
+Matthieu Wipliez and Micka\"{e}l Raulet.
+\newblock Classification of dataflow actors with satisfiability and abstract
+  interpretation.
+\newblock {\em Int. J. Embed. Real-Time Commun. Syst.}, 3(1):49--69, January
+  2012.
+
+\end{thebibliography}

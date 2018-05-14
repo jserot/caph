@@ -82,11 +82,11 @@ SRCDIR=/Users/jserot/Dev/ml/caph
 TMPDIR=/tmp
 
 #DISTDIR=caph-$(VERSION)
-DISTDIR=caph
+DISTDIR=caph-source
 TARBALL=$(DISTDIR).tar.gz
 
 source-dist: 
-	(cd $(TMPDIR); rm -rf $(DISTDIR); git clone $(SRCDIR); tar --exclude .git -zcvf $(TARBALL) $(DISTDIR))
+	(cd $(TMPDIR); rm -rf $(DISTDIR); git clone $(SRCDIR) caph-source; tar --exclude .git -zcvf $(TARBALL) $(DISTDIR))
 	echo "checksum: \""`md5 -q $(TMPDIR)/$(TARBALL)`"\"" >> $(TMPDIR)/$(TARBALL).ssa
 	@ echo "** Files $(TMPDIR)/$(TARBALL) and $(TMPDIR)/$(TARBALL).ssa are ready."
 

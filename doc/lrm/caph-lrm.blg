@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: caph-lrm.aux
+The style file: plain.bst
+Database file #1: caph.bib
+Warning--entry type for "graphivz" isn't style-file defined
+--line 397 of file caph.bib
+Warning--entry type for "Caml" isn't style-file defined
+--line 411 of file caph.bib
+Warning--I didn't find a database entry for "Lee95"
+Warning--to sort, need author or key in graphivz
+Warning--to sort, need author or key in Caml
+You've used 12 entries,
+            2118 wiz_defined-function locations,
+            576 strings with 5501 characters,
+and the built_in function-call counts, 3383 in all, are:
+= -- 336
+> -- 113
+< -- 3
++ -- 50
+- -- 34
+* -- 201
+:= -- 542
+add.period$ -- 33
+call.type$ -- 12
+change.case$ -- 52
+chr.to.int$ -- 0
+cite$ -- 14
+duplicate$ -- 148
+empty$ -- 310
+format.name$ -- 34
+if$ -- 732
+int.to.chr$ -- 0
+int.to.str$ -- 12
+missing$ -- 8
+newline$ -- 59
+num.names$ -- 20
+pop$ -- 66
+preamble$ -- 1
+purify$ -- 41
+quote$ -- 0
+skip$ -- 110
+stack$ -- 0
+substring$ -- 200
+swap$ -- 30
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 48
+warning$ -- 2
+while$ -- 32
+width$ -- 14
+write$ -- 123
+(There were 5 warnings)
