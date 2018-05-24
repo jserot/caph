@@ -137,12 +137,3 @@ let add_vhdl_extra_file f = match Misc.get_extension f with
 let set_vhdl_quartus () = Vhdl.cfg.Vhdl.vhdl_generate_qip <- true
 (* XDF related options *)
 let set_xdf_package p = Xdf.cfg.Xdf.target_package <- p
-(* Deprecated options - kept here just in case ... *)
-(* let dont_insert_fifos () = Interm.cfg.Interm.ir_insert_fifos <- false *)
-(* let dont_insert_splitters () = Interm.cfg.Interm.ir_insert_splitters <- false *)
-(* let set_dl_path f = Foreign.load_path := f *)
-(* let set_sc_alias_arrays () = Systemc.cfg.Systemc.sc_alias_arrays <- true *)
-(* let set_sc_use_templates () = Systemc.cfg.Systemc.sc_use_templates <- true *)
-(* let set_vhdl_default_fifo_model s = Vhdl.cfg.Vhdl.vhdl_default_fifo_model <- s *)
-(* let set_vhdl_target_dir d = Vhdl.cfg.Vhdl.vhdl_target_dir <- Some d *)
-(* let set_sc_target_dir d = Systemc.cfg.Systemc.sc_target_dir <- Some d *)

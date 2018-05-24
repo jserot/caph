@@ -37,9 +37,9 @@ LDFLAGS	    = -L$(SC_DIR)/lib-macosx64
 # VHDL
 
 ifeq ($(USE_VHDL_FP_LIB),yes)
-GHDL_ELAB_OPTS 	= -P$(CAPH_VHDL_LIB) -P$(VHDL_FP_LIB)
+GHDL_ELAB_OPTS 	= -fno-color-diagnostics -P$(CAPH_VHDL_LIB) -P$(VHDL_FP_LIB)
 else
-GHDL_ELAB_OPTS 	= -P$(CAPH_VHDL_LIB)
+GHDL_ELAB_OPTS 	= -fno-color-diagnostics -P$(CAPH_VHDL_LIB)
 endif
 
 QUARTUS_DIR = /Users/jserot/Desktop/SF1/vhdl/caph

@@ -16,33 +16,31 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity fifo_small is
-generic
-   (
-       depth     : integer  := 80;  -- FIFO depth (number of cells)
-       size      : integer  := 8  -- FIFO width (size in bits of each cell)
+entity fifo is
+generic (
+       depth     : integer  := 8;  -- FIFO depth (number of cells)
+       width      : integer  := 8  -- FIFO width (size in bits of each cell)
    );
-
  port (
          full : out std_logic;
-         datain : in std_logic_vector (size-1 downto 0);
+         datain : in std_logic_vector (width-1 downto 0);
          enw : in std_logic;
          empty : out std_logic;
-         dataout : out std_logic_vector(size-1 downto 0);
+         dataout : out std_logic_vector(width-1 downto 0);
          enr : in std_logic;
          clk : in std_logic;
          rst: in std_logic
          );
-end fifo_small;
+end fifo;
 
 
-architecture archi of fifo_small is
+architecture arch of fifo is
 
  constant ad_Max : integer range 0 to depth-1:= depth-1;
  constant ad_Min : integer range 0 to depth-1:= 0;
  
- type fifo_length is array ( 0 to depth-1) of std_logic_vector((size-1) downto 0);
- signal tmp: fifo_length ;
+ type mem_t is array ( 0 to depth-1) of std_logic_vector((width-1) downto 0);
+ signal mem: mem_t ;
 
  signal address: integer range 0 to depth-1 := ad_Max;
 
@@ -52,45 +50,41 @@ architecture archi of fifo_small is
  
  begin
 
-----------------------------------
--- creation of the shift register
-----------------------------------
-
-     shift_reg: process (clk)             
+ shift_reg: process (clk)             
      begin
 
        if (clk'event and clk='1' ) then
        
--- pure read mode
+       -- read 
          if (enr='1' and enw='0') then    
            for i in 0 to ad_Max-1 loop
-             tmp(i+1) <= tmp(i);
+             mem(i+1) <= mem(i);
            end loop;
          end if;
          
--- read & write mode
+       -- read & write 
          if (enw='1' and enr='1') then    
            if (address = ad_Max)  then   
-             tmp(address)<=datain;       
+             mem(address)<=datain;       
            else
              for i in 0 to ad_Max-1 loop
-               tmp(i+1) <= tmp(i);
+               mem(i+1) <= mem(i);
              end loop;
-			 tmp(address+1)<=datain;	 
+			 mem(address+1)<=datain;	 
            end if;
          end if;
          
--- pure write mode
+       -- write
          if (enw='1' and enr='0') then    
-           tmp(address)<=datain;
+           mem(address)<=datain;
          end if;
 
        end if;
      end process shift_reg;
      
------------------------------
--- write address computation
------------------------------
+     -----------------------------
+     -- write address computation
+     -----------------------------
      counter : process(clk, rst)          
      begin
        if ( rst='0' ) then  
@@ -116,12 +110,11 @@ architecture archi of fifo_small is
            end if;
 
        end if;
-   end process counter;
+     end process counter;
 
------------------------------
--- empty/full flag generation
------------------------------
-
+   -----------------------------
+   -- empty/full flag generation
+   -----------------------------
    flags : process(address,enw,enr)  
    begin
         if (  address > ad_Max-1 ) then
@@ -137,13 +130,11 @@ architecture archi of fifo_small is
          else
            full <='0';
          end if;
-
    end process flags;
    
-----------------------------------------
--- Last register provides the data out
-----------------------------------------
+   ----------------------------------------
+   -- Last register provides the data out
+   ----------------------------------------
+   dataout <= mem(depth-1);
 
-   dataout <= tmp(depth-1);
-
-  end architecture;
+end architecture;

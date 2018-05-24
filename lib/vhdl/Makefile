@@ -23,26 +23,9 @@ COMPONENTS=data_types.vhd \
            port_in.vhd \
            port_out.vhd \
            port_buffer.vhd \
-           single_clock_ram.vhd \
-           fifo_small.vhd \
-           fifo_big.vhd \
-		   d1l_opt.vhd
+           fifo.vhd
 
 OBJS=$(COMPONENTS:.vhd=.o)
-
-#components: $(COMPONENTS)
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) data_types.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) single_clock_ram.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) stream_in.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) stream_out.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) stream_in_mult.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) stream_out_mult.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) port_in.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) port_out.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) port_buffer.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) fifo_small.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) fifo_big.vhd
-#	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) d1l_opt.vhd
 
 %.o: %.vhd
 	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) $<

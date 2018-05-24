@@ -1,27 +1,60 @@
------------------------------------------------------------------------------------------
---                                                                                     --
---                This file is part of the CAPH Compiler distribution                  --
---                            http://caph.univ-bpclermont.fr                           --
---                                                                                     --
---                                  Jocelyn SEROT                                      --
---                         Jocelyn.Serot@univ-bpclermont.fr                            --
---                                                                                     --
---         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                    --
---  This file is distributed under the terms of the GNU Library General Public License --
---      with the special exception on linking described in file ../LICENSE.            --
---                                                                                     --
------------------------------------------------------------------------------------------
-
--- This is an optimized implementation of the [d1l] (one line delay) actor
--- for which line buffering is implemented using a local array.
--- On Altera FPGAs, the Quartus synthetizer infers RAM for the array.
--- Nov 2015, JS
+-- This is an optimized implementation of the [d1li] (one line delay) actor
+-- provided in the Caph standard library for which the implementation of
+-- the internal array used for line buffering is carried out using
+-- a RAM block on Altera FPGAs when using the Quartus synthetizer.
+--
+-- To use this model :
+-- 1. Have this available in the current include path (either by adding
+--    the adequate "-I <dir>" option to the compiler options or by copying
+--    this file to your working directory)
+-- 2. Add the following line to your Caph source code
+--      #pragma implemented(d1li,vhdl,d1li_opt)
+--
+-- This model was part of the Caph standard VHDL library up to v2.8.5
+-- It was then moved in the [contrib] section because the expected synthetizer-level
+-- behavior is likely to be Quartus/Altera specific.
+-- Author : J.Sérot, 2015
 
 library ieee;
 use ieee.std_logic_1164.all;
-use work.all;
 
-entity d1l_opt is
+ENTITY single_clock_ram IS
+  GENERIC (
+    size: integer := 64;
+    width: integer := 8
+    );
+  PORT (
+	clock: IN STD_LOGIC;
+	data: IN std_logic_vector (width-1 DOWNTO 0);
+	write_address: IN INTEGER RANGE 0 to size-1 ;
+	read_address: IN INTEGER RANGE 0 to size-1 ;
+	we: IN STD_LOGIC;
+	q: OUT std_logic_vector (width-1 DOWNTO 0)
+	);
+END single_clock_ram;
+
+ARCHITECTURE rtl OF single_clock_ram IS
+
+  TYPE MEM IS ARRAY(0 TO size-1) OF std_logic_vector (width-1 DOWNTO 0);
+
+  signal ram_block: MEM;
+
+  BEGIN
+		PROCESS (clock)
+		BEGIN
+		  IF (clock'event AND clock = '1') THEN
+            assert(read_address < size) report integer'image(read_address);
+            IF (we = '1') THEN
+              assert(write_address < size) report integer'image(write_address);
+              ram_block(write_address) <= data;
+            END IF;
+            q <= ram_block(read_address);
+            -- Will return the OLD data at the address, when reading during a write to the same address
+          END IF;
+		END PROCESS;
+END rtl;
+
+entity d1li_opt is
    generic (
     linewidth: integer;
     bitwidth: integer
@@ -38,7 +71,7 @@ entity d1l_opt is
     );
 end d1l_opt;
 
-architecture FSM of d1l_opt is
+architecture FSM of d1li_opt is
 
   constant mk_soS: std_logic_vector(bitwidth+1 downto 0) := "01" & (bitwidth-1 downto 0 => '0');
   constant mk_eoS: std_logic_vector(bitwidth+1 downto 0) := "10" & (bitwidth-1 downto 0 => '0');

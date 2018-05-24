@@ -51,44 +51,17 @@ package core is
   function to_string(v : std_logic_vector) return string;  -- for debug only
   procedure dump_slv(name: string; v: std_logic_vector); -- for debug only
 
-component fifo_small is
-generic (depth: integer; size: integer);
+component fifo is
+generic (depth: integer; width: integer);
 port ( full : out std_logic;
-       datain : in std_logic_vector (size-1 downto 0);
+       datain : in std_logic_vector (width-1 downto 0);
        enw : in std_logic;
        empty : out std_logic;
-       dataout : out std_logic_vector(size-1 downto 0);
+       dataout : out std_logic_vector(width-1 downto 0);
        enr : in std_logic;
        clk : in std_logic;
        rst: in std_logic );
 end component;
-
-component fifo_big is
-generic (depth: integer; size: integer);
-port ( full : out std_logic;
-       datain : in std_logic_vector (size-1 downto 0);
-       enw : in std_logic;
-       empty : out std_logic;
-       dataout : out std_logic_vector(size-1 downto 0);
-       enr : in std_logic;
-       clk : in std_logic;
-       rst: in std_logic );
-end component;
-
-component single_clock_ram is
-  GENERIC (
-    size: integer := 64;
-    width: integer := 8
-    );
-  PORT (
-	clock: IN STD_LOGIC;
-	data: IN std_logic_vector (width-1 DOWNTO 0);
-	write_address: IN INTEGER RANGE 0 to size-1 ;
-	read_address: IN INTEGER RANGE 0 to size-1 ;
-	we: IN STD_LOGIC;
-	q: OUT std_logic_vector (width-1 DOWNTO 0)
-	);
-END component;
 
 use work.data_types.all;
 

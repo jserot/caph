@@ -67,8 +67,8 @@ ide;vhdl;-vhdl_annot_file;Arg.String;set_vhdl_annot_file;give the name of the ba
 ide;vhdl;-vhdl_fifo_offset;Arg.Int;set_vhdl_fifo_offset;add offset to each FIFO size when read in back-annotation file (default value: 2)
 ide;vhdl;-vhdl_default_int_size;Arg.Int;set_vhdl_default_int_size;set default size for ints (default: 8)
 ide;vhdl;-vhdl_default_fifo_capacity;Arg.Int;set_vhdl_default_fifo_capacity;set default fifo capacity (default: 4)
-ide;vhdl;-vhdl_small_fifo_model;Arg.String;set_vhdl_small_fifo_model;set model for small fifos (default: fifo_small)
-ide;vhdl;-vhdl_big_fifo_model;Arg.String;set_vhdl_big_fifo_model;set model for big fifos (default: fifo_big)
+ide;vhdl;-vhdl_small_fifo_model;Arg.String;set_vhdl_small_fifo_model;set model for small fifos (default: fifo)
+ide;vhdl;-vhdl_big_fifo_model;Arg.String;set_vhdl_big_fifo_model;set model for big fifos (default: fifo)
 ide;vhdl;-vhdl_fifo_model_threshold;Arg.Int;set_vhdl_fifo_model_threshold;set threshold for switching between fifo models
 ide;vhdl;-vhdl_extra;Arg.String;add_vhdl_extra_file;add file to the list of external modules for the VHDL backend
 ide;vhdl;-vhdl_reset_duration;Arg.Int;set_vhdl_reset_duration;set duration of the reset signal (ns)

@@ -14,6 +14,7 @@
 open Printf
 open Genmake
 open Static
+open Misc
 
 let dump_qip_file fname files =
   let oc = open_out fname in
@@ -22,8 +23,8 @@ let dump_qip_file fname files =
     (function f -> Printf.fprintf oc "  %s\n" f)
     files;
   fprintf oc "}\n";
-  close_out oc;
-  Printf.printf "Wrote file %s\n" fname
+  Logfile.write fname;
+  close_out oc
 
 let rec dump_xml_file name fname sp src_files =
   let oc = open_out fname in
@@ -61,8 +62,8 @@ let rec dump_xml_file name fname sp src_files =
     ports;
   fprintf oc "  </ports>\n";
   fprintf oc "</process>\n";
-  close_out oc;
-  Printf.printf "Wrote file %s\n" fname
+  Logfile.write fname;
+  close_out oc
 
 let dump_files name tp =
   let _,files = List.partition
