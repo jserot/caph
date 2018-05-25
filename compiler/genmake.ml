@@ -427,7 +427,7 @@ let dump_vhdl_makefile fname =
   fprintf oc "%%.o: %%.vhd\n";
   fprintf oc "\t(cd %s; $(GHDL) -a $(GHDL_ELAB_OPTS) `basename $<`)\n" target.dir;
   fprintf oc "\n";
-  fprintf oc ".PHONY: run code viewtrace viewvcdtrace quartus clean clobber\n";
+  fprintf oc ".PHONY: run code viewtrace viewvcdtrace clean clobber\n";
   fprintf oc "\n";
   fprintf oc "code: %s/%s_tb.vhd\n" target.dir target.proj_name;
   fprintf oc "\n";
@@ -467,9 +467,6 @@ let dump_vhdl_makefile fname =
   fprintf oc "\t$(GTKWAVE) -f %s_tb.vcd -a %s_tb.sav\n" target.proj_name target.proj_name;
   fprintf oc "viewtrace: %s_tb.ghw\n" target.proj_name;
   fprintf oc "\t$(GTKWAVE) -f %s_tb.ghw -a %s_tb.sav\n" target.proj_name target.proj_name;
-  fprintf oc "\n";
-  fprintf oc "quartus:\n";
-  fprintf oc "\tCAPH_DIR=$(PREFIX) $(ETCDIR)/mk_quartus_proj $(QUARTUS_DIR)/$(CURRENT_DIRNAME)_net\n";
   fprintf oc "\n";
   fprintf oc "show: %s\n" (Misc.string_of_list (function f -> f.orig_name) " " (!(target.output_files)));
   List.iter (dump_show_cmd oc) !(target.output_files);

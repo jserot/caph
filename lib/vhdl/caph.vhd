@@ -377,29 +377,3 @@ package body core is
   end;
 
 end package body core;
-
-library ieee;
-use ieee.std_logic_1164.all;
-  
-package optimized is
-
-component d1l_opt is  -- Optimized implementation for infering RAM blocks with
-                      -- Altera Quartus II synthetizer
-   generic (
-    linewidth: integer;
-    bitwidth: integer
-    -- Warning : no padding value specified here; will always be 0..
-    );
-  port (
-    a_empty: in std_logic;
-    a: in std_logic_vector(bitwidth+1 downto 0); -- +2 bits for tag
-    a_rd: out std_logic;
-    c_full: in std_logic;
-    c: out std_logic_vector(bitwidth+1 downto 0); -- +2 bits for tag
-    c_wr: out std_logic;
-    clock: in std_logic;
-    reset: in std_logic
-    );
-end component;
-  
-end optimized;

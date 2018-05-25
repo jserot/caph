@@ -1087,7 +1087,8 @@ let dump_actor prefix profil ir (id,a) =
         ( (if profil.use_floats then cfg.vhdl_core_fp_libs else cfg.vhdl_core_libs)
           @ [cfg.vhdl_num_lib]
           @ (if profil.use_floats then cfg.vhdl_fp_libs else [])
-          @ (if profil.has_globals || profil.variant_types <> [] then ["work.all"] else []) );
+          @ (if ((profil.has_globals || profil.variant_types <> []) && not cfg.vhdl_generate_qip) then ["work.all"] else []) );
+          (* Adding "use work.all" seems to cause problems when compiling under Quartus 13.1.. *)
       if profil.has_externs then fprintf oc "use %s.all;\n" cfg.vhdl_extfns_package;
       if profil.has_globals then fprintf oc "use work.%s_%s.all;\n" prefix cfg.vhdl_global_suffix;
       dump_actor_interface "entity" oc (name,b);

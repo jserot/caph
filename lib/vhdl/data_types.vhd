@@ -20,6 +20,7 @@ package data_types is
   -- We therefore have to define a pair of [pad]/[trim] fns to accomodate variable length strings :(
   constant string_length: natural := 64;
   type string_array is array (natural range <>) of string(1 to string_length);
+  type natural_array is array (natural range <>) of natural;
   function str_pad(s: string; c: character := '_') return string;
   function str_rtrim(s: string; c: character := '_') return string;
   --function slv_to_string(v : std_logic_vector) return string;

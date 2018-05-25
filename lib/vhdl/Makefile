@@ -28,10 +28,10 @@ COMPONENTS=data_types.vhd \
 OBJS=$(COMPONENTS:.vhd=.o)
 
 %.o: %.vhd
-	$(GHDL) -a --work=caph --workdir=. $(GHDLOPTS) $<
+	$(GHDL)  -a --work=caph --workdir=. -fno-color-diagnostics $(GHDLOPTS) $<
 
 caph_fp.o: caph_fp.vhd
-	$(GHDL) -a --work=caph_fp --workdir=. $(GHDLOPTS) -P$(VHDL_FP_LIB) $<
+	$(GHDL) -a --work=caph_fp --workdir=. $(GHDLOPTS) -fno-color-diagnostics -P$(VHDL_FP_LIB) $<
 
 lib-core: $(OBJS) caph.o
 

@@ -1,9 +1,10 @@
-set module_name "main_net"
+set module_name "_MODULE_NAME_"
 set lib_path "../lib/"
 set module_path "./"
 set lib_files {
 	caph.vhd
-	single_clock_ram.vhd
+	data_types.vhd
+    fifo.vhd
 }
 post_message -type extra_info "Module: $module_name (path: $module_path)"
 set_global_assignment -name IP_TOOL_NAME $module_name

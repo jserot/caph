@@ -1,0 +1,8 @@
+# Template for Quartus II .qpf files 
+#
+
+QUARTUS_VERSION = "13.1"
+
+# Revisions
+
+PROJECT_REVISION = "_MODULE_NAME_"
