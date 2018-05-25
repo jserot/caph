@@ -139,7 +139,7 @@ try
         if profil.Vhdl.splitters <> [] then
           Vhdl.dump_split_actors (prefix ^ Vhdl.cfg.Vhdl.vhdl_splitters_suffix ^ ".vhd") profil.Vhdl.splitters; 
         if !Misc.generate_makefiles then Genmake.dump_vhdl_makefile "Makefile.vhdl";
-        if Vhdl.cfg.Vhdl.vhdl_generate_qip then Quartus.dump_files "main_net" sp
+        if Vhdl.cfg.Vhdl.vhdl_generate_qip then Quartus.dump_files prefix sp
     | _ ->
         ()
     end

@@ -20,7 +20,7 @@ let dump_qip_file fname files =
   let oc = open_out fname in
   fprintf oc "set module_files {\n";
   List.iter 
-    (function f -> Printf.fprintf oc "  %s\n" f)
+    (function f -> Printf.fprintf oc "  %s\n" (Filename.basename f))
     files;
   fprintf oc "}\n";
   Logfile.write fname;
@@ -65,13 +65,15 @@ let rec dump_xml_file name fname sp src_files =
   Logfile.write fname;
   close_out oc
 
-let dump_files name tp =
-  let _,files = List.partition
+let dump_files prefix tp =
+  let tb_files,files = List.partition
       (function f -> filename_contains "tb" f)
       (!(target.vhdl_files) @ !(target.vhdl_extra_files)) in
-  let qip_name = name ^ ".qip" in
-  let qip_file = Misc.prefix_dir Genmake.target.Genmake.dir qip_name in
-  dump_qip_file qip_file files;
-  let xml_name = name ^ ".xml" in
+  let qip_net_file, qip_tb_file =
+    Misc.prefix_dir Genmake.target.Genmake.dir (prefix ^ "_net.qip"),
+    Misc.prefix_dir Genmake.target.Genmake.dir (prefix ^ "_tb.qip") in
+  dump_qip_file qip_net_file files;
+  dump_qip_file qip_tb_file (files @ tb_files);
+  let xml_name = prefix ^ "_net.xml" in
   let xml_file = Misc.prefix_dir Genmake.target.Genmake.dir xml_name in
-  dump_xml_file name xml_file tp (qip_name :: files)
+  dump_xml_file prefix xml_file tp ((prefix ^ "_net.qip") :: files)
