@@ -68,7 +68,8 @@ type vhdl_config = {
   mutable vhdl_mem_ctlr_name: string;
   mutable vhdl_mem_ctlr_base_addr: int;
   mutable vhdl_rename_io_wires: bool;
-  mutable vhdl_inline_tb: bool;
+  mutable vhdl_tb_external_clock: bool;
+  mutable vhdl_tb_inline_io: bool;
   mutable vhdl_generate_qip: bool;
   mutable vhdl_warn_on_unsized_consts: bool;
   }
@@ -126,7 +127,8 @@ let cfg = {
   vhdl_mem_ctlr_name = "mem_controller";
   vhdl_mem_ctlr_base_addr = 0;
   vhdl_rename_io_wires = false;
-  vhdl_inline_tb = false;
+  vhdl_tb_external_clock = false;
+  vhdl_tb_inline_io = false;
   vhdl_generate_qip = false;
   vhdl_warn_on_unsized_consts = false;
 }
@@ -1326,20 +1328,6 @@ and dump_wire boxes oc (wid,(((src,_),(dst,_)),ty)) =
       fprintf oc "signal %s : %s;\n" w (string_of_io_type ty);
     end
 
-and dump_extra_wire oc (bid,box) =
-  match box.ib_tag with
-  | InpB Syntax.StreamIO ->
-      fprintf oc "signal b%d_err : std_logic;\n" bid;
-      fprintf oc "signal b%d_cnt : natural;\n" bid
-  | OutB Syntax.StreamIO ->
-     let ty =
-       begin match box.ib_ins with
-         [_,(_,ty)] -> ty
-       | _ -> Misc.fatal_error "Vhdl.dump_extra_wire" end in
-      fprintf oc "signal b%d_dout : %s;\n" bid (string_of_io_type ty);
-      fprintf oc "signal b%d_cnt : natural;\n" bid
-  | _ -> ()
-
 and is_inp_box boxes bid = test_box_kind boxes (function b -> match b.ib_tag with InpB _ -> true | _ -> false) bid
 and is_out_box boxes bid = test_box_kind boxes (function b -> match b.ib_tag with OutB _ -> true | _ -> false) bid
 and is_fifo_box boxes bid = test_box_kind boxes (function b -> b.ib_tag = RegularB && b.ib_name = "fifo") bid
@@ -1938,6 +1926,34 @@ and bin_c_converters fname = function
 
 (* Dumping the testbench *)
 
+let dump_testbench_ios oc boxes = 
+  let extract_io acc (bid,box) = 
+    let b = "b" ^ string_of_int bid in
+    match box.ib_tag with
+    | InpB Syntax.StreamIO ->
+       acc @ [b ^ "_err", "out", "std_logic"; b ^ "_cnt", "out", "natural"]
+    | OutB Syntax.StreamIO ->
+       let ty =
+         begin match box.ib_ins with
+         | [_,(_,ty)] -> ty
+         | _ -> Misc.fatal_error "Vhdl.dump_testbench_io"
+         end in
+       acc @ [b ^ "_dout", "out", string_of_io_type ty; b ^ "_cnt", "out", "natural"]
+    | _ -> acc in
+  let ios1 = List.fold_left extract_io [] boxes in
+  let ios2 = [cfg.vhdl_clock, "in", "std_logic"; cfg.vhdl_reset, "in", "std_logic"] in
+  let ios = match cfg.vhdl_tb_inline_io, cfg.vhdl_tb_external_clock with
+    | true, true -> ios1 @ ios2
+    | false, true -> ios2
+    | true, false -> ios1
+    | false, false -> [] in
+  match ios with
+    | [] -> ()
+    | _ ->
+       fprintf oc "  port (\n";
+       Misc.print_semic_nl oc (fun oc (name, dir, ty) -> fprintf oc "    %s: %s %s" name dir ty) ios;
+       fprintf oc "    );\n"
+
 let rec dump_testbench prefix ir =
   let tb_name = prefix ^ "_tb" in
   let net_name = prefix ^ "_net" in
@@ -1949,6 +1965,7 @@ let rec dump_testbench prefix ir =
   dump_libraries oc (cfg.vhdl_core_libs @ [cfg.vhdl_num_lib]);
   fprintf oc "\n";
   fprintf oc "entity %s is\n" tb_name;
+  dump_testbench_ios oc ir.Interm.ir_boxes;
   fprintf oc "end %s;\n" tb_name;
   fprintf oc "\n";
   fprintf oc "architecture %s of %s is\n" cfg.vhdl_arch_tag tb_name;
@@ -1957,10 +1974,10 @@ let rec dump_testbench prefix ir =
   fprintf oc "\n";
   let wire_name = mk_wire_name_fn renamed_wires in
   List.iter (dump_io_wire ir.Interm.ir_boxes oc wire_name) ir.Interm.ir_wires;
-  fprintf oc "signal %s: std_logic;\n" cfg.vhdl_clock;
-  fprintf oc "signal %s: std_logic;\n" cfg.vhdl_reset;
-  if cfg.vhdl_inline_tb then
-    List.iter (dump_extra_wire oc) ir.Interm.ir_boxes;
+  if not cfg.vhdl_tb_external_clock then begin
+    fprintf oc "signal %s: std_logic;\n" cfg.vhdl_clock;
+    fprintf oc "signal %s: std_logic;\n" cfg.vhdl_reset
+    end;
   fprintf oc "\n";
   fprintf oc "begin\n";
   List.iter (dump_io_box oc wire_name) ir.Interm.ir_boxes;
@@ -1969,14 +1986,17 @@ let rec dump_testbench prefix ir =
     (string_of_net_ios wire_ins wire_outs)
     cfg.vhdl_clock
     cfg.vhdl_reset;
-  fprintf oc "\n";
-  dump_reset_process oc;
-  fprintf oc "\n";
-  dump_clock_process oc;
-  fprintf oc "\n";
+  if not cfg.vhdl_tb_external_clock then begin
+    fprintf oc "\n";
+    dump_reset_process oc;
+    fprintf oc "\n";
+    dump_clock_process oc;
+    fprintf oc "\n"
+    end;
   fprintf oc "end %s;\n" cfg.vhdl_arch_tag;
   Logfile.write fname';
   close_out oc
+
 
 and dump_io_wire boxes oc wire_name (wid,(((src,_),(dst,_)),ty)) =
   let w = wire_name wid in
@@ -2022,7 +2042,7 @@ and dump_io_box oc wire_name (bid,box) =
     RegularB, _, _ -> ()
   | InpB Syntax.StreamIO, _, [_,([wid],ty)] ->
       let w = wire_name wid in
-      begin match Filepat.expand box.ib_device, cfg.vhdl_inline_tb  with
+      begin match Filepat.expand box.ib_device, cfg.vhdl_tb_inline_io  with
         [], _ ->
           () (* should not happen *)
       | [f], false -> 
@@ -2067,7 +2087,7 @@ and dump_io_box oc wire_name (bid,box) =
       end
   | OutB Syntax.StreamIO, [_,(wid,ty)], _ ->
       let w = wire_name wid in
-      begin match Filepat.expand box.ib_device, cfg.vhdl_inline_tb with
+      begin match Filepat.expand box.ib_device, cfg.vhdl_tb_inline_io with
         [], _ ->
           () (* should not happen *)
       | [f], false ->

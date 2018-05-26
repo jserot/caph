@@ -84,6 +84,7 @@ ide;vhdl;-vhdl_init_array_at_decl;Arg.Unit;set_vhdl_init_array_at_decl;initializ
 ide;vhdl;-vhdl_float_support;Arg.Unit;set_vhdl_float_support;enable float support
 ide;vhdl;-vhdl_io_converters;Arg.Unit;set_vhdl_write_type_converters;generate C programs for reading/writing input/output files involving user-defined types
 ide;vhdl;-vhdl_rename_io_wires;Arg.Unit;set_vhdl_rename_io_wires;rename IO wires in the _net.vhd and _tb.vhd files according to the connected IO stream/port 
-ide;vhdl;-vhdl_inline_tb;Arg.Unit;set_vhdl_inline_tb;generate stand-alone testbench (without file I/O)
+ide;vhdl;-vhdl_tb_external_clock;Arg.Unit;set_vhdl_tb_external_clock;make clock and reset input signals for the generated testbench (default: false)
+ide;vhdl;-vhdl_tb_inline_io;Arg.Unit;set_vhdl_tb_inline_io;use inline processes for I/O in the generated testbench instead of reading/writing files (default: false)
 ide;vhdl;-vhdl_quartus;Arg.Unit;set_vhdl_quartus;generate .qip and .xml files for Altera Quartus II and GPStudio
 ide;xdf;-xdf_package;Arg.String;set_xdf_package;set package name for the generated XDF code
