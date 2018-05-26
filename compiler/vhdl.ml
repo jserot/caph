@@ -47,11 +47,13 @@ type vhdl_config = {
   mutable vhdl_clock_period_ns: int;
   mutable vhdl_seq_delay_ns: int;
   mutable vhdl_tb_stream_in_name: string;
+  mutable vhdl_tb_cstream_in_name: string;
   mutable vhdl_tb_stream_mult_in_name: string;
   mutable vhdl_stream_in_period: int;
   mutable vhdl_stream_in_blanking: bool;
   mutable vhdl_stream_in_skew: int;
   mutable vhdl_tb_stream_out_name: string;
+  mutable vhdl_tb_cstream_out_name: string;
   mutable vhdl_tb_stream_mult_out_name: string;
   mutable vhdl_tb_port_in_name: string;
   mutable vhdl_tb_port_out_name: string;
@@ -66,6 +68,7 @@ type vhdl_config = {
   mutable vhdl_mem_ctlr_name: string;
   mutable vhdl_mem_ctlr_base_addr: int;
   mutable vhdl_rename_io_wires: bool;
+  mutable vhdl_inline_tb: bool;
   mutable vhdl_generate_qip: bool;
   mutable vhdl_warn_on_unsized_consts: bool;
   }
@@ -102,11 +105,13 @@ let cfg = {
   vhdl_clock_period_ns = 10;
   vhdl_seq_delay_ns = 1;  (* TO FIX : this should be 0 !! *)
   vhdl_tb_stream_in_name = "stream_in";
+  vhdl_tb_cstream_in_name = "cstream_in";
   vhdl_tb_stream_mult_in_name = "stream_in_mult";
   vhdl_stream_in_period = 1;
   vhdl_stream_in_blanking = false;
   vhdl_stream_in_skew = 0;
   vhdl_tb_stream_out_name = "stream_out";
+  vhdl_tb_cstream_out_name = "cstream_out";
   vhdl_tb_stream_mult_out_name = "stream_out_mult";
   vhdl_tb_port_in_name = "port_in";
   vhdl_tb_port_out_name = "port_out";
@@ -121,6 +126,7 @@ let cfg = {
   vhdl_mem_ctlr_name = "mem_controller";
   vhdl_mem_ctlr_base_addr = 0;
   vhdl_rename_io_wires = false;
+  vhdl_inline_tb = false;
   vhdl_generate_qip = false;
   vhdl_warn_on_unsized_consts = false;
 }
@@ -1320,6 +1326,20 @@ and dump_wire boxes oc (wid,(((src,_),(dst,_)),ty)) =
       fprintf oc "signal %s : %s;\n" w (string_of_io_type ty);
     end
 
+and dump_extra_wire oc (bid,box) =
+  match box.ib_tag with
+  | InpB Syntax.StreamIO ->
+      fprintf oc "signal b%d_err : std_logic;\n" bid;
+      fprintf oc "signal b%d_cnt : natural;\n" bid
+  | OutB Syntax.StreamIO ->
+     let ty =
+       begin match box.ib_ins with
+         [_,(_,ty)] -> ty
+       | _ -> Misc.fatal_error "Vhdl.dump_extra_wire" end in
+      fprintf oc "signal b%d_dout : %s;\n" bid (string_of_io_type ty);
+      fprintf oc "signal b%d_cnt : natural;\n" bid
+  | _ -> ()
+
 and is_inp_box boxes bid = test_box_kind boxes (function b -> match b.ib_tag with InpB _ -> true | _ -> false) bid
 and is_out_box boxes bid = test_box_kind boxes (function b -> match b.ib_tag with OutB _ -> true | _ -> false) bid
 and is_fifo_box boxes bid = test_box_kind boxes (function b -> b.ib_tag = RegularB && b.ib_name = "fifo") bid
@@ -1939,6 +1959,8 @@ let rec dump_testbench prefix ir =
   List.iter (dump_io_wire ir.Interm.ir_boxes oc wire_name) ir.Interm.ir_wires;
   fprintf oc "signal %s: std_logic;\n" cfg.vhdl_clock;
   fprintf oc "signal %s: std_logic;\n" cfg.vhdl_reset;
+  if cfg.vhdl_inline_tb then
+    List.iter (dump_extra_wire oc) ir.Interm.ir_boxes;
   fprintf oc "\n";
   fprintf oc "begin\n";
   List.iter (dump_io_box oc wire_name) ir.Interm.ir_boxes;
@@ -2000,10 +2022,10 @@ and dump_io_box oc wire_name (bid,box) =
     RegularB, _, _ -> ()
   | InpB Syntax.StreamIO, _, [_,([wid],ty)] ->
       let w = wire_name wid in
-      begin match Filepat.expand box.ib_device with
-        [] ->
+      begin match Filepat.expand box.ib_device, cfg.vhdl_inline_tb  with
+        [], _ ->
           () (* should not happen *)
-      | [f] -> 
+      | [f], false -> 
           fprintf oc "  B%d: %s generic map (\"%s\",%d,%d,%s,%d ns) port map(%s_f,%s,%s_wr,%s,%s);\n"
             bid
             cfg.vhdl_tb_stream_in_name
@@ -2015,7 +2037,21 @@ and dump_io_box oc wire_name (bid,box) =
             w w w
             cfg.vhdl_clock
             cfg.vhdl_reset
-      | fs ->
+      | [f], true -> 
+          let tokens = [1;2;3;4] in
+          fprintf oc "  B%d: %s generic map ((%s),%d,%d,%s,%d ns) port map(%s_f,%s,%s_wr,%s,%s,b%d_err,b%d_cnt);\n"
+            bid
+            cfg.vhdl_tb_cstream_in_name
+            (Misc.string_of_list string_of_int "," tokens)
+            (num_size_of_type ty)
+            cfg.vhdl_stream_in_period
+            (if cfg.vhdl_stream_in_blanking then "true" else "false")
+            cfg.vhdl_stream_in_skew
+            w w w
+            cfg.vhdl_clock
+            cfg.vhdl_reset
+            bid bid
+      | fs, _ ->
         fprintf oc "  B%d: %s generic map ((%s),%d,%d,%d,%s,%d ns) port map(%s_f,%s,%s_wr,%s,%s);\n"
           bid
           cfg.vhdl_tb_stream_mult_in_name
@@ -2031,10 +2067,10 @@ and dump_io_box oc wire_name (bid,box) =
       end
   | OutB Syntax.StreamIO, [_,(wid,ty)], _ ->
       let w = wire_name wid in
-      begin match Filepat.expand box.ib_device with
-        [] ->
+      begin match Filepat.expand box.ib_device, cfg.vhdl_inline_tb with
+        [], _ ->
           () (* should not happen *)
-      | [f] ->
+      | [f], false ->
           fprintf oc "  B%d: %s generic map (\"%s\",%d) port map(%s_e,%s,%s_rd,%s,%s);\n"
             bid
             cfg.vhdl_tb_stream_out_name
@@ -2043,7 +2079,16 @@ and dump_io_box oc wire_name (bid,box) =
             w w w
             cfg.vhdl_clock
             cfg.vhdl_reset
-      | fs ->
+      | [f], true ->
+          fprintf oc "  B%d: %s generic map (%d) port map(%s_e,%s,%s_rd,%s,%s,b%d_dout,b%d_cnt);\n"
+            bid
+            cfg.vhdl_tb_cstream_out_name
+            (num_size_of_type ty)
+            w w w
+            cfg.vhdl_clock
+            cfg.vhdl_reset
+            bid bid
+      | fs, _ ->
           fprintf oc "  B%d: %s generic map ((%s),%d,%d,%b) port map(%s_e,%s,%s_rd,%s,%s);\n"
             bid
             cfg.vhdl_tb_stream_mult_out_name

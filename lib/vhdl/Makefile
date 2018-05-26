@@ -17,7 +17,9 @@ endif
 
 COMPONENTS=data_types.vhd \
            stream_out.vhd \
+           cstream_out.vhd \
            stream_in.vhd \
+           cstream_in.vhd \
            stream_out_mult.vhd \
            stream_in_mult.vhd \
            port_in.vhd \

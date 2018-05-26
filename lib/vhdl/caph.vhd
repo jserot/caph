@@ -82,6 +82,25 @@ component stream_in is
     );
 end component;
 
+component cstream_in is
+  generic (
+    tokens: natural_array;
+    size: integer := 10;
+    period: integer := 1;
+    blanking: boolean := false;
+    skew: time := 0 ns
+    );
+  port (
+    full : in std_logic; 
+    dout : out std_logic_vector(size-1 downto 0);
+    wr : out std_logic;
+    clk : in std_logic;
+    rst : in std_logic;
+    err : out std_logic;
+    cnt : out natural
+    );
+end component;
+
 component stream_out is
 generic (
   filename: string;
@@ -94,6 +113,21 @@ port (  empty : in std_logic;
         clk : in std_logic;
         rst : in std_logic
         );
+end component;
+
+component cstream_out is
+  generic (
+    size: integer;
+    period: integer := 1
+    );
+  port (  empty : in std_logic;
+          din : in std_logic_vector(size-1 downto 0);
+          rd : out std_logic; 
+          clk : in std_logic;
+          rst : in std_logic;
+          dout : out std_logic_vector(size-1 downto 0);
+          cnt : out natural   -- Numbers of tokens read so far
+          );
 end component;
 
 component stream_in_mult is

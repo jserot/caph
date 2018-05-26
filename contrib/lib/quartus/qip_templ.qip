@@ -5,6 +5,8 @@ set lib_files {
 	caph.vhd
 	data_types.vhd
     fifo.vhd
+    cstream_in.vhd
+    cstream_out.vhd
 }
 post_message -type extra_info "Module: $module_name (path: $module_path)"
 set_global_assignment -name IP_TOOL_NAME $module_name
