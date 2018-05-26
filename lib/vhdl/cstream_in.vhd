@@ -21,9 +21,9 @@ entity cstream_in is
   generic (
     tokens: natural_array;
     size: integer := 10;
-    period: integer := 1;
-    blanking: boolean := false;
-    skew: time := 0 ns
+    period: integer := 1;          -- Unused (to fix)
+    blanking: boolean := false;    -- Unused (to fix)
+    skew: time := 0 ns             -- Unused
     );
   port (
     full : in std_logic; 
@@ -31,41 +31,35 @@ entity cstream_in is
     wr : out std_logic;
     clk : in std_logic;
     rst : in std_logic;
-    err : out std_logic;
-    cnt : out natural
+    err : out std_logic;   -- Asserted when downstream FIFO is full
+    cnt : out natural      -- Number of tokens produced so far
     );
 end cstream_in;
 
 architecture beh of cstream_in is
 begin
-  process
-  variable data: std_logic_vector(size-1 downto 0);
-  variable ctr: natural;
+  process (rst, clk)
+    variable data: std_logic_vector(size-1 downto 0);
+    variable i: natural;
   begin
-    ctr := 0;
-    wr <= '0';
-    err <= '0';
-    for i in tokens'range loop
-      data := std_logic_vector(to_unsigned(tokens(i),size));
-      wait until rising_edge(clk);
-      for j in 0 to period-2 loop
-        wr <= '0';
-        wait until rising_edge(clk);
-      end loop;
-      if ( full='1' ) then err <= '1'; end if;
-      if ( blanking = false or data(size-1 downto size-2) /= "00" ) then 
-        wait for skew;
+    if ( rst='0' ) then
+      i := 0;
+      wr <= '0';
+      err <= '0';
+    elsif ( rising_edge(clk) ) then
+      if ( i < tokens'length ) then
+        data := std_logic_vector(to_unsigned(tokens(i),size));
+        -- TO FIX : should wait for [period-2] extra clock ticks here..
+        if ( full='1' ) then err <= '1'; end if;
+        -- TO FIX : should wait if blancking is true here
         dout <= data; 
         wr <= '1';
-        ctr := ctr+1;
+        i := i+1;
+        cnt <= i;
       else
-        wr <= '0';
+	    wr <= '0';
       end if;
-      cnt <= ctr;
-    end loop;
-	wait until rising_edge(clk);
-	wr <= '0';
-    wait;
+    end if;
 end process;
 end;
 

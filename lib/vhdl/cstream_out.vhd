@@ -32,19 +32,18 @@ end cstream_out;
 
 architecture beh of cstream_out is
 begin
-  process
+  process(clk, rst)
     variable ctr: natural;
   begin
-    ctr := 0;
-    while true loop
-      wait until rising_edge(clk);
+    if (rst='0') then
+      ctr := 0;
+    elsif rising_edge(clk) then
       if ( empty = '0' ) then 
         dout <= din;
         ctr := ctr+1;
       end if;
       cnt <= ctr;
-    end loop;      
-    wait;
-end process;
-rd <= not(empty);
+    end if;
+  end process;
+  rd <= not(empty);
 end;
