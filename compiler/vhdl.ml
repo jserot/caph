@@ -2058,11 +2058,14 @@ and dump_io_box oc wire_name (bid,box) =
             cfg.vhdl_clock
             cfg.vhdl_reset
       | [f], true -> 
-          let tokens = [1;2;3;4] in
+          let f' = Misc.change_extension "bin" f in
+          let tokens = 
+            try Misc.read_file_lines f'
+            with Sys_error _ -> Error.cannot_read_bin_file f' in
           fprintf oc "  B%d: %s generic map ((%s),%d,%d,%s,%d ns) port map(%s_f,%s,%s_wr,%s,%s,b%d_err,b%d_cnt);\n"
             bid
             cfg.vhdl_tb_cstream_in_name
-            (Misc.string_of_list string_of_int "," tokens)
+            (Misc.string_of_list (function t -> "\"" ^ Misc.pad_left 32 '0' t ^ "\"") "," tokens)
             (num_size_of_type ty)
             cfg.vhdl_stream_in_period
             (if cfg.vhdl_stream_in_blanking then "true" else "false")

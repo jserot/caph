@@ -267,6 +267,8 @@ let int_of_bool = function false -> 0 | true -> 1
 
 let bit_of_bool = function false -> 0 | true -> 1
 
+let pad_left n c s = String.make (n - String.length s) c ^ s
+                   
 let rec iter_sep f s = function
     [] -> ()
   | [v] -> f v
@@ -520,4 +522,16 @@ let get_file_with_name dir name =
   (* Returns the first file with name (w/o suffix) [name] in directory [dir]. Raises [Not_found] if none found *)
   let fs = Array.to_list (Sys.readdir dir) in
   List.find (function f -> Filename.chop_extension f = name ) fs
+
+let read_file_lines fname = 
+  let lines = ref [] in
+  let ic = open_in fname in
+  try
+    while true; do
+      lines := input_line ic :: !lines
+    done;
+    !lines
+  with End_of_file ->
+    close_in ic;
+    List.rev !lines
 

@@ -730,3 +730,7 @@ let invalid_box_id id =
 let cannot_build_sdf_graph bid name =
   eprintf "** Cannot build SDF graph: box %d (%s) has not been attributed an SDF MoC.\n" bid name;
   raise Error
+
+let cannot_read_bin_file fname =
+  eprintf "** Cannot read file %s (you may have to run txt2bin to generate it).\n" fname;
+  raise Error

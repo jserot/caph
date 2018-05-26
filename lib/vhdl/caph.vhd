@@ -84,7 +84,7 @@ end component;
 
 component cstream_in is
   generic (
-    tokens: natural_array;
+    tokens: slv32_array;
     size: integer := 10;
     period: integer := 1;
     blanking: boolean := false;
