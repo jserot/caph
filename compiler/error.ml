@@ -732,5 +732,5 @@ let cannot_build_sdf_graph bid name =
   raise Error
 
 let cannot_read_bin_file fname =
-  eprintf "** Cannot read file %s (you may have to run txt2bin to generate it).\n" fname;
+  eprintf "** Cannot read file %s (you may have to invoke \"make vhdl.bin\" to generate it).\n" fname;
   raise Error

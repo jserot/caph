@@ -15,6 +15,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.data_types.all;
+  
 
 package core is
 
@@ -51,151 +53,149 @@ package core is
   function to_string(v : std_logic_vector) return string;  -- for debug only
   procedure dump_slv(name: string; v: std_logic_vector); -- for debug only
 
-component fifo is
-generic (depth: integer; width: integer);
-port ( full : out std_logic;
-       datain : in std_logic_vector (width-1 downto 0);
-       enw : in std_logic;
-       empty : out std_logic;
-       dataout : out std_logic_vector(width-1 downto 0);
-       enr : in std_logic;
-       clk : in std_logic;
-       rst: in std_logic );
-end component;
-
-use work.data_types.all;
-
-component stream_in is
+  component fifo is
+  generic (depth: integer; width: integer);
+  port ( full : out std_logic;
+         datain : in std_logic_vector (width-1 downto 0);
+         enw : in std_logic;
+         empty : out std_logic;
+         dataout : out std_logic_vector(width-1 downto 0);
+         enr : in std_logic;
+         clk : in std_logic;
+         rst: in std_logic );
+  end component;
+  
+  component stream_in is
+    generic (
+      filename: string;
+      size: integer;
+      period: integer := 1;
+      blanking: boolean := false;
+      skew: time := 0 ns
+      );
+    port (
+      full : in std_logic; 
+      dout : out std_logic_vector(size-1 downto 0);
+      wr : out std_logic;
+      clk : in std_logic;
+      rst : in std_logic
+      );
+  end component;
+  
+  component cstream_in is
+    generic (
+      tokens: slv32_array;
+      size: integer := 10;
+      period: integer := 1;
+      blanking: boolean := false;
+      skew: time := 0 ns
+      );
+    port (
+      full : in std_logic; 
+      dout : out std_logic_vector(size-1 downto 0);
+      wr : out std_logic;
+      clk : in std_logic;
+      rst : in std_logic;
+      err : out std_logic;
+      cnt : out natural
+      );
+  end component;
+  
+  component stream_out is
   generic (
     filename: string;
     size: integer;
-    period: integer := 1;
-    blanking: boolean := false;
-    skew: time := 0 ns
-    );
-  port (
-    full : in std_logic; 
-    dout : out std_logic_vector(size-1 downto 0);
-    wr : out std_logic;
-    clk : in std_logic;
-    rst : in std_logic
-    );
-end component;
-
-component cstream_in is
-  generic (
-    tokens: slv32_array;
-    size: integer := 10;
-    period: integer := 1;
-    blanking: boolean := false;
-    skew: time := 0 ns
-    );
-  port (
-    full : in std_logic; 
-    dout : out std_logic_vector(size-1 downto 0);
-    wr : out std_logic;
-    clk : in std_logic;
-    rst : in std_logic;
-    err : out std_logic;
-    cnt : out natural
-    );
-end component;
-
-component stream_out is
-generic (
-  filename: string;
-  size: integer;
-  period: integer := 1
-  );
-port (  empty : in std_logic; 
-        din : in std_logic_vector(size-1 downto 0);
-        rd : out std_logic;   -- read (pop) signal
-        clk : in std_logic;
-        rst : in std_logic
-        );
-end component;
-
-component cstream_out is
-  generic (
-    size: integer;
     period: integer := 1
     );
-  port (  empty : in std_logic;
+  port (  empty : in std_logic; 
           din : in std_logic_vector(size-1 downto 0);
-          rd : out std_logic; 
+          rd : out std_logic;   -- read (pop) signal
           clk : in std_logic;
-          rst : in std_logic;
-          dout : out std_logic_vector(size-1 downto 0);
-          cnt : out natural   -- Numbers of tokens read so far
+          rst : in std_logic
           );
-end component;
-
-component stream_in_mult is
-  generic (
-    filename: string_array;
-    nfiles: integer;
-    size: integer := 10;
-    period: integer := 1;
-    blanking: boolean := false;
-    skew: time := 0 ns
-    );
-  port (
-    full : in std_logic; 
-    dout : out std_logic_vector(size-1 downto 0);
-    wr : out std_logic;
-    clk : in std_logic;
-    rst : in std_logic
-    );
-end component;
-
-component stream_out_mult is
-  generic (
-    filename: string_array;
-    nfiles: integer;
-    size: integer := 10;
-    split_output_frames: boolean := false;
-    period: integer := 1
-    );
-port (  empty : in std_logic; 
-        din : in std_logic_vector(size-1 downto 0);
-        rd : out std_logic;   -- read (pop) signal
-        clk : in std_logic;
-        rst : in std_logic
-        );
-end component;
-
-component port_in is
-generic ( filename: string := ""; size: integer := 10; ival: bit_vector);
-port (  full : in std_logic;
-        dout : out std_logic_vector(size-1 downto 0);
-        wr : out std_logic;   -- write (push) signal, active 1 on clk^
-        clk : in std_logic;
-        rst : in std_logic
-        );
-end component;
-
-component port_out is
-generic ( filename: string := "result.bin"; size: integer := 10 );
-port (  empty : in std_logic; 
-        din : in std_logic_vector(size-1 downto 0);
-        rd : out std_logic;   -- read (pop) signal, active 1 on clk^
-        clk : in std_logic;
-        rst : in std_logic
-        );
-end component;
-
-component port_buffer is
-    generic ( size: integer := 10);
-    port ( w_f:    out std_logic;
-           wi :     in std_logic_vector (size-1 downto 0);
-           w_wr :  in std_logic;
-           w_e :   out std_logic; 
-           wo :    out std_logic_vector(size-1 downto 0);
-           w_rd :  in std_logic;
-           clk:    in std_logic;
-           rst:    in std_logic );
-end component;
-
+  end component;
+  
+  component cstream_out is
+    generic (
+      size: integer;
+      period: integer := 1
+      );
+    port (  empty : in std_logic;
+            din : in std_logic_vector(size-1 downto 0);
+            rd : out std_logic; 
+            clk : in std_logic;
+            rst : in std_logic;
+            dout : out std_logic_vector(size-1 downto 0);
+            cnt : out natural   -- Numbers of tokens read so far
+            );
+  end component;
+  
+  component stream_in_mult is
+    generic (
+      filename: string_array;
+      nfiles: integer;
+      size: integer := 10;
+      period: integer := 1;
+      blanking: boolean := false;
+      skew: time := 0 ns
+      );
+    port (
+      full : in std_logic; 
+      dout : out std_logic_vector(size-1 downto 0);
+      wr : out std_logic;
+      clk : in std_logic;
+      rst : in std_logic
+      );
+  end component;
+  
+  component stream_out_mult is
+    generic (
+      filename: string_array;
+      nfiles: integer;
+      size: integer := 10;
+      split_output_frames: boolean := false;
+      period: integer := 1
+      );
+  port (  empty : in std_logic; 
+          din : in std_logic_vector(size-1 downto 0);
+          rd : out std_logic;   -- read (pop) signal
+          clk : in std_logic;
+          rst : in std_logic
+          );
+  end component;
+  
+  component port_in is
+  generic ( filename: string := ""; size: integer := 10; ival: bit_vector);
+  port (  full : in std_logic;
+          dout : out std_logic_vector(size-1 downto 0);
+          wr : out std_logic;   -- write (push) signal, active 1 on clk^
+          clk : in std_logic;
+          rst : in std_logic
+          );
+  end component;
+  
+  component port_out is
+  generic ( filename: string := "result.bin"; size: integer := 10 );
+  port (  empty : in std_logic; 
+          din : in std_logic_vector(size-1 downto 0);
+          rd : out std_logic;   -- read (pop) signal, active 1 on clk^
+          clk : in std_logic;
+          rst : in std_logic
+          );
+  end component;
+  
+  component port_buffer is
+      generic ( size: integer := 10);
+      port ( w_f:    out std_logic;
+             wi :     in std_logic_vector (size-1 downto 0);
+             w_wr :  in std_logic;
+             w_e :   out std_logic; 
+             wo :    out std_logic_vector(size-1 downto 0);
+             w_rd :  in std_logic;
+             clk:    in std_logic;
+             rst:    in std_logic );
+  end component;
+  
 --component decoder is
 --    generic ( size: integer := 8 )
 --    port (

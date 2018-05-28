@@ -1095,8 +1095,7 @@ let dump_actor prefix profil ir (id,a) =
         ( (if profil.use_floats then cfg.vhdl_core_fp_libs else cfg.vhdl_core_libs)
           @ [cfg.vhdl_num_lib]
           @ (if profil.use_floats then cfg.vhdl_fp_libs else [])
-          @ (if ((profil.has_globals || profil.variant_types <> []) && not cfg.vhdl_generate_qip) then ["work.all"] else []) );
-          (* Adding "use work.all" seems to cause problems when compiling under Quartus 13.1.. *)
+          @ (List.map (function (n, _) -> "work." ^ n) profil.variant_types) );
       if profil.has_externs then fprintf oc "use %s.all;\n" cfg.vhdl_extfns_package;
       if profil.has_globals then fprintf oc "use work.%s_%s.all;\n" prefix cfg.vhdl_global_suffix;
       dump_actor_interface "entity" oc (name,b);
@@ -1197,7 +1196,7 @@ let rec dump_network prefix tp ir =
     ( (if use_floats then cfg.vhdl_core_fp_libs else cfg.vhdl_core_libs)
     @ [cfg.vhdl_num_lib]
     @ (if use_floats then cfg.vhdl_fp_libs else [])
-    @ (if has_globals || array_types <> [] || variant_types <> [] then ["work.all"] else []) );
+    @ (List.map (function (n, _) -> "work." ^ n) variant_types) );
   if array_types != [] then fprintf oc "use work.%s_%s.all;\n" prefix cfg.vhdl_global_suffix;
   fprintf oc "\n";
   dump_network_intf "entity" oc name wire_ins wire_outs;
@@ -2060,8 +2059,11 @@ and dump_io_box oc wire_name (bid,box) =
       | [f], true -> 
           let f' = Misc.change_extension "bin" f in
           let tokens = 
-            try Misc.read_file_lines f'
-            with Sys_error _ -> Error.cannot_read_bin_file f' in
+            if !Misc.generate_makefiles then []
+              (* This is hack to break circular dependency when invoking [make vhdl.makefile] after [caphmake] *)
+            else
+              try Misc.read_file_lines f'
+              with Sys_error _ -> Error.cannot_read_bin_file f' in
           fprintf oc "  B%d: %s generic map ((%s),%d,%d,%s,%d ns) port map(%s_f,%s,%s_wr,%s,%s,b%d_err,b%d_cnt);\n"
             bid
             cfg.vhdl_tb_cstream_in_name

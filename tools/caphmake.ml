@@ -96,7 +96,7 @@ let main () =
   fprintf oc "\n";
   List.iter (dump_relay_target oc args "systemc") ["code"; "exe"; "run"; "show"; "save"; "check"; "clean"; "clobber"];
   fprintf oc "\n";
-  List.iter (dump_relay_target oc args "vhdl") ["code"; "exe"; "run"; "show"; "save"; "check"; "viewtrace"; "viewvcdtrace"; "clean"; "clobber"];
+  List.iter (dump_relay_target oc args "vhdl") ["bin"; "code"; "exe"; "run"; "show"; "save"; "check"; "viewtrace"; "viewvcdtrace"; "clean"; "clobber"];
   fprintf oc "\n";
   dump_xdf_target oc args;
   fprintf oc "\n";

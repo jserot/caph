@@ -42,7 +42,7 @@ type target_desc = {
   output_files: file_desc list ref;
   input_type_converters: (string * Types.typ) list ref;
   output_type_converters: (string * Types.typ) list ref;
-  other_files: string list ref (* to be removed ? *)
+  other_files: string list ref; (* to be removed ? *)
 }
 
 and file_desc  = {
@@ -56,6 +56,13 @@ and file_converter = (file_fmt * file_fmt) option
 
 and file_fmt = FF_Txt | FF_Pgm | FF_Bin
 
+type genmake_config = {
+  mutable tb_inline_io: bool (* This duplicates the corresponding field [Vhdl.cfg] to avoid circular build dependency *)
+  }
+
+let cfg = {
+  tb_inline_io = false
+  }
 let add_to_target files file = if not (List.mem file !files) then files := file :: !files 
 
 let target = {
@@ -362,25 +369,27 @@ let rec pgm2bin_opts ty =
         end 
   | ty -> raise (FileConverter ty)
 
-let dump_vhdl_inp_file_target oc f =
+let dump_vhdl_inp_file_target oc acc f =
   match f.converter with
     Some (FF_Txt,FF_Bin) -> 
       begin match txt2bin_opts f.typ with 
       | None, opts ->
           fprintf oc "%s: %s\n" f.actual_name f.orig_name;
-          fprintf oc "\t$(TXT2BIN) %s $< > $@\n" opts
+          fprintf oc "\t$(TXT2BIN) %s $< > $@\n" opts;
       | Some c, opts ->
           let encoder = "encode_" ^ c in
           fprintf oc "%s: %s %s\n" f.actual_name f.orig_name encoder;
           fprintf oc "\t./encode_%s %s $< > $@\n" c opts;
           add_to_target target.input_type_converters (encoder, f.typ)
-      end
+      end;
+      f.actual_name :: acc
   | Some (FF_Pgm,FF_Bin) -> 
       fprintf oc "%s: %s\n" f.actual_name f.orig_name;
       let opts = pgm2bin_opts f.typ in 
-      fprintf oc "\t$(PGM2BIN) %s $< $@\n" opts
+      fprintf oc "\t$(PGM2BIN) %s $< $@\n" opts;
+      f.actual_name :: acc
   | None ->
-      ()
+      acc
   | _ ->
       Error.invalid_input_data_file f.orig_name
 
@@ -427,9 +436,9 @@ let dump_vhdl_makefile fname =
   fprintf oc "%%.o: %%.vhd\n";
   fprintf oc "\t(cd %s; $(GHDL) -a $(GHDL_ELAB_OPTS) `basename $<`)\n" target.dir;
   fprintf oc "\n";
-  fprintf oc ".PHONY: run code viewtrace viewvcdtrace clean clobber\n";
+  fprintf oc ".PHONY: bin run code viewtrace viewvcdtrace clean clobber\n";
   fprintf oc "\n";
-  fprintf oc "code: %s/%s_tb.vhd\n" target.dir target.proj_name;
+  fprintf oc "code: %s %s/%s_tb.vhd\n" (if cfg.tb_inline_io then "bin" else "") target.dir target.proj_name;
   fprintf oc "\n";
   fprintf oc "%s/%s_tb.vhd: %s\n" target.dir target.proj_name target.main_file;
   fprintf oc "\t$(CAPHC) -I $(CAPH)/lib/caph -vhdl $(VHDL_OPTS) %s\n" target.main_file;
@@ -456,7 +465,9 @@ let dump_vhdl_makefile fname =
     (fun f -> fprintf oc "%s: %s\n"  (mk_obj_file f) f)
     (!(target.vhdl_files) @ !(target.vhdl_extra_files)) ;
   fprintf oc "\n";
-  List.iter (dump_vhdl_inp_file_target oc) !(target.input_files);
+  let bin_targets = List.fold_left (dump_vhdl_inp_file_target oc) [] !(target.input_files) in
+  fprintf oc "\n";
+  fprintf oc "bin: %s\n" (Misc.string_of_list Misc.id " " bin_targets);
   fprintf oc "\n";
   List.iter (dump_vhdl_outp_file_target oc) !(target.output_files);
   fprintf oc "\n";
