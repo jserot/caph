@@ -1,3 +1,23 @@
+## 2.9.0 (May 29, 2018)
+
+#### VHDL
+- added option `-vhdl_tb_inline_io` and `vhdl_tb_external_clock`. The former forces the generated
+  testbench to use inlined data instead of reading/writing `.bin` files. The latter generates an
+  "open" testbench, taking `clock` and `reset` signals as input.
+- added variants `cstream_in` and `cstream_out` to `lib/vhdl` to support inlined data in testbenches
+- removed `fifo_big.vhd` from `lib/vhdl` because the synthesis of this model as a RAM-based
+  component was Quartus-specific. All platform-specific code will be now hosted 
+  [caph-contrib](https://github.com/jserot/caph-contrib). 
+
+#### COMPILER
+- removed option `-vhdl_quartus` for the reasons listed above
+  
+#### EXAMPLES
+- corrected name of the VHDL annotation file in several examples .proj files
+
+#### DOC
+- fixed several typos in the Primer document
+
 ## 2.8.5 (May 5, 2018)
 
 #### SYSTEMC backend
