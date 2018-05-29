@@ -17,4 +17,4 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
 set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
-set_global_assignment -name SEARCH_PATH "z:/vhdl/caph/lib"
+set_global_assignment -name SEARCH_PATH "F:/vhdl/caph/lib"

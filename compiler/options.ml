@@ -136,6 +136,5 @@ let add_vhdl_extra_file f = match Misc.get_extension f with
 | _ -> Error.illegal_extra_file "-vhdl_extra" ".vhd" f
 let set_vhdl_tb_external_clock () = Vhdl.cfg.Vhdl.vhdl_tb_external_clock <- true
 let set_vhdl_tb_inline_io () = Vhdl.cfg.Vhdl.vhdl_tb_inline_io <- true; Genmake.cfg.Genmake.tb_inline_io <- true
-let set_vhdl_quartus () = Vhdl.cfg.Vhdl.vhdl_generate_qip <- true
 (* XDF related options *)
 let set_xdf_package p = Xdf.cfg.Xdf.target_package <- p

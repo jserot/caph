@@ -70,7 +70,6 @@ type vhdl_config = {
   mutable vhdl_rename_io_wires: bool;
   mutable vhdl_tb_external_clock: bool;
   mutable vhdl_tb_inline_io: bool;
-  mutable vhdl_generate_qip: bool;
   mutable vhdl_warn_on_unsized_consts: bool;
   }
 
@@ -129,7 +128,6 @@ let cfg = {
   vhdl_rename_io_wires = false;
   vhdl_tb_external_clock = false;
   vhdl_tb_inline_io = false;
-  vhdl_generate_qip = false;
   vhdl_warn_on_unsized_consts = false;
 }
 
