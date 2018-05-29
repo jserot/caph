@@ -1,5 +1,5 @@
 DOT_OPTS = # -infer_mocs -dump_senv
 SIM_OPTS = -abbrev_dc_ctors 
 SC_OPTS = -target_dir systemc -sc_abbrev_dc_ctors -sc_io_monitor -sc_stop_when_idle 100 -sc_dump_fifo_stats
-VHDL_OPTS = -vhdl_quartus -target_dir vhdl
+VHDL_OPTS = -target_dir vhdl
 GHDL_RUN_OPTS = --stop-time=300ns  --vcd=scale_tb.vcd 

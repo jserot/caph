@@ -1,4 +1,4 @@
-SUBDIRS=c etc systemc vhdl caph quartus
+SUBDIRS=c etc systemc vhdl caph 
 
 install:
 	(cd c; $(MAKE) install)

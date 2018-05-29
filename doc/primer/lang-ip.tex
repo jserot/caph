@@ -169,7 +169,7 @@ v & \text{if}\ 1 \leq 2\ \text{or}\ 1 \leq j \leq 2 \\
 \end{equation}
 
 The corresponding formulation in CAPH is given in Listing~\ref{lst:sobel-conv}. The convolution
-kernels $G_x$ and $G_y$ are specified as 2S arrays. The padding value $v$
+kernels $G_x$ and $G_y$ are specified as 2D arrays. The padding value $v$
 (for the first two lines and columns) has here been set to 0 and the scaling factor is also 0.
 
 \begin{lstlisting}[style=CaphStyle,numbers=left,numberstyle=\tiny,caption={Computation of the

@@ -556,11 +556,11 @@ platform-independant model for a RAM-based FIFO is actually very difficult\footn
   implementations, but only on Altera FPGAs using the Quartus synthetizer.} because it ultimately
 relies on the actual target hardware and on synthetizer-specific settings.  We view it as essential
 that CAPH essentially remains a \emph{platform-agnostic} tool, \emph{i.e.} that it does not rely on
-hardware and/or vendor specific facilities. Since version 2.8.6, the CAPH VHDL library therefore
+hardware and/or vendor specific facilities. Since version 2.9.0, the CAPH VHDL library therefore
 only contains one FIFO model, generating, by default, LE-based FIFO implementations. For a given
 platform, it is possible to supply an alternate model -- generating RAM-based implementations in
 particular -- and to decide when using this model by using two compiler options\footnote{These options were
-  already present in pre-2.8.6 versions; they are just used slightly differently now.}~:
+  already present in pre-2.9.0 versions; they are just used slightly differently now.}~:
 \begin{itemize}
 \item the \verb|-vhdl_big_fifo_model| option is used to specify the VHDL model for ``big'' FIFO
   (which have to be implemented using RAM-blocks typically),

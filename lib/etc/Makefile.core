@@ -42,8 +42,6 @@ else
 GHDL_ELAB_OPTS 	= -fno-color-diagnostics -P$(CAPH_VHDL_LIB)
 endif
 
-QUARTUS_DIR = /Users/jserot/Desktop/SF1/vhdl/caph
-
 # MISC
 
 CHECK_DIFF = diff --ignore-tab-expansion --ignore-space-change --ignore-blank-lines --strip-trailing-cr 
