@@ -3,8 +3,8 @@
 DOT_OPTS = -I $(CAPHLIB) 
 SIM_OPTS = -I $(CAPHLIB)  -abbrev_dc_ctors -chan_cap 150 
 SC_OPTS = -I $(CAPHLIB)  -sc_abbrev_dc_ctors -sc_default_fifo_capacity 150 -sc_stop_time 800000 -sc_dump_fifo_stats -sc_istream_hblank 4 -sc_istream_vblank 140
-VHDL_OPTS = -I $(CAPHLIB)  -vhdl_annot_file mkconv1_fifo_stats.dat -vhdl_istream_blanking
-GHDL_RUN_OPTS = --stop-time=640000ns 
+VHDL_OPTS = -I $(CAPHLIB)  -vhdl_annot_file fifo_stats.dat -vhdl_istream_blanking
+
 
 GEN_CAPH_SRCS = conv233.cph conv255.cph 
 conv233.cph: 

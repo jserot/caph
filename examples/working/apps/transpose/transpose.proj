@@ -1,5 +1,5 @@
 DOT_OPTS = -I $(CAPHLIB)
 SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors
 SC_OPTS = -I $(CAPHLIB) -sc_stop_time 800 -sc_abbrev_dc_ctors -sc_dump_fifo_stats
-VHDL_OPTS = -I $(CAPHLIB) -vhdl_istream_period 1 -vhdl_annot_file transpose_fifo_stats.dat # -vhdl_default_fifo_capacity 32
+VHDL_OPTS = -I $(CAPHLIB) -vhdl_istream_period 1 -vhdl_annot_file fifo_stats.dat # -vhdl_default_fifo_capacity 32
 GHDL_RUN_OPTS = --stop-time=800ns --wave=transpose_tb.ghw

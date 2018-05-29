@@ -1,16 +1,16 @@
 DOT_OPTS = -I $(CAPHLIB)  -D arg1=lena128.pgm -D arg2=255
 SIM_OPTS = -I $(CAPHLIB)  -abbrev_dc_ctors -chan_cap 130 -D arg1=lena128.pgm -D arg2=255
 SC_OPTS = -I $(CAPHLIB)  -sc_abbrev_dc_ctors -sc_default_fifo_capacity 130 -sc_stop_time 800000 -sc_dump_fifo_stats -D arg1=lena128.pgm -D arg2=255
-VHDL_OPTS = -I $(CAPHLIB)  -target_dir vhdl -D arg1=lena128.pgm -D arg2=255 -vhdl_annot_file mkconv2_fifo_stats.dat 
+VHDL_OPTS = -I $(CAPHLIB)  -target_dir vhdl -D arg1=lena128.pgm -D arg2=255 -vhdl_annot_file fifo_stats.dat 
 GHDL_RUN_OPTS = --stop-time=640000ns  
 
 GEN_CAPH_SRCS = conv213.cph conv231.cph conv233.cph
 
 conv233.cph: 
-	../../../../tools/mkconv -o conv233.cph -mode shifted -dim 2 -h 3 -w 3 
+	../../../../bin/mkconv -o conv233.cph -mode shifted -dim 2 -h 3 -w 3 
 
 conv213.cph: 
-	../../../../tools/mkconv -o conv213.cph -mode shifted -dim 2 -h 1 -w 3 
+	../../../../bin/mkconv -o conv213.cph -mode shifted -dim 2 -h 1 -w 3 
 
 conv231.cph: 
-	../../../../tools/mkconv -o conv231.cph -mode shifted -dim 2 -h 3 -w 1 
+	../../../../bin/mkconv -o conv231.cph -mode shifted -dim 2 -h 3 -w 1 

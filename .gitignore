@@ -78,4 +78,5 @@ examples/working/*/*/dot/
 examples/working/*/*/sim/
 examples/working/*/*/systemc/
 examples/working/*/*/vhdl/
+!examples/do_test
 compiler/obsolete/
