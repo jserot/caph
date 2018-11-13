@@ -389,6 +389,14 @@ fi
 #    pgmviewer=''
 #fi
 
+# Checking whether sed needs -E argument (FreeBSD non standard ext)
+echo "" | sed -E -e "s/{}//" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	esed="sed -E"
+else
+	esed="sed"
+fi
+
 # Finish generated files
 
 echo "INSTALL=$install" >> config
@@ -400,6 +408,7 @@ echo "AR=$ar" >> config
 echo "CP=cp" >> config
 echo "MV=mv" >> config
 echo "RM=rm -f" >> config
+echo "ESED=$esed" >> config
 echo "RMDIR=rm -rf" >> config
 echo "MAKE=$make" >> config
 echo "QMAKE=$qmake" >> config

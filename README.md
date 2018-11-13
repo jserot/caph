@@ -39,6 +39,15 @@ Installers for MacOS and Windows are available from the [Project web page](http:
 
 ##### From source
 
+Pre-requisites :
+
+* [Ocaml](http://ocaml.org/docs/install.html) version >= 4.06.0 with the following packages
+    - [ocamlbuild](https://opam.ocaml.org/packages/ocamlbuild)
+    - [ocamlfind](https://opam.ocaml.org/packages/ocamlfind)
+    - [camlp4](https://opam.ocaml.org/packages/camlp4)
+* A running `Latex` installation, with the `pdflatex` command if you want to build the documentation
+  from sources
+
 Download the source tree from the [Project web page](http://caph.univ-bpclermont.fr) or via
 [github](http://github.com/jserot/caph) (`git clone https://github.com/jserot/caph`).
 
