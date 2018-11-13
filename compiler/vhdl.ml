@@ -484,14 +484,16 @@ and string_of_exp ?(loc=Location.no_location) ty e = match e, real_type ty with
   (* Unary ops *)
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar op},_,[e']), _ when Syntax.is_unop op -> string_of_unop op ^ "(" ^ string_of_expr e' ^ ")"
   (* Binary ops *)
+  | Syntax.EApp ({Syntax.e_desc=Syntax.EVar "::"},_,[e1;{Syntax.e_desc=Syntax.EConst(Const.CInt (n,_,_))}]), _ ->
+      "resize(" ^ string_of_expr e1 ^ ", " ^ string_of_int n ^ ")"
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar ">>"},_,[e1;{Syntax.e_desc=Syntax.EConst(Const.CInt (n,_,_))}]), _ ->
-      "SHIFT_RIGHT(" ^ string_of_expr e1 ^ ", " ^ string_of_int n ^ ")"
+      "shift_right(" ^ string_of_expr e1 ^ ", " ^ string_of_int n ^ ")"
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar ">>"},_,[e1;e2]), _ ->
-      "SHIFT_RIGHT(" ^ string_of_expr e1 ^ ", to_integer(" ^ string_of_expr e2 ^ "))"
+      "shift_right(" ^ string_of_expr e1 ^ ", to_integer(" ^ string_of_expr e2 ^ "))"
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar "<<"},_,[e1;{Syntax.e_desc=Syntax.EConst(Const.CInt (n,_,_))}]), _ ->
-      "SHIFT_LEFT(" ^ string_of_expr e1 ^ ", " ^ string_of_int n ^ ")"
+      "shift_left(" ^ string_of_expr e1 ^ ", " ^ string_of_int n ^ ")"
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar "<<"},_,[e1;e2]), _ ->
-      "SHIFT_LEFT(" ^ string_of_expr e1 ^ ", to_integer(" ^ string_of_expr e2 ^ "))"
+      "shift_left(" ^ string_of_expr e1 ^ ", to_integer(" ^ string_of_expr e2 ^ "))"
   (* Others *)
   | Syntax.EApp ({Syntax.e_desc=Syntax.EVar "*"},_,[e1;e2]), _ when not cfg.vhdl_use_native_mult ->
       "mul(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"

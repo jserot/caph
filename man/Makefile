@@ -34,7 +34,7 @@ man: $(MANS)
 .pod.tex:
 	@$(POD2TEX) -full -preamble "\chapter{The \texttt{$(<:.pod=)} command}" -preamble "\label{cha:$(<:.pod=)}" -postamble "%%% Local Variables:" -postamble "%%% mode: latex" -postamble "%%% TeX-master: \"caph\"" -postamble "%%% End: " -sections $(TEX_MAN_SECTIONS) $< $@
 #	$(POD2TEX) -full -prefile $(TEX_PREFILE) -postfile $(TEX_POSTFILE) -sections $(TEX_MAN_SECTIONS) $< $@
-	@sed -E -e "s/\\\\label{[^}]+}|\\\\index{[^}]+}//g" -e "s/section/section*/" $@ > _$@
+	@$(ESED) -e "s/\\\\label{[^}]+}|\\\\index{[^}]+}//g" -e "s/section/section*/" $@ > _$@
 	@mv _$@ $@ 
 #	pdflatex $@
 

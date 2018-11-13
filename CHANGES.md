@@ -1,4 +1,4 @@
-## 2.9.0 (May 29, 2018)
+## 2.9.0 (Nov 12, 2018)
 
 #### VHDL
 - added option `-vhdl_tb_inline_io` and `vhdl_tb_external_clock`. The former forces the generated
@@ -6,8 +6,9 @@
   "open" testbench, taking `clock` and `reset` signals as input.
 - added variants `cstream_in` and `cstream_out` to `lib/vhdl` to support inlined data in testbenches
 - removed `fifo_big.vhd` from `lib/vhdl` because the synthesis of this model as a RAM-based
-  component was Quartus-specific. All platform-specific code will be now hosted 
-  [caph-contrib](https://github.com/jserot/caph-contrib). 
+  component was Quartus-specific. All platform-specific code will be now hosted on 
+  the separate repository [caph-contrib](https://github.com/jserot/caph-contrib). More details on 
+  this [here](https://github.com/jserot/caph/issues/1).
 
 #### COMPILER
 - removed option `-vhdl_quartus` for the reasons listed above
@@ -17,6 +18,11 @@
 
 #### DOC
 - fixed several typos in the Primer document
+
+#### DISTRIB
+- fixed a bug in `man/Makefile` which prevented building the man pages
+  from sources on platforms for which the `sed` command did not accept the `-E` extension
+- updated the `configure` to automatically detect which version of `sed` to use
 
 ## 2.8.5 (May 5, 2018)
 
