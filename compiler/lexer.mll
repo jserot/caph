@@ -123,6 +123,7 @@ let keyword_table = [
 (*   "ror", INFIXOP4("ror"); *)
   "port", PORT;
   "init", INIT;
+  "parameter", PARAMETER;
 ]
 
 (* To handle #include directive (added 2014-11-04, JS) *)

@@ -696,7 +696,9 @@ let rec string_of_val ty v = match v, real_type ty with
 (* Actors *)
 
 let rec dump_actor_interface kw oc (id,b) =
-    let name = match b.ib_impl.Syntax.ai_vhdl with "" -> id | s -> s in
+    let name = match List.assoc_opt "vhdl" b.ib_impl with
+      | Some [f] -> f
+      | _ -> id in
     fprintf oc "\n";
     fprintf oc "%s %s is\n " kw name;
     TypeVarNames.reset ();
@@ -1077,12 +1079,12 @@ let dump_libraries oc libs =
   List.iter (fprintf oc "use %s;\n") libs
 
 let dump_actor prefix profil ir (id,a) =
-  if a.Interm.ia_impl.Syntax.ai_vhdl <> "" then begin
-    let f = Misc.prefix_dir Genmake.target.Genmake.dir a.Interm.ia_impl.Syntax.ai_vhdl ^ ".vhd" in
+  match List.assoc_opt "vhdl" a.ia_impl with
+  | Some [f'] ->
+    let f = Misc.prefix_dir Genmake.target.Genmake.dir f' ^ ".vhd" in
     Misc.check_file f;
     Genmake.add_target ~extra:true f
-    end
-  else
+  | _ ->
     let dump_inst mono ((ty,fns), (b, bids)) =
       let name =
         if mono then b.ib_name ^ "_act" 
@@ -1382,10 +1384,10 @@ and dump_box oc actors annots wire_name (bid,box) =
         (string_of_split_ios wire_name (bid,box))
   | RegularB ->
       let name =
-        begin match box.ib_impl.Syntax.ai_vhdl, box.ib_ninsts with
-          "", n when n<2 -> box.ib_name ^ "_act" 
-        | "", n -> Mangling.string_of_name box.ib_name [box.ib_tysig] [] (List.map snd box.ib_fpbs) ^ "_act"
-        | s, _ -> s
+        begin match List.assoc_opt "vhdl" box.ib_impl, box.ib_ninsts with
+        | Some [s], _ -> s
+        | _, n when n<2 -> box.ib_name ^ "_act" 
+        | _, n -> Mangling.string_of_name box.ib_name [box.ib_tysig] [] (List.map snd box.ib_fpbs) ^ "_act"
         end in
       fprintf oc "  B%d: %s %s port map(%s,%s%s,%s);\n"    (* TO FIX : size param ! *)
         bid

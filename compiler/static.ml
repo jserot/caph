@@ -49,7 +49,7 @@ and ss_box = {
     b_vars: (string * (Expr.e_val option * typ)) list; (* Local variables, with their initial values *)
     b_rules: b_rule list;                              (* The (instanciated, specialized) rule set *)
     b_device: string;                                  (* For I/O boxes, name of the file, port ... *)
-    b_impl: Syntax.actor_impl;
+    b_impl: Syntax.actor_impl list;
     mutable b_moc: b_moc;
     b_ival: Expr.e_val option                          (* For port inputs, initial value *)
 }
@@ -259,7 +259,9 @@ let new_rbox name ty typarams tyins tyvars tyouts tvbs svbs fpbs ins outs types 
 
 let new_ibox kind name ty dev ival =
   let bid = new_bid () in
-  let dev' = Genmake.add_input_file (dev,ty) in
+  let dev' = match dev with
+      "" -> ""
+     | _ -> Genmake.add_input_file (dev,ty) in
   if !Genmake.safe_mode && not (List.mem dev' Genmake.safe_cfg.Genmake.allowed_ifiles) then unsafe_run dev';
   bid, { b_id=bid; b_tag=InpB kind; b_name=name; b_wsub=""; b_ins=[]; b_outs=["o",([0],ty)]; b_typ=ty; 
          b_tysig=ty;
@@ -322,6 +324,7 @@ let rec net_matching toplevel nenv npat r = match npat.np_desc, r with
   | NPat_tuple ps, SVTuple rs when List.length ps = List.length rs ->
       let nenvs, ws = List.split (List.map2 (net_matching toplevel nenv) ps rs) in
       List.concat nenvs, List.concat ws
+  | NPat_unit, _ -> [], []
   | _, _ -> raise Matching_fail
 
 (* Rule: NE |- NExp => rho,B,W *)
@@ -332,6 +335,7 @@ let rec eval_net_expr tp globals nenv expr =
       if List.mem_assoc v nenv then List.assoc v nenv, [], []
       else unbound_value_err v expr.ne_loc
   | NConst c -> SVVal (eval_const expr.ne_loc c), [], []
+  | NUnit -> SVUnit, [], []
   | NArray1Const vs -> 
       let a = Array1.of_list (List.map (Expr.eval_const expr.ne_loc) vs) in
       SVVal (Expr.Val_array1 (Array1.size a, a)), [], []
@@ -668,6 +672,7 @@ and create_rec_bindings toplevel nenv npat =
             ne' @ ne, bs' @ bs)
           ([],[])
           ps
+    | NPat_unit -> not_implemented "recursive unit pattern"
 (*     | NPat_bundle ps -> not_implemented "recursive bundle pattern" *)
 
 and mk_subst loc nenv (rid,rv) =
@@ -759,6 +764,14 @@ and instanciate_actor tp globals nenv loc a args =
   let tyins' = list_of_types tyins in
   let tyouts' = list_of_types tyouts in
   match List.length a.sa_ins, List.length a.sa_outs, args with
+  | 0, 1, SVUnit ->                                                  (* APP_0_1 *)
+      SVLoc (l,0,List.nth tyouts' 0,false),
+      [l,b],
+      []
+  | 0, n, SVUnit ->                                                  (* APP_0_n *)
+      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+      [l,b],
+      []
   | 1, 1, SVLoc(l1,s1,ty,false) ->                                    (* APP_1_1 *)
       let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
       SVLoc (l,0,List.nth tyouts' 0,false),
@@ -797,6 +810,7 @@ and instanciate_actor_ios loc a args =
                SVLoc(l,s,ty,false) -> ty
              | _ -> illegal_application loc)
            vs)
+  | SVUnit -> type_unit
   | _ -> illegal_application loc in
   match a.sa_params (* ,a.sa_vars *) with
     [] ->
@@ -881,8 +895,12 @@ let rec eval_io_decl tp (ne,bs) d =
       let (l, b), is_output = begin match kind, dir, ival with
       | StreamIO, IoIn, _ -> new_ibox kind id ty dev None, false
       | StreamIO, IoOut, _ -> new_obox kind id ty dev None, true
-      | PortIO, IoIn, None -> new_ibox kind id ty dev None, false
-      | PortIO, IoIn, Some e -> new_ibox kind id ty dev (Some (Expr.eval_expression [] [] e)), false
+      | PortIO, IoIn, None
+      | ParamIn, _, None ->
+         new_ibox kind id ty dev None, false
+      | PortIO, IoIn, Some e 
+      | ParamIn, _, Some e ->
+         new_ibox kind id ty dev (Some (Expr.eval_expression [] [] e)), false
       | PortIO, IoOut, _ -> new_obox kind id ty dev None, true end in
       (id,SVLoc (l,0,ty,is_output)) :: ne, (l,b) :: bs
 
@@ -1082,7 +1100,7 @@ let print_box (i,b) =
        The above statement is just for helping debug.. *)
   match b.b_tag with
     RegularB ->
-      Printf.printf "B%d: %s (tvbs=[%s],svbs=[%s],fpbs=[%s]) params=[%s] ins=[%s] outs=[%s] vars=[%s] moc=%s)\n"
+      Printf.printf "B%d: %s (tvbs=[%s],svbs=[%s],fpbs=[%s]) params=[%s] ins=[%s] outs=[%s] vars=[%s] impls=[%s] moc=%s)\n"
         i
         b.b_name
         (Misc.string_of_list string_of_typ_var_inst ","  b.b_tvbs)
@@ -1092,6 +1110,7 @@ let print_box (i,b) =
         (Misc.string_of_list string_of_typed_bin ","  b.b_ins)
         (Misc.string_of_list string_of_typed_bout ","  b.b_outs)
         (Misc.string_of_list string_of_typed_bvar ","  b.b_vars)
+        (Syntax.string_of_actor_impls b.b_impl)
         (string_of_moc b.b_moc)
   | InpB kind ->
       Printf.printf "I%d: %s: %s (outs=[%s] kind=%s)\n"

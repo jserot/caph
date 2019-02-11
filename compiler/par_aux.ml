@@ -50,7 +50,7 @@ and mk_qualifier desc = {q_desc = desc; q_loc = get_current_location()}
 
 let empty_rule_schema = { rsch_desc = ([],[]); rsch_loc = Location.no_location }
 
-(* Streams and port IOs *)
+(* Stream, port and parameter IOs *)
 
 let mk_io desc = IoDecl {io_desc = desc; io_loc = get_current_location()}
 

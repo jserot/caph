@@ -96,6 +96,7 @@ let rec mk_process tp sp (bid,box) =
             begin match kind with
               StreamIO -> Streams.mk_input_stream tp ty box.b_device
             | PortIO -> Ports.mk_input_port box.b_name tp ty box.b_device box.b_ival
+            | ParamIn -> not_implemented "Dynamic semantics of input parameters"
             end in
           Some { pf_rdy=rdy_fn; pf_get=get_fn; pf_put=(fun t v -> ()); pf_close=close_fn } }
   | OutB kind ->
@@ -114,6 +115,7 @@ let rec mk_process tp sp (bid,box) =
            begin match kind with
              StreamIO -> Streams.mk_output_stream ty box.b_device
            | PortIO -> Ports.mk_output_port ty box.b_device
+           | ParamIn -> not_implemented "Dynamic semantics of input parameters"
            end in
           Some { pf_rdy=(function t -> true); pf_get=(function t -> None); pf_put=put_fn; pf_close=close_fn } }
   | DummyB -> 

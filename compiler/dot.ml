@@ -25,6 +25,7 @@ type dot_config = {
     mutable show_indexes: bool;
     mutable stream_io_box_shape: string;
     mutable port_io_box_shape: string;
+    mutable param_box_shape: string;
     mutable slotted_boxes: bool;
     mutable show_wire_annots: bool
   }
@@ -34,6 +35,7 @@ let cfg = {
   show_indexes = false;
   stream_io_box_shape = "invtriangle";
   port_io_box_shape = "hexagon";
+  param_box_shape = "hexagon";
   slotted_boxes = true;
   show_wire_annots = false
 }
@@ -65,6 +67,7 @@ let string_of_fparams b = match b.ib_fpbs with
 let string_of_io_kind = function
     Syntax.StreamIO -> cfg.stream_io_box_shape
   | Syntax.PortIO -> cfg.port_io_box_shape
+  | Syntax.ParamIn -> cfg.param_box_shape
 
 let output_box ch (i,b) =
   let ioslots c n =

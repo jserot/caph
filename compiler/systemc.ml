@@ -694,15 +694,15 @@ let dump_component f modname fname m =
   close_out oc
 
 let dump_actor profil prefix ir (id,a) =
-  if a.Interm.ia_impl.Syntax.ai_systemc <> "" then begin
-    let f1 = a.Interm.ia_impl.Syntax.ai_systemc ^ ".h"
-    and f2 = a.Interm.ia_impl.Syntax.ai_systemc ^ ".cpp" in
+  match List.assoc_opt "systemc" a.ia_impl with
+  | Some [f] ->
+    let f1 = f ^ ".h"
+    and f2 = f ^ ".cpp" in
     Misc.check_file f1;
     Misc.check_file f2;
     Genmake.add_target ~extra:true f1;
     Genmake.add_target ~extra:true f2
-    end
-  else
+  | _ ->
     if cfg.sc_use_templates then
       (* Obsolete *)
       let modname = id ^ cfg.sc_mod_suffix in
@@ -1187,9 +1187,9 @@ List.iter (function w -> fprintf oc "  sc_signal<bool> _%s;\n" w.iow_name) io_mo
     splitters = splitters }
 
 and header_name (id,a) =
-  if a.ia_impl.Syntax.ai_systemc <> "" then 
-    [ "\"" ^ a.ia_impl.Syntax.ai_systemc ^ ".h\"" ]
-  else
+  match List.assoc_opt "systemc" a.ia_impl with
+  | Some [f] -> [ "\"" ^ f ^ ".h\"" ]
+  | _ ->
     if cfg.sc_use_templates then 
       [ "\"" ^ id ^ cfg.sc_mod_suffix ^ ".h\"" ]
     else
@@ -1281,6 +1281,8 @@ and dump_box ir stop_wires oc (i,b) =
       fprintf oc "  %s.%s(%s);\n" bname cfg.sc_mod_clock cfg.sc_mod_clock;
       fprintf oc "  %s.%s(w%d);\n" bname cfg.sc_stream_in_out_id wid;
       fprintf oc "  %s.started(_%s_started);\n" bname bname
+  | InpB Syntax.ParamIn ->
+     Misc.not_implemented "SystemC translation of input parameters"
   | OutB Syntax.StreamIO ->
       let wid, ty = begin match b.ib_ins with
         [id,(wid,ty)] -> wid, ty 
@@ -1334,6 +1336,8 @@ and dump_box ir stop_wires oc (i,b) =
           cfg.sc_port_out_mod_name (string_of_type ty) bname bname b.ib_device cfg.sc_trace;
       fprintf oc "  %s.%s(%s);\n" bname cfg.sc_mod_clock cfg.sc_mod_clock;
       fprintf oc "  %s.%s(w%d);\n" bname cfg.sc_stream_out_in_id wid
+  | OutB Syntax.ParamIn ->
+     Misc.fatal_error "Systemc.dump_box"
   | DummyB ->  Misc.fatal_error "Systemc.dump_box: dummy box"
 
 and io_fmt dev = 

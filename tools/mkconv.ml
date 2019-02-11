@@ -36,7 +36,7 @@ let mk_rgrd d = { rgrd_desc = d; rgrd_loc = Location.no_location }
 let mk_rrhs d = { rrhs_desc = List.map (function (q,e) -> mk_rqual q, mk_exp e) d; rrhs_loc = Location.no_location }
 let mk_rule (lhs,rhs) = { rule_desc = mk_rlhs lhs, mk_rgrd [], mk_rrhs rhs; rule_loc = Location.no_location }
 let mk_op op e1 e2 = EApp (mk_exp (EVar op), None, [mk_exp e1; mk_exp e2])
-let no_impl = { ai_vhdl=""; ai_systemc="" }
+let no_impl = []
 let no_rsch = mk_rsch ([],[])
 
 let id p i = p ^ string_of_int i

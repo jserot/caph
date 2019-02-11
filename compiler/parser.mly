@@ -107,6 +107,7 @@ open Misc
 %token TY_ARRAY       /* "array" */
 %token PRAGMA         /* "#pragma" */
 %token PORT           /* "port" */
+%token PARAMETER      /* "parameter" */
 %token INIT           /* "init" */ 
 
 /* Precedences and associativities. Lower precedences first. */
@@ -188,6 +189,9 @@ pragma_param:
       { $1 }
   | INT
       { string_of_int $1}
+  | STRING
+      { $1 }
+  
 ;
       
 /* =================== TYPE DECLARATION ========================== */
@@ -314,9 +318,12 @@ ident_comma_list:
 /* =================== ACTOR DECLARATION ========================== */
 
 actor_decl:
-        ACTOR LIDENT actor_opt_params IN LPAREN actor_io RPAREN OUT LPAREN actor_io RPAREN
-        actor_vars actor_rules 
-          { mk_actor {a_id=$2; a_params=$3; a_ins=$6; a_outs=$10; a_vars=$12; a_rsch=fst($13); a_rules=snd($13); a_impl=no_impl} }
+        ACTOR LIDENT actor_opt_params actor_inps actor_outps actor_body
+        { match $6 with
+          | Some (vars,rules) ->
+             mk_actor {a_id=$2; a_params=$3; a_ins=$4; a_outs=$5; a_vars=vars; a_rsch=fst(rules); a_rules=snd(rules); a_impl=no_impl}
+          | None ->
+             mk_actor {a_id=$2; a_params=$3; a_ins=$4; a_outs=$5; a_vars=[]; a_rsch=empty_rule_schema; a_rules=[]; a_impl=no_impl} }
 ;
 
 /* -- ACTOR PARAMETERS */
@@ -344,6 +351,18 @@ actor_param:
 
 /* -- ACTOR IOs */
 
+actor_inps:
+       /* Nothing */
+          { [] }
+      | IN LPAREN actor_io RPAREN
+          { $3 }
+
+actor_outps:
+       /* Nothing */
+          { [] }
+      | OUT LPAREN actor_io RPAREN
+          { $3 }
+
 actor_io:
         act_io_comma_list
           { $1 }
@@ -362,6 +381,10 @@ act_io:
 
 /* -- ACTOR BODY */
 
+actor_body:
+      | /* nothing */ { None }
+      | actor_vars actor_rules { Some ($1, $2) }
+          
 actor_vars:
       | /* nothing */
           { [] }
@@ -655,6 +678,8 @@ io_decl:
           { mk_io(PortIO, $2, $4, IoIn, $5, Some (mk_expr (EConst $7))) }
       | PORT LIDENT COLON type_expr TO STRING
           { mk_io(PortIO, $2, $4, IoOut, $6, None) }
+      | PARAMETER LIDENT COLON type_expr EQUAL val_defn
+          { mk_io(ParamIn, $2, $4, IoIn, "", Some $6) }
 ;
 
 io_dir:
@@ -708,6 +733,8 @@ net_pattern:
           { mk_net_pat(NPat_var $1) }
       | LPAREN net_pattern_comma_list RPAREN
           { match $2 with [x] -> x | xs -> mk_net_pat(NPat_tuple(xs)) }
+      | LPAREN RPAREN
+          { mk_net_pat(NPat_unit) }
 ;
 
 net_pattern_comma_list:
@@ -744,6 +771,8 @@ simple_net_constant:
 simple_net_expr:
       | LIDENT
           { mk_net_expr (NVar $1) }
+      | LPAREN RPAREN 
+          { mk_net_expr (NUnit) }
       | simple_net_constant
           { mk_net_expr(NConst $1) }
       | net_array1_constant 

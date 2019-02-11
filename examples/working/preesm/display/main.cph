@@ -1,0 +1,20 @@
+type pixel == unsigned<8>;
+
+actor read_yuv
+  in (width: int, height: int)
+  out (y: pixel, u: pixel, v: pixel)
+;
+
+actor display
+  in (height: int, width: int, id: int, y: pixel, u: pixel, v: pixel)
+;
+
+#pragma implemented(read_yuv, preesm, "yuvRead", "readYUV", "initReadYUV", 0)
+#pragma implemented(display, preesm, "yuvDisplay", "yuvDisplay", "yuvDisplayInit", 0)
+
+parameter width: int = 352;
+parameter height: int = 288;
+parameter index: int = 0;
+
+net (y,u,v) = read_yuv (width,height);
+net () = display (height,width,index,y,u,v);

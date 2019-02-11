@@ -873,6 +873,7 @@ let rec type_net_pattern p =
           ([], [])
           ps in
       (type_product (List.rev tys), env')
+  | NPat_unit -> type_unit, []
   in
   let ty, env' = type_pat p in
   p.np_typ <- ty;
@@ -991,7 +992,9 @@ and type_network_expr tenv expr =
       let _, ty' = type_of_type_expression tenv empty_venv te in
         (* Note 2015-05-19, JS. Should we really type [te] in an empty VE here ? *)
       type_cast e.ne_loc ty ty';
-      ty' in
+      ty'
+  | NUnit ->
+     type_unit in
   let ty = type_expr expr in
   expr.ne_typ <- ty;
   update_tc_insts tenv.te_types expr.ne_loc ty;
@@ -1031,6 +1034,8 @@ and extract_type_bindings loc tenv pat ty = match pat.np_desc, real_type ty with
       List.flatten (List.map2 (extract_type_bindings loc tenv) ps ts)
   | NPat_tuple ps, Tconstr ({tc_name="bundle"}, [ty'], [sz]) ->
       List.flatten (List.map (function p -> extract_type_bindings p.np_loc tenv p ty') ps)
+  | NPat_unit, Tconstr ({tc_name="unit"}, [], []) ->
+     []
   | _, _ -> illegal_definition loc
 
 (* RULE TE |- IoDecl => TEi,TEo *)
@@ -1042,12 +1047,15 @@ let type_io_decl tenv (ie,oe) d =
     in t in
   let id, t, dir = match d.io_desc with 
     (StreamIO, id, ty, dir, _, _) -> id, type_of ty, dir
-  | (PortIO, id, ty, dir, _, None) -> id, type_of ty, dir
-  | (PortIO, id, ty, dir, _, Some exp) ->
+  | (PortIO, id, ty, dir, _, None) 
+  | (ParamIn, id, ty, dir, _, None) -> id, type_of ty, dir
+  | (PortIO, id, ty, dir, _, Some exp)
+  | (ParamIn, id, ty, dir, _, Some exp) ->
       let t = type_of ty in
       let t' = type_expression tenv empty_venv exp in
       type_cast d.io_loc t' t;
-      id, t, dir in 
+      id, t, dir
+  in 
   update_tc_insts tenv.te_types d.io_loc t;
   match dir with
     IoIn -> (id, t)::ie, oe

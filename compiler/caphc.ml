@@ -38,7 +38,7 @@ let reopen_input_file () =
 let print_banner () = 
   Printf.printf "-------------------------------------------------------------------------------------------------\n";
   Printf.printf "This is the Caph compiler, version %s\n" Version.version;
-  Printf.printf "(C) 2011-2018 J. Serot (Jocelyn.Serot@uca.fr)\n";
+  Printf.printf "(C) 2011-2019 J. Serot (Jocelyn.Serot@uca.fr)\n";
   Printf.printf "For more information, see : http://caph.univ-bpclermont.fr\n"; 
   Printf.printf "-------------------------------------------------------------------------------------------------\n";
   flush stdout
@@ -110,6 +110,9 @@ try
     | Dif ->
         check_dir Genmake.target.Genmake.dir;
         Dif.output_ir prefix ir
+    | Preesm ->
+        check_dir Genmake.target.Genmake.dir;
+        Preesm.output_ir prefix ir
     | Systemc ->
         let ir' = Interm.insert_splitters ir in
         Dot.output_ir (prefix ^ "_expanded") ir';

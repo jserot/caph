@@ -71,6 +71,11 @@ let dump_dif_target oc args =
   fprintf oc "%s.dif: %s.cph $(GEN_CAPH_SRCS)\n" args.main args.main;
   fprintf oc "\t$(CAPHC) -I %s/lib/caph -dif $(DIF_OPTS) %s.cph\n\n" args.caph_dir args.main
 
+let dump_preesm_target oc args =
+  fprintf oc "preesm: %s.pi\n\n" args.main;
+  fprintf oc "%s.pi: %s.cph $(GEN_CAPH_SRCS)\n" args.main args.main;
+  fprintf oc "\t$(CAPHC) -I %s/lib/caph -preesm $(PREESM_OPTS) %s.cph\n\n" args.caph_dir args.main
+
 let dump_relay_target oc args target sub =
   fprintf oc "%s.%s:\n" target sub;
   fprintf oc "\tmake -f Makefile.%s %s CAPH=%s\n" target sub args.caph_dir
@@ -101,6 +106,8 @@ let main () =
   dump_xdf_target oc args;
   fprintf oc "\n";
   dump_dif_target oc args;
+  fprintf oc "\n";
+  dump_preesm_target oc args;
   fprintf oc "\n";
   fprintf oc "clean:\n";
   List.iter

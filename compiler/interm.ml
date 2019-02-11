@@ -73,7 +73,7 @@ and ir_box = {
     ib_types: (string * Ssval.local_type_def) list;
     ib_params: (string * (Expr.e_val * typ)) list;
     ib_device: string;
-    ib_impl: Syntax.actor_impl;
+    ib_impl: Syntax.actor_impl list;
     ib_vars: (string * (Expr.e_val option * Types.typ * var_kind * Syntax.qual_desc)) list;  
     ib_transitions: transition list;
     ib_ival: Expr.e_val option; (* for input ports *)
@@ -91,7 +91,7 @@ and ir_actor = {
     ia_vars: (string * (Syntax.expr option * Types.typ * var_kind * Syntax.qual_desc)) list;
     ia_transitions: transition list;
     ia_insts: (ir_box, bid) ActInsts.t;         (* Instances *)
-    ia_impl: Syntax.actor_impl
+    ia_impl: Syntax.actor_impl list
   }
     
 and var_kind =
@@ -904,8 +904,12 @@ let rec dump_actor (id,a) =
     (Misc.string_of_list string_of_typed_out ","  a.ia_outs)
     (Misc.string_of_list string_of_typed_var ","  a.ia_vars);
   List.iter (function t -> Printf.printf "        # %s\n" (string_of_transition t)) a.ia_transitions;
-  if a.ia_impl.ai_systemc <> "" then Printf.printf "  * using %s for SystemC implementation\n" a.ia_impl.ai_systemc;
-  if a.ia_impl.ai_vhdl <> "" then Printf.printf "  * using %s for VHDL implementation\n" a.ia_impl.ai_vhdl;
+  match List.assoc_opt "systemc" a.ia_impl with
+  | Some [f] -> Printf.printf "  * using %s for SystemC implementation\n" f
+  | _ -> ();
+  match List.assoc_opt "vhdl" a.ia_impl with
+  | Some [f] -> Printf.printf "  * using %s for VHDL implementation\n" f
+  | _ -> ();
   ActInsts.iter Static.print_actor_inst a.ia_insts
 
 and string_of_typed_in (id,ty) = id ^ ":" ^ Pr_type.string_of_type ty

@@ -13,7 +13,7 @@
 
 let print_version () = Printf.printf "This is the Caph compiler, version %s\n" Version.version; exit 0
 
-type output_format = NoOutput | Dot | Xdf | Dif | Systemc | Vhdl
+type output_format = NoOutput | Dot | Xdf | Dif | Preesm | Systemc | Vhdl
 let output_fmt = ref NoOutput
 let output_prefix = ref ""
 let prefix = ref ""
@@ -52,6 +52,7 @@ let do_dump_fsms () = dump_fsms := true
 let do_run () = run := true
 let do_dot () = output_fmt := Dot
 let do_xdf () = output_fmt := Xdf
+let do_preesm () = output_fmt := Preesm
 let do_dif () = output_fmt := Dif
 let do_systemc () = output_fmt := Systemc
 let do_vhdl () = output_fmt := Vhdl
@@ -138,3 +139,7 @@ let set_vhdl_tb_external_clock () = Vhdl.cfg.Vhdl.vhdl_tb_external_clock <- true
 let set_vhdl_tb_inline_io () = Vhdl.cfg.Vhdl.vhdl_tb_inline_io <- true; Genmake.cfg.Genmake.tb_inline_io <- true
 (* XDF related options *)
 let set_xdf_package p = Xdf.cfg.Xdf.target_package <- p
+(* Preesm related options *)
+let set_preesm_code_prefix p = Preesm.cfg.Preesm.code_prefix <- p
+let set_preesm_no_actors_num () = Preesm.cfg.Preesm.actors_num <- false
+let set_preesm_use_floats () = Preesm.cfg.Preesm.use_floats <- true

@@ -154,13 +154,10 @@ and act_desc = {
   a_vars: var list;
   a_rsch: rule_schema;
   a_rules: rule list;
-  mutable a_impl: actor_impl
+  mutable a_impl: actor_impl list
   }
 
-and actor_impl = { 
-  ai_vhdl: string;
-  ai_systemc: string;
-  }
+and actor_impl = string * string list  (* target, target-specific arguments *)  
 
 and param =
   { param_desc: ident * type_expression;
@@ -232,7 +229,7 @@ and io_decl =
 
 and io_decl_desc = io_kind * io_id * type_expression * io_dir * io_dev * expr option
 
-and io_kind = StreamIO | PortIO
+and io_kind = StreamIO | PortIO | ParamIn
 
 and io_id = ident
 and io_dir = IoIn | IoOut
@@ -260,6 +257,7 @@ and net_pattern =
 and net_pattern_desc =
   | NPat_var of string
   | NPat_tuple of net_pattern list
+  | NPat_unit
 
 and net_expr =
   { ne_desc: net_expr_desc;
@@ -278,6 +276,7 @@ and net_expr_desc =
    | NApp of net_expr * net_expr
    | NFun of net_pattern * net_expr (* single match here ! *)
    | NLet of bool * net_binding list * net_expr (* rec / non rec*)
+   | NUnit
 
 (* Accessors *)
 
@@ -327,6 +326,7 @@ let name_of_pragma_decl d = match d.pragma_desc with (s, _) -> s
 let rec names_of_net_pattern p = match p.np_desc with
   NPat_var v -> [v]
 | NPat_tuple ps -> List.flatten (List.map names_of_net_pattern ps)
+| NPat_unit -> []
 
 let names_of_net_binding ns b = match b.nb_desc with
   p, _ -> ns @ names_of_net_pattern p
@@ -336,7 +336,7 @@ let names_of_net_decl d = match d.nd_desc with
 
 (* Program manipulation *)
 
-let no_impl = { ai_vhdl = ""; ai_systemc = "" }
+let no_impl = []
 
 let empty_program = { types=[]; vals=[]; actors=[]; ios=[]; nets=[]; pragmas=[]; decls=[] }
 
@@ -517,7 +517,10 @@ let string_of_rule r = match r.rule_desc with
 
 let string_of_const_annot = function None -> "" | Some (Cst_annot ann) -> "[" ^ ann ^ "]"
 
-let string_of_io_kind = function StreamIO -> "stream" | PortIO -> "port"
+let string_of_io_kind = function
+  | StreamIO -> "stream"
+  | PortIO -> "port"
+  | ParamIn -> "parameter"
 
 let string_of_const = Const.string_of_const
 
@@ -544,6 +547,10 @@ and string_of_net_pattern np = string_of_net_pat np.np_desc
 and string_of_net_pat = function
     NPat_var v -> v
   | NPat_tuple ps -> "(" ^ Misc.string_of_list string_of_net_pattern "," ps ^ ")"
+  | NPat_unit -> "()"
+
+let string_of_actor_impl (target,args) = target ^ ":" ^ Misc.string_of_list Misc.id "," args 
+let string_of_actor_impls = Misc.string_of_list string_of_actor_impl ","
 
 (* Re-externalizing actor decls *)
 
@@ -703,29 +710,32 @@ and qualify a (i,r_comps) loc q =
 
 (* Collecting #pragma's *)
 
-let parse_pragmas actors pragmas =
+let parse_pragmas pragmas =
     List.fold_left
-      (fun impls p -> match p.pragma_desc with
-        "implemented", [actor_id;target;src_file] when List.mem target ["vhdl";"systemc"] ->  (actor_id,(target,src_file)) :: impls
-      | "implemented", _ -> Error.invalid_pragma "implemented" "illegal format" p.pragma_loc
-      | _, _ -> impls)
+      (fun impls p ->
+        match p.pragma_desc with
+        | "implemented", [actor_id;target;src_file] when List.mem target ["vhdl";"systemc"] ->
+           (actor_id, (target, [src_file]))  :: impls
+        | "implemented", [actor_id;target;incl_file;loop_fn;init_fn;period] when target="preesm" ->
+           (actor_id, (target, [incl_file;loop_fn;init_fn;period])) :: impls
+        | "implemented", _ -> Error.invalid_pragma "implemented" "illegal format" p.pragma_loc
+        | _, _ -> impls)
       []
       pragmas
 
 let rec update_actor impls ad =
   let a = ad.act_desc in
-  a.a_impl <- get_actor_impl impls a.a_id
+  a.a_impl <- update_actor_impl impls a.a_impl a.a_id
 
-and get_actor_impl impls id =
-  let ips = List.fold_left (fun z (id',(t,s)) -> if id=id' then (t,s)::z else z) [] impls in
-  { ai_vhdl = (try List.assoc "vhdl" ips with Not_found -> "");
-    ai_systemc = (try List.assoc "systemc" ips with Not_found -> "") }
+and update_actor_impl impls impl id =
+  let ips = List.fold_left (fun z (id',(target,args)) -> if id=id' then (target,args)::z else z) [] impls in
+  ips
 
 (* Pre-processing *)
 
 let pre_process p =
   let pragmas = if !allow_pragmas then p.pragmas else [] in
-  let impls = parse_pragmas p.actors pragmas in
+  let impls = parse_pragmas pragmas in
   let p' = { p with actors = List.map qualify_actor_rules p.actors } in
   List.iter (update_actor impls) p'.actors;
   p'

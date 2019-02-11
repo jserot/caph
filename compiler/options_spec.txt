@@ -14,6 +14,7 @@ ide;general;-flat_variants;Arg.Unit;do_flat_variants;display constructed values 
 noide;general;-sim;Arg.Unit;do_run;run the program through the simulator
 noide;general;-dot;Arg.Unit;do_dot;generate .dot representation of the program
 noide;general;-xdf;Arg.Unit;do_xdf;generate .xdf representation of the network and .cal descriptions of the actors
+noide;general;-preesm;Arg.Unit;do_preesm;generate .pi representation of the network
 ide;general;-dif;Arg.Unit;do_dif;generate .dif representation of the program
 noide;general;-systemc;Arg.Unit;do_systemc;activate the SystemC backend
 noide;general;-vhdl;Arg.Unit;do_vhdl;activate the VHDL backend
@@ -87,3 +88,6 @@ ide;vhdl;-vhdl_rename_io_wires;Arg.Unit;set_vhdl_rename_io_wires;rename IO wires
 ide;vhdl;-vhdl_tb_external_clock;Arg.Unit;set_vhdl_tb_external_clock;make clock and reset input signals for the generated testbench (default: false)
 ide;vhdl;-vhdl_tb_inline_io;Arg.Unit;set_vhdl_tb_inline_io;use inline processes for I/O in the generated testbench instead of reading/writing files (default: false)
 ide;xdf;-xdf_package;Arg.String;set_xdf_package;set package name for the generated XDF code
+ide;preesm;-preesm_code_prefix;Arg.String;set_preesm_code_prefix;set prefix path to actor source code
+ide;preesm;-preesm_no_actors_num;Arg.Unit;set_preesm_no_actors_num;do not add instance number to actor names
+ide;preesm;-preesm_use_floats;Arg.Unit;set_preesm_use_floats;translate float type as float (not double)

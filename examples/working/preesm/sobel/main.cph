@@ -1,0 +1,26 @@
+type pixel == unsigned<8>;
+
+actor read_yuv in (width: int, height: int) out (y: pixel, u: pixel, v: pixel);
+actor split in (width: int, height: int, nbSlice: int, input: pixel) out (output: pixel);
+actor sobel in (width: int, height: int, input: pixel) out (output: pixel);
+actor merge in (width: int, height: int, nbSlice: int, input: pixel) out (output: pixel);
+actor display in (width: int, idx: int, height: int, y: pixel, u: pixel, v: pixel);
+
+#pragma implemented(read_yuv, preesm, "yuvRead", "readYUV", "initReadYUV", 0)
+#pragma implemented(display, preesm, "yuvDisplay", "yuvDisplay", "yuvDisplayInit", 0)
+#pragma implemented(sobel, preesm, "sobel", "sobel", "", 0)
+#pragma implemented(split, preesm, "splitMerge", "split", "", 0)
+#pragma implemented(merge, preesm, "splitMerge", "merge", "", 0)
+
+parameter width: int = 352;
+parameter height: int = 288;
+parameter index: int = 0;
+parameter nbSlice: int = 8;
+-- parameter sliceHeight: int = height/nbSlice+2; -- DYNAMIC INTERP
+parameter sliceHeight: int = 38; -- STATIC INTERP
+
+net (y,u,v) = read_yuv (width,height);
+net y1 = split (width,height,nbSlice,y);
+net y2 = sobel (width,sliceHeight,y1);
+net y3 = merge (width,height,nbSlice,y2);
+net () = display (width,index,height,y3,u,v);

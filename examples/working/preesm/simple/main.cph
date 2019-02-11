@@ -1,0 +1,22 @@
+actor inp
+  out (c:signed<8>)
+;
+
+actor foo 
+  in (sz: int, a:signed<8>)
+  out (c:signed<8>)
+;
+
+actor outp
+  in (a:signed<8>)
+;
+
+#pragma implemented (inp, preesm, "simple", "inp", "", 0)
+#pragma implemented (foo, preesm, "simple", "foo", "", 0)
+#pragma implemented (outp, preesm, "simple", "outp", "", 0)
+
+parameter size: unsigned<8> = 128;
+
+net x = inp ();
+net y = foo (size,x);
+net () = outp y;

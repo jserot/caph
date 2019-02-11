@@ -1,0 +1,5 @@
+DOT_OPTS = -dot_unlabeled_edges
+SIM_OPTS =
+SC_OPTS = 
+VHDL_OPTS =
+PREESM_OPTS = -suppress_cast_warnings -preesm_code_prefix "Code/include/" -preesm_no_actors_num

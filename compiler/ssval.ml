@@ -24,6 +24,7 @@ type ss_val =
   | SVClos of sv_clos
   | SVAct of sv_act
   | SVLoc of idx * sel * typ * bool (* node index, output selector, type, is_output *)
+  | SVUnit
 
 and sv_clos =
   { cl_pat: Syntax.net_pattern;
@@ -45,7 +46,7 @@ and sv_act = {
     sa_vars: (string * (Syntax.expr option * typ) * location ) list; 
     sa_rules: (sa_rule * typ * sa_rsig * location) list;
     sa_types: (string * local_type_def) list;    (* locally defined types (enums) *)
-    sa_impl: Syntax.actor_impl;
+    sa_impl: Syntax.actor_impl list;
 }
 
 and sa_rule = Syntax.qualified_rule_pattern list * Syntax.expr list * Syntax.qualified_expr list
@@ -104,5 +105,6 @@ and  string_of_ssval v = match v with
   | SVHoPrim (p,n,args) ->
       String.capitalize p ^ "<" ^ string_of_int n ^ "," ^ Misc.string_of_list string_of_ssval "," args ^ ">"
   | SVTuple vs -> "(" ^ Misc.string_of_list string_of_ssval "," vs ^ ")"
+  | SVUnit -> "()"
 
 and output_ss_val_list oc sep l = Misc.output_list output_value oc sep l
