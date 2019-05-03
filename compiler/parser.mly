@@ -744,6 +744,8 @@ simple_net_constant:
 simple_net_expr:
       | LIDENT
           { mk_net_expr (NVar $1) }
+      | LPAREN RPAREN 
+          { mk_net_expr (NUnit) }
       | simple_net_constant
           { mk_net_expr(NConst $1) }
       | net_array1_constant 

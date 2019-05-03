@@ -24,6 +24,7 @@ type ss_val =
   | SVClos of sv_clos
   | SVAct of sv_act
   | SVLoc of idx * sel * typ * bool (* node index, output selector, type, is_output *)
+  | SVUnit
 
 and sv_clos =
   { cl_pat: Syntax.net_pattern;
@@ -104,5 +105,6 @@ and  string_of_ssval v = match v with
   | SVHoPrim (p,n,args) ->
       String.capitalize p ^ "<" ^ string_of_int n ^ "," ^ Misc.string_of_list string_of_ssval "," args ^ ">"
   | SVTuple vs -> "(" ^ Misc.string_of_list string_of_ssval "," vs ^ ")"
+  | SVUnit -> "()"
 
 and output_ss_val_list oc sep l = Misc.output_list output_value oc sep l

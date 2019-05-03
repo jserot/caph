@@ -209,6 +209,7 @@ let builtin_typing_env = {
   te_types = [
     "int", {tc_defn={ty_constr={tc_name="int";tc_abbr=Tnotabbrev}; ty_arity=1,1; ty_desc=Abstract_type}; tc_insts=TyconInsts.empty ()};
     "bool", {tc_defn={ty_constr={tc_name="bool";tc_abbr=Tnotabbrev}; ty_arity=0,0; ty_desc=Abstract_type}; tc_insts=TyconInsts.empty ()};
+    "unit", {tc_defn={ty_constr={tc_name="unit";tc_abbr=Tnotabbrev}; ty_arity=0,0; ty_desc=Abstract_type}; tc_insts=TyconInsts.empty ()};
     "float", {tc_defn={ty_constr={tc_name="float";tc_abbr=Tnotabbrev}; ty_arity=0,0; ty_desc=Abstract_type}; tc_insts=TyconInsts.empty ()};
     "array", {tc_defn={ty_constr=constr_type_array; ty_arity=1,1; ty_desc=Abstract_type};tc_insts=TyconInsts.empty ()};
     "bundle", {tc_defn={ty_constr=constr_type_bundle; ty_arity=1,1; ty_desc=Abstract_type};tc_insts=TyconInsts.empty ()} ];

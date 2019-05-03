@@ -260,6 +260,7 @@ and net_pattern =
 and net_pattern_desc =
   | NPat_var of string
   | NPat_tuple of net_pattern list
+  | NPat_unit
 
 and net_expr =
   { ne_desc: net_expr_desc;
@@ -278,6 +279,7 @@ and net_expr_desc =
    | NApp of net_expr * net_expr
    | NFun of net_pattern * net_expr (* single match here ! *)
    | NLet of bool * net_binding list * net_expr (* rec / non rec*)
+   | NUnit
 
 (* Accessors *)
 
@@ -327,6 +329,7 @@ let name_of_pragma_decl d = match d.pragma_desc with (s, _) -> s
 let rec names_of_net_pattern p = match p.np_desc with
   NPat_var v -> [v]
 | NPat_tuple ps -> List.flatten (List.map names_of_net_pattern ps)
+| NPat_unit -> []
 
 let names_of_net_binding ns b = match b.nb_desc with
   p, _ -> ns @ names_of_net_pattern p
@@ -544,6 +547,10 @@ and string_of_net_pattern np = string_of_net_pat np.np_desc
 and string_of_net_pat = function
     NPat_var v -> v
   | NPat_tuple ps -> "(" ^ Misc.string_of_list string_of_net_pattern "," ps ^ ")"
+  | NPat_unit -> "()"
+
+let string_of_actor_impl (target,args) = target ^ ":" ^ Misc.string_of_list Misc.id "," args 
+let string_of_actor_impls = Misc.string_of_list string_of_actor_impl ","
 
 (* Re-externalizing actor decls *)
 
