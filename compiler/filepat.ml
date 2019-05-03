@@ -28,7 +28,9 @@ let check s =
       int_of_string (Str.matched_group 1 s),
       int_of_string (Str.matched_group 2 s),
       String.sub s p2 (String.length s - p2))
-  with Not_found ->
+  with
+  | Invalid_argument _
+  | Not_found ->
     Litteral s
 
 let expand s = match check s with
