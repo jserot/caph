@@ -6,7 +6,7 @@
 (*                                  Jocelyn SEROT                                   *)
 (*                         Jocelyn.Serot@univ-bpclermont.fr                         *)
 (*                                                                                  *)
-(*         Copyright 2011-2018 Jocelyn SEROT.  All rights reserved.                 *)
+(*         Copyright 2011-2019 Jocelyn SEROT.  All rights reserved.                 *)
 (*  This file is distributed under the terms of the Q Public License version 1.0.   *)
 (*                                                                                  *)
 (************************************************************************************)
