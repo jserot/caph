@@ -379,6 +379,8 @@ and string_of_vhdl_io_type = function
   | Boolean -> sprintf "std_logic_vector(0 downto 0)"
   | Float when cfg.vhdl_float_support -> sprintf "std_logic_vector(31 downto 0)"
   | Variant { vd_repr={vr_size=n} } -> sprintf "std_logic_vector(%d downto 0)" (n-1)
+  | Integer None -> "integer"
+  | Integer (Some (lo,hi)) -> "integer range " ^ string_of_int lo ^ " to " ^ string_of_int hi
   | _ -> failwith "Vhdl.string_of_vhdl_io_type: illegal io type"
 
 and string_of_vhdl_farg_type = function
@@ -1434,9 +1436,7 @@ and string_of_array_param_value vs t =
   Array1.to_string ~ld:"(" ~rd:")" (fun (i,v) -> string_of_int i ^ "=>" ^ string_of_param_value ("",(v,t))) vs'
 
 and string_of_box_ios wire_name box =
-    Misc.string_of_list (string_of_box_inp wire_name)  "," box.ib_ins
-  ^ ","
-  ^ Misc.string_of_list (string_of_box_outp wire_name) "," box.ib_outs
+  Misc.string_of_two_lists (string_of_box_inp wire_name) (string_of_box_outp wire_name) "," box.ib_ins box.ib_outs
 
 (* Each wire at the box level gives 3 wires at the VHDL level.
  *
@@ -2013,9 +2013,11 @@ and dump_io_wire boxes oc wire_name (wid,(((src,_),(dst,_)),ty)) =
     ()
 
 and string_of_net_ios wins wouts = 
-    Misc.string_of_list (function (w,ty) -> sprintf "%s_f,%s,%s_wr" w w w) "," wins
-  ^ "," 
-  ^ Misc.string_of_list (function (w,ty) -> sprintf "%s_e,%s,%s_rd" w w w) "," wouts
+  Misc.string_of_two_lists
+    (function (w,ty) -> sprintf "%s_f,%s,%s_wr" w w w)
+    (function (w,ty) -> sprintf "%s_e,%s,%s_rd" w w w)
+    ","
+    wins wouts
 
 and dump_reset_process oc = 
   fprintf oc "process                     -- Initial reset\n";

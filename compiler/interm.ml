@@ -980,7 +980,7 @@ let dump_interm_repr ir =
   List.iter Static.print_global_const ir.ir_consts;
   printf "- Global functions ------------------------\n";
   List.iter Static.print_global_fn ir.ir_globfns;
-  printf "- Global types ------------------------\n";
+  printf "- Global types ----------------------------\n";
   List.iter Typing.print_type ir.ir_globtys;
   printf "- Actors ----------------------------------\n";
   List.iter dump_actor ir.ir_actors;

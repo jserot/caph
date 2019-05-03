@@ -1,0 +1,14 @@
+-- This is an example of an actor without input (here producing the stream 0,1,2,...)
+-- May 2019 - JS
+
+actor gen 
+   in (i: unit)
+  out (o: unsigned<8>)
+var cnt: unsigned<8> = 0
+rules
+| i:_ -> (o:cnt, cnt:cnt+1)
+;
+
+stream o:unsigned<8> to "result.txt";
+
+net o = gen ();

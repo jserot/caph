@@ -147,7 +147,8 @@ and fireable_rule tenv env channels p ((qpats,guards,qexps),no) =
   && List.for_all (rexp_rdy channels p) qexps
 
 and rpat_rdy tenv env channels p qpat = match qpat with
-        {q_desc=QIn i}, pat -> ready_or_ignored_inp channels (List.assoc i p.p_ins) pat 
+        {q_desc=QIn _}, pat when Types.is_unit_type pat.rp_typ -> true (* Added 2019-05-03, v 2.9.1 *)
+      | {q_desc=QIn i}, pat -> ready_or_ignored_inp channels (List.assoc i p.p_ins) pat 
       | {q_desc=QVar (v,k)}, pat -> compatible_variable tenv env p v k pat
       | _ -> fatal_error "Process.rpat_rdy" (* should not happen *)
 

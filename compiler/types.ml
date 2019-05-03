@@ -494,6 +494,10 @@ let ty_constr_name t = match real_type t with
   | Tconstr ({tc_name=name},_,_) -> name 
   | _ -> Misc.fatal_error "Types.ty_constr_name"
 
+let is_unit_type ty = match real_type ty with 
+  | Tconstr({tc_name="unit"},_,_) -> true
+  | _ -> false
+
 let rec is_ground_type ?(strict=false) ty = 
     match real_type ty with
       | Tvar _ -> false

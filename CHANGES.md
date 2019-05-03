@@ -1,3 +1,9 @@
+## 2.9.1 (May XX, 2019)
+
+####  LANGUAGE
+- support for input or output-less actors (using the `unit` type) (see for ex. `examples/misc/ioless`)
+
+
 ## 2.9.0 (Nov 12, 2018)
 
 #### VHDL
