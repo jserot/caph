@@ -1,0 +1,5 @@
+DOT_OPTS =   -D ifile=lena64.txt -D th=40S
+SIM_OPTS =  -chan_cap 130 -suppress_cast_warnings -D ifile=lena64.txt -D th=40S -abbrev_dc_ctors
+SC_OPTS =  -suppress_cast_warnings -D ifile=lena64.txt -D th=40S -sc_default_fifo_capacity 256 -sc_stop_time 200000 -sc_abbrev_dc_ctors -sc_dump_fifo_stats # -dump_typed
+VHDL_OPTS =  -D ifile=lena64.txt -D th=40S -vhdl_annot_file ./systemc/fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=400000ns

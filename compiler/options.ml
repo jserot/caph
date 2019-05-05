@@ -38,6 +38,7 @@ let add_allowed_output_file f =
 let set_output_prefix name = output_prefix := name
 let add_include_path path = Lexer.include_path := !Lexer.include_path @ [path]
 let set_prefix p = prefix := p
+let set_project_file f = Genmake.target.Genmake.proj_file <- f
 let set_target_dir p = Genmake.target.Genmake.dir <- p
 let do_show_signness () = Const.show_signness := true
 let do_flat_variants () = Expr.flat_variants := true

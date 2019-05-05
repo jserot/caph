@@ -6,11 +6,21 @@ caphmake - Makefile generator for CAPH projects
 
 =head1 SYNOPSIS
 
-caphmake [-main name] [-caph_dir path] [-o file]
+caphmake [-main name] [-caph_dir path] [-o file] [file]
 
 =head1 DESCRIPTION
 
 This program reads I<.proj> and I<.cph> files and generates top-level Makefiles for CAPH projects.
+
+=head1 ARGUMENTS
+
+=over
+
+=item file
+
+name of the project file (default is I<main.proj>)
+
+=back
 
 =head1 OPTIONS
 
@@ -18,7 +28,7 @@ This program reads I<.proj> and I<.cph> files and generates top-level Makefiles 
 
 =item -main name
 
-set name of the top-level CAPH source file (default is the first I<.cph> file found in the directory)
+set name of the top-level CAPH source file (default is I<main.cph>)
 
 =item -caph_dir path
 

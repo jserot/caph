@@ -1,0 +1,5 @@
+DOT_OPTS = -I ..
+SIM_OPTS = -I .. -abbrev_dc_ctors
+SC_OPTS = -I .. -sc_stop_time 400 -sc_abbrev_dc_ctors -sc_dump_fifo_stats 
+VHDL_OPTS = -I .. -vhdl_annot_file ./systemc/fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=600ns  

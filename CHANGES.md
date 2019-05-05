@@ -3,6 +3,15 @@
 ####  LANGUAGE
 - support for input or output-less actors (using the `unit` type) (see for ex. `examples/misc/ioless`)
 
+####  TOOLS
+- `caphmake` now (optionally) takes the name of the project file (`.proj`) as argument
+- `caphmake` now systematically generates Makefiles in sub-directories (`./dot`, `./sim`, `./system` and
+  `./vhdl`) so that subsequent processing can be carried out by simply cd'ing to the corresponding
+  subdir and invoking the various targets 
+
+#### EXAMPLES
+- some directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
+
 
 ## 2.9.0 (Nov 12, 2018)
 

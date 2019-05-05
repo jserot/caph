@@ -1,0 +1,16 @@
+# WARNING !!!! HORIZONTAL AND VERTICAL BLANKING REQUIRED HERE for the [CCONV] ACTORS !!!
+#
+DOT_OPTS = -I .. 
+SIM_OPTS = -I ..  -abbrev_dc_ctors -chan_cap 150 
+SC_OPTS = -I ..  -sc_abbrev_dc_ctors -sc_default_fifo_capacity 150 -sc_stop_time 800000 -sc_dump_fifo_stats -sc_istream_hblank 4 -sc_istream_vblank 140
+VHDL_OPTS = -I ..  -vhdl_annot_file ./systemc/fifo_stats.dat -vhdl_istream_blanking
+GHDL_RUN_OPTS = --stop-time=640000ns  
+
+
+GEN_CAPH_SRCS = conv233.cph conv255.cph 
+conv233.cph: 
+	$(MKCONV) -o conv233.cph -mode centered -dim 2 -h 3 -w 3 
+conv255.cph: 
+	$(MKCONV) -o conv255.cph -mode centered -dim 2 -h 5 -w 5 
+
+

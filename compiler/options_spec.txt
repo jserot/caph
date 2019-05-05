@@ -1,4 +1,4 @@
-ide;general;-prefix;Arg.String;set_output_prefix;set prefix output file names (default is basename of working directory);
+ide;general;-prefix;Arg.String;set_output_prefix;set prefix output file names (default is main source file basename);
 ide;general;-I;Arg.String;add_include_path;add path to the list of dirs to search for include;
 noide;general;-dump_tenv;Arg.Unit;do_dump_tenv;dump builtin typing environment (for debug only)
 noide;general;-dump_typed;Arg.Unit;do_dump_typed;dump typed program (for debug only)
@@ -20,6 +20,7 @@ noide;general;-vhdl;Arg.Unit;do_vhdl;activate the VHDL backend
 noide;general;-target_dir;Arg.String;set_target_dir;set target directory for generated files (default is current directory)
 ide;general;-D;Arg.String;add_macro_defn;define macro symbol
 ide;general;-make;Arg.Unit;do_gen_make;generate makefile dependencies 
+ide;general;-proj_file;Arg.String;set_proj_file;set project file name (default: same as main source file);
 ide;general;-version;Arg.Unit;print_version;print version of the compiler
 noide;general;--v;Arg.Unit;print_version;print version of the compiler
 ide;general;-ignore_pragmas;Arg.Unit;ignore_pragmas;ignore all pragma directives

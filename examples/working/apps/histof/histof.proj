@@ -1,5 +1,0 @@
-DOT_OPTS = -I $(CAPHLIB) -dump_fsms
-SIM_OPTS = -I $(CAPHLIB) -abbrev_dc_ctors 
-SC_OPTS = -I $(CAPHLIB) -sc_stop_time 2800 -sc_abbrev_dc_ctors -sc_dump_fifo_stats
-VHDL_OPTS = -I $(CAPHLIB) -vhdl_annot_file fifo_stats.dat
-GHDL_RUN_OPTS = --stop-time=2800ns  

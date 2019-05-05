@@ -9,7 +9,7 @@ rules a -> c
 | '> -> '>
 ;
 
-stream i:unsigned<8> dc from "samples/sample_[1-2].txt";
-stream o:unsigned<8> dc to "results/result_[1-2].txt";
+stream i:unsigned<8> dc from "sample_[1-2].txt";
+stream o:unsigned<8> dc to "result_[1-2].txt";
 
 net o = scale 2 i;

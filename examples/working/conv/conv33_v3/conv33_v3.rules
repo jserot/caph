@@ -1,2 +1,0 @@
-lena128.bin: lena128.pgm
-	$(PGM2BIN) -hblank 4 -vblank 140 16 $< $@

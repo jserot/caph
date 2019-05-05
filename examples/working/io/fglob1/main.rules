@@ -1,0 +1,2 @@
+sample_1.bin: ../sample_1.txt
+	$(TXT2BIN) -dc -abbrev -hblank 2 -vblank 4 uint 8 $< > $@

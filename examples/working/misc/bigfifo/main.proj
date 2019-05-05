@@ -1,0 +1,5 @@
+DOT_OPTS = -D ifile=lena64.pgm
+SIM_OPTS = -D ifile=lena64.pgm -chan_cap 18000 -abbrev_dc_ctors
+SC_OPTS = -sc_default_fifo_capacity 5000 -sc_dump_fifo_stats -D ifile=lena64.pgm -sc_stop_time 85000 -sc_abbrev_dc_ctors 
+VHDL_OPTS = -D ifile=lena64.pgm -vhdl_annot_file ./systemc/fifo_stats.dat
+GHDL_RUN_OPTS = --stop-time=240000ns

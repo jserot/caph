@@ -59,11 +59,12 @@ try
   print_banner ();
   let p1 = parse !source_file in
   let p = Syntax.pre_process p1 in
-  let prefix = match !output_prefix with
-    "" -> Filename.basename (Sys.getcwd ())
-  | s -> s in
-  Genmake.target.Genmake.proj_name <- prefix;
   Genmake.target.Genmake.main_file <- !source_file;
+  if Genmake.target.Genmake.proj_file = "" then Genmake.target.Genmake.proj_file <- Misc.replace_file_suffix "cph" "proj" !source_file;
+  let prefix = match !output_prefix with
+    "" -> Filename.remove_extension (Filename.basename !source_file)
+  | s -> s in
+  Genmake.target.Genmake.prefix <- prefix;
   Logfile.start ();
   if !dump_tenv then print_typing_environment builtin_typing_env;
   let tp = type_program builtin_typing_env p in
@@ -77,10 +78,11 @@ try
     Some bid -> Absint.run sp bid
   | None -> () 
   end;
-  if !dump_fsms then Fsm.dump_fsms sp;
   if !run then begin
-    if !Misc.generate_makefiles then
-      Genmake.dump_sim_makefile "Makefile.sim"
+    if !Misc.generate_makefiles then begin
+      check_dir Genmake.target.Genmake.dir;
+      Genmake.dump_sim_makefile ()
+      end
     else begin
       let denv = build_dynamic tp sp builtin_static_env in
       if !dump_denv then print_dyn_env denv;
@@ -102,7 +104,8 @@ try
     begin match !output_fmt with
     | Dot ->
         check_dir Genmake.target.Genmake.dir;
-        Dot.output_ir prefix ir
+        Dot.output_ir prefix ir;
+        if !dump_fsms then Fsm.dump_fsms sp
     | Xdf ->
         check_dir Genmake.target.Genmake.dir;
         Xdf.output_ir prefix ir;
@@ -121,7 +124,7 @@ try
         List.iter (Systemc.dump_actor profil prefix ir') ir.Interm.ir_actors;
         if profil.Systemc.splitters <> [] then
           Systemc.dump_split_actors (prefix ^ Systemc.cfg.Systemc.sc_splitters_suffix ^ ".h") profil.Systemc.splitters; 
-        if !Misc.generate_makefiles then Genmake.dump_systemc_makefile "Makefile.systemc"
+        if !Misc.generate_makefiles then Genmake.dump_systemc_makefile ()
     | Vhdl ->
         let ir' = Interm.insert_fifos_and_buffers (Interm.insert_splitters ir) in
         Dot.output_ir (prefix ^ "_expanded") ir';
@@ -138,7 +141,7 @@ try
 (*         if profil.Vhdl.has_externs then Genmake.add_target "extfns.vhd";  (\* to be adjusted/generalized.. *\) *)
         if profil.Vhdl.splitters <> [] then
           Vhdl.dump_split_actors (prefix ^ Vhdl.cfg.Vhdl.vhdl_splitters_suffix ^ ".vhd") profil.Vhdl.splitters; 
-        if !Misc.generate_makefiles then Genmake.dump_vhdl_makefile "Makefile.vhdl";
+        if !Misc.generate_makefiles then Genmake.dump_vhdl_makefile ()
     | _ ->
         ()
     end

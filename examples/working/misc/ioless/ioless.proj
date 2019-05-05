@@ -1,5 +1,0 @@
-DOT_OPTS = -target_dir ./dot
-SIM_OPTS = -target_dir ./sim -stop_after 100
-SC_OPTS = -target_dir ./systemc -sc_stop_time 200 
-VHDL_OPTS = -target_dir ./vhdl
-GHDL_RUN_OPTS = --stop-time=100ns  

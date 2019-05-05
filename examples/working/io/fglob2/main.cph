@@ -9,7 +9,7 @@ rules a -> c
 | '> -> '>
 ;
 
-stream i:unsigned<8> dc from "imgs/im-[1-4].pgm";
-stream o:unsigned<8> dc to "results/result-[1-4].pgm";
+stream i:unsigned<8> dc from "im-[1-4].pgm";
+stream o:unsigned<8> dc to "result-[1-4].pgm";
 
 net o = inv i;

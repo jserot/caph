@@ -143,7 +143,7 @@ let dump_fifo_sizes name ir =
   compute_phases g;
 (*   dump_graph g *)
   ir.Interm.ir_wire_annots <- List.fold_left (fun acc (i,e) -> (i, Interm.mk_wire_annot e.phase e.cap)::acc) [] g.edges;
-  let fname = Misc.prefix_dir Genmake.target.Genmake.dir name ^ cfg.sdf_fifo_size_file_suffix in
+  let fname = name ^ cfg.sdf_fifo_size_file_suffix in
   let oc = open_out fname  in
   List.iter (function (i,e) -> Printf.fprintf oc "w%d fifo_size = %d\n" i e.cap) g.edges;
   Logfile.write fname;

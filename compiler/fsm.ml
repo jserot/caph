@@ -107,7 +107,8 @@ let dump_fsm (id,b) =
       | Some state ->
           Pr_type.TypeVarNames.reset ();
           Pr_type.SizeVarNames.reset ();
-          let fname = b.b_name ^ "_act_b" ^ string_of_int b.b_id ^ ".dot" in
+          let name = b.b_name ^ "_act_b" ^ string_of_int b.b_id  in
+          let fname = Misc.prefix_dir Genmake.target.Genmake.dir name ^ ".dot" in
           let oc = open_out fname in
           Printf.fprintf oc "digraph %s_act {\n" b.b_name;
           List.iter (dump_fsm_state oc state.fs_name) state.fs_values;

@@ -48,7 +48,7 @@ let dump_box_moc oc (bid,box) =
 
 let compute_mocs name sp = 
   List.iter compute_box_moc sp.boxes;
-  let fname = Misc.prefix_dir Genmake.target.Genmake.dir name ^ "_mocs.dat" in
+  let fname = name ^ "_mocs.dat" in
   let oc = open_out fname  in
   List.iter (dump_box_moc oc) sp.boxes;
   Logfile.write fname;

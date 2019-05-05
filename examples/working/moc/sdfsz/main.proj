@@ -1,0 +1,5 @@
+DOT_OPTS = -dump_sdf_fifo_sizes -dot_wire_annots -dot_unboxed_ios -dot_simple_boxes
+SIM_OPTS = -abbrev_dc_ctors -trace -dump_channel_stats
+SC_OPTS = -sc_stop_time 400 -sc_abbrev_dc_ctors -sc_dump_fifo_stats -sc_dump_fifos
+VHDL_OPTS = -vhdl_annot_file ./systemc/fifo_stats.dat -vhdl_fifo_model_threshold 8 -vhdl_fifo_offset 2
+GHDL_RUN_OPTS = --stop-time=400ns  

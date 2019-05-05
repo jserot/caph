@@ -1,0 +1,5 @@
+CXXFLAGS += # -DTRACE_SYSC_IO
+SIM_OPTS = -abbrev_dc_ctors -trace_ports -suppress_cast_warnings
+SC_OPTS = -sc_stop_time 300 -sc_abbrev_dc_ctors  -sc_trace_fifos  -sc_dump_fifo_stats -suppress_cast_warnings
+VHDL_OPTS = 
+GHDL_RUN_OPTS = --stop-time=600ns  --vcd=main_tb.vcd 

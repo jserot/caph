@@ -1,1 +1,77 @@
-../tests/do_test
+#!/bin/bash
+
+# A script for automated testing 
+
+function try_make
+{
+case $1 in
+dot) make dot;;
+*) make $1.run;;
+esac
+case $? in
+0) echo "OK";;
+*) echo "FAILED";;
+esac
+}
+
+function run
+{
+echo -n "  -> making $2 in $1 ... "
+(cd $1; make $2.run) > /dev/null 2>&1
+case $? in
+0) echo -e "\033[32mOK\033[0m";;
+*) failed=true; echo -e "\033[31mFAILED\033[0m"; (cd $1; make $2.clobber) > /dev/null 2>&1;;
+esac
+}
+
+function check_results
+{
+echo -n "  -> checking $1 results ... "
+(cd $1; make $2.check) > /dev/null 2>&1
+case $? in
+0)
+  echo -e "\033[32mOK\033[0m";;
+*)
+  case $1 in 
+  "working/conv/mkconv2"|"working/conv/mkconv1"|"working/conv/conv33_v3"|"working/primer/invimg"|"working/apps/rle"|"working/float/fscale"|"working/float/heron"|"working/io/portio"|"working/typing/ovfl"|"working/typing/resize"|"working/ovfl"|"working/genact6"|"working/dep4"|"working/let6"|"working/cast2"|"working/cast3"|"working/misc/implemented"|"misc/foreign"|"working/misc/ioless"|"working/io/fglob1")
+    echo -e "\033[32m** $2 FAILED in $1 but it's ok\033[0m";;
+  *)
+    failed=true; echo -e "\033[31m** $2 FAILED in $1\033[0m";;
+  esac
+esac
+}
+
+function make_test 
+{
+    failed=false
+    (cd $1; make clobber; caphmake main.proj; make makefiles) > $TMP 2>&1
+    run $1 sim 
+    run $1 systemc
+    check_results $1 systemc
+    run $1 vhdl
+    check_results $1 vhdl
+    (cd $1; make clobber) > $TMP 2>&1
+}
+
+TMP=/tmp/do_test.out
+
+if [ $1 = "all" ]
+then
+    shift
+    echo "** Running test in $1... "
+    make_test $1 2>&1
+    if $failed ; then
+        exit 0
+    else
+        exit 1
+    fi
+else 
+    echo -n "Testing $1 in $2... "
+    (cd $2; if [ -e Makefile ]; then make clobber > $TMP 2>&1; fi)
+    (cd $2; caphmake main.proj; make makefiles) > $TMP 2>&1
+    (cd $2; try_make $1 && make clean) > $TMP 2>&1
+    grep "OK" $TMP >/dev/null && echo -e "\033[32mOK\033[0m"
+    grep "FAILED" $TMP >/dev/null && echo -e "\033[31mFAILED\033[0m"
+    grep "OK" $TMP >/dev/null && exit 1
+    exit 0
+fi

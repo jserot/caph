@@ -1,6 +1,0 @@
-DOT_OPTS = -I $(CAPHLIB) -D arg1=10000 -D arg2=3000 -suppress_cast_warnings
-SIM_OPTS = -I $(CAPHLIB) -D arg1=10000 -D arg2=3000 -abbrev_dc_ctors -chan_cap 6000 -suppress_cast_warnings -warn_channels -dump_channel_stats
-SC_OPTS = -I $(CAPHLIB) -D arg1=10000 -D arg2=3000 -sc_default_fifo_capacity 16000 -suppress_cast_warnings -sc_dump_fifo_stats -sc_stop_time 128000 -sc_abbrev_dc_ctors 
-VHDL_OPTS = -I $(CAPHLIB) -D arg1=10000 -D arg2=3000  -suppress_cast_warnings -vhdl_annot_file fifo_stats.dat 
-GHDL_RUN_OPTS = --stop-time=400000ns
-

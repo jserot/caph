@@ -45,6 +45,7 @@ examples/working/mocs_summary.*
 _build/
 man/*.1
 man/*.tex
+compiler/_tags
 compiler/lexer.ml
 compiler/options_spec.ml
 compiler/parser.ml
