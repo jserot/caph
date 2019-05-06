@@ -1,4 +1,4 @@
-true:   annot, explain
+true:   annot, explain, debug
 <ports.ml>: syntax(camlp4o), package(camlp4.macro)
 <io.ml>: syntax(camlp4o), package(camlp4.macro)
 <caphc.{native,byte}> : use_unix, use_str, use_dynlink

@@ -27,6 +27,7 @@ config::config(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->compilerPathButton, SIGNAL(clicked()), this, SLOT(setCaphcPath()));
+    connect(ui->libPathButton, SIGNAL(clicked()), this, SLOT(setCaphLibPath()));
     connect(ui->dottyPathButton, SIGNAL(clicked()), this, SLOT(setDotViewerPath()));
     connect(ui->pgmViewerPathButton, SIGNAL(clicked()), this, SLOT(setPgmViewerPath()));
 }
@@ -56,27 +57,31 @@ QString getPathName(void)
 void config::setCaphcPath()
 {
     QString path = getPathName();
-    if ( ! path.isEmpty() )
-      ui->compilerPathEdit->setText(path);
+    if ( ! path.isEmpty() ) ui->compilerPathEdit->setText(path);
+}
+
+void config::setCaphLibPath()
+{
+    QString path = getPathName();
+    if ( ! path.isEmpty() ) ui->libPathEdit->setText(path);
 }
 
 void config::setDotViewerPath()
 {
     QString path = getPathName();
-    if ( ! path.isEmpty() )
-      ui->dottyPathEdit->setText(path);
+    if ( ! path.isEmpty() ) ui->dottyPathEdit->setText(path);
 }
 
 void config::setPgmViewerPath()
 {
     QString path = getPathName();
-    if ( ! path.isEmpty() )
-      ui->pgmViewerPathEdit->setText(path);
+    if ( ! path.isEmpty() ) ui->pgmViewerPathEdit->setText(path);
 }
 
 QString config::getPath(QString name)
 {
   if ( name == "caphc" ) return ui->compilerPathEdit->text();
+  else if ( name == "caphLib" ) return ui->libPathEdit->text();
   else if ( name == "dotViewer" ) return ui->dottyPathEdit->text();
   else if ( name == "pgmViewer" ) return ui->pgmViewerPathEdit->text();
   else return "";
@@ -86,6 +91,7 @@ void config::setPath(QString name, QString val)
 {
   qDebug() << "config::setPath: " << name << "=" << val;
   if ( name == "caphc" ) ui->compilerPathEdit->setText(val);
+  else if ( name == "caphLib" ) ui->libPathEdit->setText(val);
   else if ( name == "dotViewer" ) ui->dottyPathEdit->setText(val);
   else if ( name == "pgmViewer" ) ui->pgmViewerPathEdit->setText(val);
 }

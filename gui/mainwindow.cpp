@@ -106,6 +106,8 @@ void MainWindow::readInitFile(void)
           ui->logText->append("  " + key + "=" + val);
           if ( key == "CAPHC" )
             config::getInstance()->setPath("caphc", val);
+          if ( key == "CAPHLIB" )
+            config::getInstance()->setPath("caphLib", val);
           else if ( key == "DOTVIEWER" )
             config::getInstance()->setPath("dotViewer", val);
           else if ( key == "PGMVIEWER" )
@@ -463,6 +465,8 @@ void MainWindow::compile(QString type, QString baseCmd, QString targetDir)
   saveFile();
   QString caphc = config::getInstance()->getPath("caphc");
   if ( caphc.isNull() || caphc.isEmpty() ) caphc = "caph"; // Last chance..
+  QString caphlib = config::getInstance()->getPath("caphLib");
+  if ( ! caphlib.isEmpty()  ) caphlib += "/caph";
   // Get actual source file
   QString srcFilePath =
       project != NULL ? project->dir+"/"+project->mainFile
@@ -473,9 +477,13 @@ void MainWindow::compile(QString type, QString baseCmd, QString targetDir)
   if ( targetDir != "" ) dir.mkdir(targetDir);
   QString srcFile = f.fileName();
   QString wDir = dir.absolutePath();
-  qDebug () << "pdir=" << (project ? project->dir : "<none>") << " wdir=" << wDir;
+  //qDebug () << "pdir=" << (project ? project->dir : "<none>") << " wdir=" << wDir;
   QString prefix = project ? "" : "-prefix " + f.baseName();
-  CommandLine cmd(caphc, prefix + baseCmd + " " + srcFile);
+  if ( type == "systemc" || type == "vhdl" ) {
+    CommandLine cmd(caphc + " -make -I " + caphlib, prefix + baseCmd + " " + srcFile);
+    if ( ! executeCmd(wDir, cmd.toString()) ) QMessageBox::warning(this, "", "Makefile generation failed");
+    } 
+  CommandLine cmd(caphc + " -I " + caphlib, prefix + baseCmd + " " + srcFile);
   runPreActions(wDir);
   if ( executeCmd(wDir, cmd.toString()) ) {
     runPostActions(wDir);
@@ -670,12 +678,14 @@ void MainWindow::openProject()
   closeAll();
   project = new Project(projFile);
   ui->logText->append("Read project " + project->descFile);
-  ui->logText->append("  caphc=" + project->toolPaths["caphc"]);
-  ui->logText->append("  dotViewer=" + project->toolPaths["dotViewer"]);
-  ui->logText->append("  pgmViewer=" + project->toolPaths["pgmViewer"]);
+  ui->logText->append("  CAPHC=" + project->toolPaths["caphc"]);
+  ui->logText->append("  CAPHLIB=" + project->toolPaths["caphlib"]);
+  ui->logText->append("  DOTVIEWER=" + project->toolPaths["dotViewer"]);
+  ui->logText->append("  PGMVIEWER=" + project->toolPaths["pgmViewer"]);
   setTreeView(project);
   // Update options and paths
   config::getInstance()->setPath("caphc", project->toolPaths["caphc"]);
+  config::getInstance()->setPath("caphLib", project->toolPaths["caphlib"]);
   config::getInstance()->setPath("dotViewer", project->toolPaths["dotViewer"]);
   config::getInstance()->setPath("pgmViewer", project->toolPaths["pgmViewer"]);
   QMap<QString,AppOption> opts = Options::getInstance()->values;

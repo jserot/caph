@@ -36,6 +36,7 @@ public:
 private slots:
 
     void setCaphcPath();
+    void setCaphLibPath();
     void setDotViewerPath();
     void setPgmViewerPath();
 

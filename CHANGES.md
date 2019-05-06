@@ -9,6 +9,11 @@
   `./vhdl`) so that subsequent processing can be carried out by simply cd'ing to the corresponding
   subdir and invoking the various targets 
 
+#### GUI
+- the location of the CAPH library is now part of the `.ini` file and the `.cphpro` project file
+- the `Build SystemC` and `Build VHDL` actions now also generates a `Makefile` for subsequent
+  compilation
+
 #### EXAMPLES
 - some directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
 

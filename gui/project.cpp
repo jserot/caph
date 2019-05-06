@@ -190,7 +190,7 @@ void Project::addFile(QString f)
 
 void Project::setPaths(void)
 {
-  toolPaths["caphc"] = config::getInstance()->getPath("caphc");
+  toolPaths["caph"] = config::getInstance()->getPath("caph");
   toolPaths["dotViewer"] = config::getInstance()->getPath("dotViewer");
   toolPaths["pgmViewer"] = config::getInstance()->getPath("pgmViewer");
   hasBeenModified = true;
