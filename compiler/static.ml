@@ -558,8 +558,23 @@ and eval_ho_prim_application tp globals (bs,ws) nenv loc p pre_args arg tyarg = 
                   let v', bs', ws' = eval_net_application tp globals ([],[]) nenv loc ff v tyarg in
                   apply (n-1) (v',bs@bs',ws@ws') in
               apply n (arg,[],[])
-          | [_; _] -> invalid_pipe_argument loc
+          | [_; _] -> invalid_pipe_argument loc "pipe"
           | _ -> fatal_error "Static.eval_ho_prim(pipe)" (* should not happen, thx to TC *) end
+      | "chain" ->
+          begin match pre_args with
+            [SVVal (Expr.Val_int (n,_)); ff] when n > 0 ->
+             let rec apply n (vs,bs,ws) =
+               begin match n, vs with
+                | 0, vs -> List.rev vs, bs, ws
+                | n, v::_ ->
+                  let v', bs', ws' = eval_net_application tp globals ([],[]) nenv loc ff v tyarg in
+                  apply (n-1) (v'::vs,bs@bs',ws@ws')
+                | _, _ -> fatal_error "Static.eval_ho_prim(chain)" 
+               end in
+              let vs, bs, ws = apply n ([arg],[],[]) in
+              SVTuple (List.tl vs), bs, ws
+          | [_; _] -> invalid_pipe_argument loc "chain"
+          | _ -> fatal_error "Static.eval_ho_prim(chain)" (* should not happen, thx to TC *) end
       | "repln" -> 
           begin match pre_args, arg, tyarg with
             [SVVal (Expr.Val_int (n,_))], v, _ when n > 0 ->
@@ -810,37 +825,6 @@ and instanciate_actor tp globals nenv loc a args =
       SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) ts'),
       [l,b],
       ws''
-  (* let tyins' = list_of_types tyins in
-   * let tyouts' = list_of_types tyouts in
-   * match a.sa_ins, List.length a.sa_outs, args with
-   * | [_,ty], 1, SVUnit when is_unit_type ty ->                        (\* APP_0_1 *\)
-   *     SVLoc (l,0,List.nth tyouts' 0,false),
-   *     [l,b],
-   *     []
-   * | [_,ty], n, SVUnit when is_unit_type ty ->                        (\* APP_0_n *\)
-   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
-   *     [l,b],
-   *     []
-   * | [_], 1, SVLoc(l1,s1,ty,false) ->                                 (\* APP_1_1 *\)
-   *     let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
-   *     SVLoc (l,0,List.nth tyouts' 0,false),
-   *     [l,b],
-   *     [new_wid(),w]
-   * | [_], n, SVLoc(l1,s1,ty,false) ->                                 (\* APP_1_n *\)
-   *     let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
-   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
-   *     [l,b],
-   *     [new_wid(),w]
-   * | _, 1, SVTuple vs ->                                               (\* APP_m_1 *\)
-   *     let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
-   *     SVLoc (l,0,List.nth tyouts' 0,false),
-   *     [l,b],
-   *     ws''
-   * | _, n, SVTuple vs ->                                               (\* APP_m_n *\)
-   *     let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
-   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
-   *     [l,b],
-   *     ws'' *)
   | _ ->
       illegal_application loc
 

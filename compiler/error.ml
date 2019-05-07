@@ -654,8 +654,8 @@ let invalid_foldt_argument loc =
   eprintf "%aWrong number of arguments for [foldt] : must be a power of 2.\n" output_location loc;
   raise Error
 
-let invalid_pipe_argument loc =
-  eprintf "%aIllegal second argument for [pipe] (must be a positive integer constant).\n" output_location loc;
+let invalid_pipe_argument loc what =
+  eprintf "%aIllegal second argument for [%s] (must be a positive integer constant).\n" output_location loc what;
   raise Error
 
 let global_redefinition what what' item =

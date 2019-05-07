@@ -1,0 +1,24 @@
+-- A basic example with the [chain] higher-order wiring primitive
+-- Jul 31, 2015, JS
+
+actor double 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> 2*x
+;
+
+actor incr 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> x+1
+;
+
+stream i:unsigned<8> from "sample.txt";
+stream o1:unsigned<8> to "result1.txt";
+stream o2:unsigned<8> to "result2.txt";
+stream o3:unsigned<8> to "result3.txt";
+stream o4:unsigned<8> to "result4.txt";
+
+net (o1,o2,o3,o4) = chain 4 double i;

@@ -93,6 +93,12 @@ let higher_order_types = [
     let sz = SzVar (mk_size_var ()) in
     let t1 = Tvar (mk_type_var ()) in
     type_arrow3 (type_int sg sz) (type_arrow t1 t1) t1 t1);
+  ("chain", function () ->
+    let sg1 = Tvar (mk_type_var ()) in
+    let sz1 = SzVar (mk_size_var ()) in
+    let t2 = Tvar (mk_type_var ()) in
+    let t3 = Tvar (mk_type_var ()) in
+    type_arrow3 (type_int sg1 sz1) (type_arrow t2 t3) t2 (type_bundle t3 (SzRef 1)));
   ("repln", function () ->
    let sg1 = Tvar (mk_type_var ()) in
    let sz1 = SzVar (mk_size_var ()) in
@@ -200,6 +206,7 @@ let builtin_primitives = [
     "foldli",  (lookup_type "foldli" higher_order_types, Val_hprim ("foldli",1));
     "foldt",  (lookup_type "foldt" higher_order_types, Val_hprim ("foldt",1));
     "pipe",  (lookup_type "pipe" higher_order_types, Val_hprim ("pipe",2));
+    "chain",  (lookup_type "chain" higher_order_types, Val_hprim ("chain",2));
     "repln",  (lookup_type "repln" higher_order_types, Val_hprim ("repln",1));
     "napp",  (lookup_type "napp" higher_order_types, Val_hprim ("napp",2));
     "nappi",  (lookup_type "nappi" higher_order_types, Val_hprim ("nappi",2))
