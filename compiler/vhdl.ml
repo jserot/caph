@@ -1980,9 +1980,9 @@ let rec dump_testbench prefix ir =
   fprintf oc "\n";
   fprintf oc "begin\n";
   List.iter (dump_io_box oc wire_name) ir.Interm.ir_boxes;
-  fprintf oc "  N: %s port map(%s,%s,%s);\n"
+  fprintf oc "  N: %s port map(%s%s,%s);\n"
     net_name
-    (string_of_net_ios wire_ins wire_outs)
+    (let s = string_of_net_ios wire_ins wire_outs in if s = "" then "" else s ^ ",")
     cfg.vhdl_clock
     cfg.vhdl_reset;
   if not cfg.vhdl_tb_external_clock then begin

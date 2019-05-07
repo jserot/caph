@@ -1,8 +1,11 @@
--- This is an example of an actor without input (here producing the stream 0,1,2,...)
+-- This example shows how to write input or output-less actors
 -- This possibility appeared in version 2.9.1
+-- The [src] actor has not input but produces the stream 0,1,2,...
+-- The [snk] actor reads this stream but has no output.
+-- This example is of course of little practical utility. A more realistic variant is given in [../ioless2]
 -- May 2019 - JS
 
-actor gen 
+actor src 
    in (i: unit)
   out (o: unsigned<8>)
 var cnt: unsigned<8> = 0
@@ -10,6 +13,12 @@ rules
 | i:_ -> (o:cnt, cnt:cnt+1)
 ;
 
-stream o:unsigned<8> to "result.txt";
+actor snk
+   in (i: unsigned<8>)
+  out (o: unit)
+var cnt: unsigned<8> = 0
+rules
+| i:x -> cnt:cnt+x
+;
 
-net o = gen ();
+net () = snk (src ());

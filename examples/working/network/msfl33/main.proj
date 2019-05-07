@@ -1,4 +1,4 @@
-SIM_OPTS = -abbrev_dc_ctors -I $(CAPHLIB)
-SC_OPTS = -sc_stop_time 600 -sc_abbrev_dc_ctors -I $(CAPHLIB) -sc_dump_fifo_stats #
-VHDL_OPTS = -I $(CAPHLIB) -vhdl_annot_file ./systemc/fifo_stats.dat
+SIM_OPTS = -abbrev_dc_ctors
+SC_OPTS = -sc_stop_time 600 -sc_abbrev_dc_ctors -sc_dump_fifo_stats #
+VHDL_OPTS = -vhdl_annot_file ./systemc/fifo_stats.dat
 GHDL_RUN_OPTS = --stop-time=1200ns  

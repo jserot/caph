@@ -706,6 +706,8 @@ net_pattern_list:
 net_pattern:
       | LIDENT
           { mk_net_pat(NPat_var $1) }
+      | LPAREN RPAREN
+          { mk_net_pat(NPat_unit) }
       | LPAREN net_pattern_comma_list RPAREN
           { match $2 with [x] -> x | xs -> mk_net_pat(NPat_tuple(xs)) }
 ;

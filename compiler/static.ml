@@ -767,35 +767,80 @@ and instanciate_actor tp globals nenv loc a args =
   | _ -> illegal_application loc in
   let tyins' = list_of_types tyins in
   let tyouts' = list_of_types tyouts in
-  match a.sa_ins, List.length a.sa_outs, args with
-  | [_,ty], 1, SVUnit when is_unit_type ty ->                        (* APP_0_1 *)
-      SVLoc (l,0,List.nth tyouts' 0,false),
+  match tyins', a.sa_ins, tyouts', a.sa_outs, args with
+  | [], [_], [], [_], SVUnit ->                                                 (* APP_0_0 *)
+     SVUnit,
+     [l,b],
+     []
+  | [t], [_], [], [_], SVLoc(l1,s1,ty,false) ->                                 (* APP_1_0 *)
+     let w = ((l1,s1),(l,0)), t in
+     SVUnit,
+     [l,b],
+     [new_wid(),w]
+  | ts, _, [], [_], SVTuple vs when List.length ts > 1 ->                       (* APP_m_0 *)
+     let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
+     SVUnit,
+     [l,b],
+     ws''
+  | [], [_], [t], [_], SVUnit ->                                                (* APP_0_1 *)
+      SVLoc (l,0,t,false),
       [l,b],
       []
-  | [_,ty], n, SVUnit when is_unit_type ty ->                        (* APP_0_n *)
-      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+  | [], [_], ts, _, SVUnit when List.length ts > 1 ->                           (* APP_0_n *)
+      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) ts),
       [l,b],
       []
-  | [_], 1, SVLoc(l1,s1,ty,false) ->                                 (* APP_1_1 *)
-      let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
-      SVLoc (l,0,List.nth tyouts' 0,false),
+  | [t], _, [t'], _, SVLoc(l1,s1,ty,false) ->                                   (* APP_1_1 *)
+      let w = ((l1,s1),(l,0)), t in
+      SVLoc (l,0,t',false),
       [l,b],
       [new_wid(),w]
-  | [_], n, SVLoc(l1,s1,ty,false) ->                                 (* APP_1_n *)
-      let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
-      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+  | [t], _, ts', _, SVLoc(l1,s1,ty,false) when List.length ts' > 1 ->           (* APP_1_n *)
+      let w = ((l1,s1),(l,0)), t in
+      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) ts'),
       [l,b],
       [new_wid(),w]
-  | _, 1, SVTuple vs ->                                               (* APP_m_1 *)
+  | ts, _, [t'], _, SVTuple vs when List.length ts > 1 ->                       (* APP_m_1 *)
       let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
-      SVLoc (l,0,List.nth tyouts' 0,false),
+      SVLoc (l,0,t',false),
       [l,b],
       ws''
-  | _, n, SVTuple vs ->                                               (* APP_m_n *)
+  | ts, _, ts', _, SVTuple vs when List.length ts > 1 && List.length ts' > 1 -> (* APP_m_n *)
       let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
-      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+      SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) ts'),
       [l,b],
       ws''
+  (* let tyins' = list_of_types tyins in
+   * let tyouts' = list_of_types tyouts in
+   * match a.sa_ins, List.length a.sa_outs, args with
+   * | [_,ty], 1, SVUnit when is_unit_type ty ->                        (\* APP_0_1 *\)
+   *     SVLoc (l,0,List.nth tyouts' 0,false),
+   *     [l,b],
+   *     []
+   * | [_,ty], n, SVUnit when is_unit_type ty ->                        (\* APP_0_n *\)
+   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+   *     [l,b],
+   *     []
+   * | [_], 1, SVLoc(l1,s1,ty,false) ->                                 (\* APP_1_1 *\)
+   *     let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
+   *     SVLoc (l,0,List.nth tyouts' 0,false),
+   *     [l,b],
+   *     [new_wid(),w]
+   * | [_], n, SVLoc(l1,s1,ty,false) ->                                 (\* APP_1_n *\)
+   *     let w = ((l1,s1),(l,0)), List.nth tyins' 0 in
+   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+   *     [l,b],
+   *     [new_wid(),w]
+   * | _, 1, SVTuple vs ->                                               (\* APP_m_1 *\)
+   *     let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
+   *     SVLoc (l,0,List.nth tyouts' 0,false),
+   *     [l,b],
+   *     ws''
+   * | _, n, SVTuple vs ->                                               (\* APP_m_n *\)
+   *     let ws'' = Misc.list_map_index (fun i v -> mk_wire (l,i) v) vs in
+   *     SVTuple (Misc.list_map_index (fun i ty -> SVLoc(l,i,ty,false)) tyouts'),
+   *     [l,b],
+   *     ws'' *)
   | _ ->
       illegal_application loc
 

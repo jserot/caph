@@ -20,7 +20,7 @@ noide;general;-vhdl;Arg.Unit;do_vhdl;activate the VHDL backend
 noide;general;-target_dir;Arg.String;set_target_dir;set target directory for generated files (default is current directory)
 ide;general;-D;Arg.String;add_macro_defn;define macro symbol
 ide;general;-make;Arg.Unit;do_gen_make;generate makefile dependencies 
-ide;general;-proj_file;Arg.String;set_proj_file;set project file name (default: same as main source file);
+ide;general;-proj_file;Arg.String;set_project_file;set project file name (default: same as main source file);
 ide;general;-version;Arg.Unit;print_version;print version of the compiler
 noide;general;--v;Arg.Unit;print_version;print version of the compiler
 ide;general;-ignore_pragmas;Arg.Unit;ignore_pragmas;ignore all pragma directives

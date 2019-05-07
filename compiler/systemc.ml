@@ -697,8 +697,8 @@ let dump_actor profil prefix ir (id,a) =
   if a.Interm.ia_impl.Syntax.ai_systemc <> "" then begin
     let f1 = a.Interm.ia_impl.Syntax.ai_systemc ^ ".h"
     and f2 = a.Interm.ia_impl.Syntax.ai_systemc ^ ".cpp" in
-    Misc.check_file f1;
-    Misc.check_file f2;
+    Misc.check_file (Genmake.target.Genmake.dir ^ "/" ^ f1);
+    Misc.check_file (Genmake.target.Genmake.dir ^ "/" ^ f2);
     Genmake.add_target ~extra:true f1;
     Genmake.add_target ~extra:true f2
     end
