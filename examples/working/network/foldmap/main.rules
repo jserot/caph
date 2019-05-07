@@ -1,0 +1,2 @@
+z.bin: ../z.txt
+	$(TXT2BIN) -eventf uint 8 $< > $@

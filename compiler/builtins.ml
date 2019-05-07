@@ -78,12 +78,12 @@ let higher_order_types = [
   ("foldl", function () ->
    let t1 = Tvar (mk_type_var ()) in
    let sz = SzVar (mk_size_var ()) in
-   type_arrow2 (type_arrow (type_product [t1;t1]) t1) (type_bundle t1 sz)  t1);
+   type_arrow3 (type_arrow (type_product [t1;t1]) t1) t1 (type_bundle t1 sz)  t1);
   ("foldli", function () ->
    let t1 = Tvar (mk_type_var ()) in
    let sz = SzVar (mk_size_var ()) in
    let sz' = SzVar (mk_size_var ()) in
-   type_arrow2 (type_arrow2 (type_unsigned sz') (type_product [t1;t1]) t1) (type_bundle t1 sz)  t1);
+   type_arrow3 (type_arrow2 (type_unsigned sz') (type_product [t1;t1]) t1) t1 (type_bundle t1 sz)  t1);
   ("foldt", function () ->
    let t1 = Tvar (mk_type_var ()) in
    let sz = SzVar (mk_size_var ()) in
@@ -202,8 +202,8 @@ let builtin_primitives = [
     "map2",  (lookup_type "map2" higher_order_types, Val_hprim ("map2",1));
     "mapi",  (lookup_type "mapi" higher_order_types, Val_hprim ("mapi",1));
     "map2i",  (lookup_type "map2i" higher_order_types, Val_hprim ("map2i",1));
-    "foldl",  (lookup_type "foldl" higher_order_types, Val_hprim ("foldl",1));
-    "foldli",  (lookup_type "foldli" higher_order_types, Val_hprim ("foldli",1));
+    "foldl",  (lookup_type "foldl" higher_order_types, Val_hprim ("foldl",2));
+    "foldli",  (lookup_type "foldli" higher_order_types, Val_hprim ("foldli",2));
     "foldt",  (lookup_type "foldt" higher_order_types, Val_hprim ("foldt",1));
     "pipe",  (lookup_type "pipe" higher_order_types, Val_hprim ("pipe",2));
     "chain",  (lookup_type "chain" higher_order_types, Val_hprim ("chain",2));

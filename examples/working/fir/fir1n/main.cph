@@ -1,0 +1,24 @@
+-- 1xn Finite Impulse Response filter on unstructured streams - multi-actor version
+-- Instantiated here with n=5
+-- This example illustrates the power of the [chain] and [foldli] higher-order wiring primitives
+-- May 7, 2019 - JS
+
+#include "stream_ops.cph"  -- for [d], one-sample delay actor
+
+const coeff = [1,2,3,2,1] : signed<12> array[5];
+
+actor madd (j:unsigned<4>)
+   in (acc:int<s,m>, tap:int<s,m>)
+  out (o:int<s,m>)
+rules
+| (acc:s, tap:x) -> o:x*coeff[j]+s
+;
+
+net fir x =
+  let xs = chain 5 (d 0) x in
+  foldli madd x xs;
+
+stream i:signed<12> from "sample.txt";
+stream o:signed<12> to "result.txt";
+
+net o = fir i;  

@@ -18,4 +18,4 @@ stream i3:unsigned<8> from "sample.txt";
 stream i4:unsigned<8> from "sample.txt";
 stream o:unsigned<8> to "result.txt";
 
-net o = foldli madd (i1,i2,i3,i4);
+net o = foldli madd i1 (i2,i3,i4);

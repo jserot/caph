@@ -1,4 +1,5 @@
-SIM_OPTS = -I $(CAPHLIB) 
-SC_OPTS = -I $(CAPHLIB) -sc_stop_time 100 -sc_abbrev_dc_ctors 
+DOT_OPTS = 
+SIM_OPTS =  
+SC_OPTS =  -sc_stop_time 100 -sc_abbrev_dc_ctors 
 VHDL_OPTS =
 GHDL_RUN_OPTS = --stop-time=200ns  

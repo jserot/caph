@@ -4,7 +4,7 @@
 -- Invoke [make dot] to see the corresponding data-flow graph.
 -- Dec 1, 2015, JS
 
-actor spl4 
+actor split4 
   in (a:unsigned<8>)
   out (c1:unsigned<8>,c2:unsigned<8>,c3:unsigned<8>,c4:unsigned<8>)
 rules a -> (c1,c2,c3,c4)
@@ -25,11 +25,12 @@ rules (a1,a2) -> c
 | (x1,x2) -> x1+x2
 ;
 
-net foldmap s f g x =
+net foldmap s f g z x =
   let xs = s x in
-  foldl g (map f xs);
+  foldl g z (map f xs);
 
 stream i:unsigned<8> from "sample.txt";
+port z:unsigned<8> from "z.txt" init 0;
 stream o:unsigned<8> to "result.txt";
 
-net o = foldmap spl4 foo bar i;
+net o = foldmap split4 foo bar z i;

@@ -489,8 +489,8 @@ and eval_ho_prim_application tp globals (bs,ws) nenv loc p pre_args arg tyarg = 
           | _, _, _ -> fatal_error "Static.eval_ho_prim(map2i)" (* should not happen, thx to TC *) end
       | "foldl" ->
           begin match pre_args, arg, tyarg with
-            [f], SVTuple (v1::v2::vs), Tproduct (ty'::_)
-          | [f], SVTuple (v1::v2::vs), Tconstr({tc_name="bundle"},[ty'],[_]) ->
+            [f;v1], SVTuple (v2::vs), Tproduct (ty'::_)
+          | [f;v1], SVTuple (v2::vs), Tconstr({tc_name="bundle"},[ty'],[_]) ->
               let v = SVTuple [v1;v2] in
               let ty'' = Tproduct [ty';ty'] in
               let r1, bs1, ws1 = eval_net_application tp globals ([],[]) nenv loc f v ty'' in
@@ -528,8 +528,8 @@ and eval_ho_prim_application tp globals (bs,ws) nenv loc p pre_args arg tyarg = 
           | _, _, _ -> fatal_error "Static.eval_ho_prim(foldt)" (* should not happen, thx to TC *) end
       | "foldli" ->
           begin match pre_args, arg, tyarg with
-            [f], SVTuple (v1::v2::vs), Tproduct (ty'::_)
-          | [f], SVTuple (v1::v2::vs), Tconstr({tc_name="bundle"},[ty'],[_]) ->
+            [f;v1], SVTuple (v2::vs), Tproduct (ty'::_)
+          | [f;v1], SVTuple (v2::vs), Tconstr({tc_name="bundle"},[ty'],[_]) ->
               let eval_node i v1 v2 ty = 
                 let v_i = SVVal (Expr.Val_int (i, None)) in
                 let ty_i = type_unsigned (new_size_var ()) in

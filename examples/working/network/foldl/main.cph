@@ -1,6 +1,6 @@
 -- Example showing to use the [foldl] higher-order wiring primitive to describe
 -- a dyadic reduction graph pattern
--- May 13, 2014 - JS
+-- Updated May 7, 2019 - JS
 
 actor add 
   in (a:unsigned<8>, b:unsigned<8>)
@@ -15,4 +15,4 @@ stream i3:unsigned<8> from "sample.txt";
 stream i4:unsigned<8> from "sample.txt";
 stream o:unsigned<8> to "result.txt";
 
-net o = foldl add (i1,i2,i3,i4);
+net o = foldl add i1 (i2,i3,i4);

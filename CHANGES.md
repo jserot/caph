@@ -3,6 +3,12 @@
 ####  LANGUAGE
 - support for input or output-less actors (see for ex. `examples/misc/ioless` and
   `examples/misc/ioless2` and Sec. 2.4.4, 2.4.7 of the LRM)
+- redefinition of the `foldl` and `foldli` higher-order primitives, which now respectively have type
+      `('a * 'a -> 'a) -> 'a -> 'a bundle -> 'a`  and
+      `(unsigned -> 'a * 'a -> 'a) -> 'a -> 'a bundle -> 'a` 
+  (see updated examples in `examples/network/{foldl,foldli,foldmap}` and `examples/fir/fir1n`)
+- added higher-order primitive `chain`, similar to `pipe` but giving access to all intermediate
+  values (see `examples/network/chain` and `example/fir/fir1n`)
 
 ####  TOOLS
 - `caphmake` now (optionally) takes the name of the project file (`.proj`) as argument
@@ -16,10 +22,11 @@
   compilation
 
 #### EXAMPLES
-- some directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
+- directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
 
 #### DOC
 - Updated sections 2.4.4 and 2.4.7 for describing the definition and use of IO-less actors resp.
+- Updated section 2.4.7.5 on higher-order primitives with `foldl`, `foldli` and `chain`
 
 
 ## 2.9.0 (Nov 12, 2018)

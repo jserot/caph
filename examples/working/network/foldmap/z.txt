@@ -1,0 +1,2 @@
+# sim_cycle sc_time vhdl_time value
+  0         0     0       10
