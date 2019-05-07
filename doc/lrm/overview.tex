@@ -2809,13 +2809,18 @@ net (o1,o2,o3) = nappi 3 scale i;
 \texttt{map2i}) encodes parallel \emph{replication} graph patterns. Another higher-order wiring
 primitive, \texttt{foldl} (fold left)\footnote{Not to be confused with the \texttt{sfold} and
   \texttt{ssfold} higher order \emph{actors}.} is provided for encoding parallel \emph{reduction} patterns.
-Formally, if $x=(x_1,\ldots,x_n)$ is a tuple of values having type $\tau$ and $f$ a function having
-type $\tau \times \tau \rightarrow \tau$, then 
+Formally, if
+\begin{itemize}
+\item $x_1$ is a value having type $\tau$,
+\item $x=(x_2,\ldots,x_n)$ a tuple of values having type $\tau$ and
+\item $f$ a function having type $\tau \times \tau \rightarrow \tau$
+\end{itemize}
+then
 \begin{equation*}
-  \text{foldl}\ f\ (x_1,\ldots,x_n) = f (\ldots f(f(x_1,x_2),x_3)\ldots, x_n)
+  \text{foldl}\ f\ x_1\ (x_2,\ldots,x_n) = f (\ldots f(f(x_1,x_2),x_3)\ldots, x_n)
 \end{equation*}
 In other words, the result of applying \emph{foldl} to $f$ and $x$ is obtained by applying $f$ as a
-binary reduction operator over the tuple $x$.
+binary reduction operator over the tuple $(x_1,\ldots,x_n)$.
 An example showing the effect of the \texttt{foldl} function is given in Fig.~\ref{fig:foldl-ex1}. 
 
 \begin{figure}[h!]
@@ -2837,7 +2842,7 @@ net i4 = ...
 
 net f (x,y) = madd 2 (x,y);
 
-net o = foldl f (i1,i2,i3,i4);
+net o = foldl f i1 (i2,i3,i4);
       \end{lstlisting}
     \end{minipage}
 \adjustbox{valign=c}{\includegraphics[width=0.4\linewidth]{figs/foldl-ex1}}
@@ -2848,10 +2853,10 @@ net o = foldl f (i1,i2,i3,i4);
 
 \medskip As for \texttt{map}, the \texttt{foldl} function has a variant, named \texttt{foldli} for dealing with
 \emph{indexed} reduction.
-Formally, if $x=(x_1,\ldots,x_n)$ is a tuple of values having type $\tau$ and $f$ a function having
+Formally, if $x$ is a value with type $\tau$, $(x_2,\ldots,x_n)$ is a tuple of values with type $\tau$ and $f$ a function having
 type $\text{unsigned} \rightarrow \tau \times \tau \rightarrow \tau$, then 
 \begin{equation*}
-  \text{foldli}\ f\ ((x_1,\ldots,x_n) = f\ (n-1)\ (\ldots f\ 1\ (f\ 0\ (x_1,x_2),x_3)\ldots, x_n)
+  \text{foldli}\ f\ x_1\ ((x_2,\ldots,x_n) = f\ (n-1)\ (\ldots f\ 1\ (f\ 0\ (x_1,x_2),x_3)\ldots, x_n)
 \end{equation*}
 
 \medskip A last variant of the \texttt{foldl} function is \texttt{foldt}, which performs a
@@ -2905,6 +2910,78 @@ net o = pipe 4 double i;
   \end{tabular}
   \caption{\texttt{pipe} - example}
   \label{fig:pipe-ex}
+\end{figure}
+
+\bigskip The \texttt{chain} higher-order wiring primitive is similar to \verb|pipe| but produces a
+tuple of values corresponding to each stage of the pipe, as illustrated in Fig.~\ref{fig:chain-ex}.
+
+\begin{figure}[h!]
+  \centering
+  \begin{tabular}[t]{cc}
+    \begin{minipage}[c]{0.5\linewidth}
+      \begin{lstlisting}
+actor double ...;
+
+actor incr 
+  in (a:unsigned<8>)
+  out (c:unsigned<8>)
+rules a -> c
+| x -> x+1
+;
+
+stream i:unsigned<8> from ...;
+stream o1:unsigned<8> to ...";
+stream o2:unsigned<8> to ...";
+stream o3:unsigned<8> to ...";
+stream o4:unsigned<8> to ...";
+
+net (o1,o2,o3,o4) = chain 4 double i;
+      \end{lstlisting}
+    \end{minipage}
+\adjustbox{valign=c}{\includegraphics[width=0.35\linewidth]{figs/chain-ex}}
+  \end{tabular}
+  \caption{\texttt{pipe} - example}
+  \label{fig:chain-ex}
+\end{figure}
+
+\clearpage
+The higher-order primitives (HOP) introduced above can of course be combined to define powerful network
+building functions. As an illustration, the program of Listing~\ref{lst:fir1n-ex} describes a
+generic $1\times n$ FIR filter using the \verb|chain| and \verb|foldl| HOPs\footnote{This program
+  can be found in the directory \texttt{examples/fir/fir1n} of the distribution.}. The former is used to
+build the values corresponding to the input stream delayed by $1, 2, \ldots n$ samples. The latter
+to describe the multiply-accumulate computation tree. The corresponding dataflow graph is given in
+Fig.~\ref{fig:fir1n-ex}.
+
+\begin{lstlisting}[language=Caph,frame=single,numbers=none,caption={A $1\times n$ FIR filter
+    described in CAPH using the \texttt{chain} and \texttt{foldl} higher-order
+    primitives},label={lst:fir1n-ex}]
+#include "stream_ops.cph"  -- for [d], one-sample delay actor
+
+const coeff = [1,2,3,2,1] : signed<12> array[5];
+
+actor madd (j:unsigned<4>)
+   in (acc:int<s,m>, tap:int<s,m>)
+  out (o:int<s,m>)
+rules
+| (acc:s, tap:x) -> o:x*coeff[j]+s
+;
+
+net fir x =
+  let xs = chain 5 (d 0) x in
+  foldli madd x xs;
+
+stream i:signed<12> from "sample.txt";
+stream o:signed<12> to "result.txt";
+
+net o = fir i;  
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figs/fir1n-ex.pdf}
+\caption{The dataflow graph obtained from the program in Listing~\ref{lst:fir1n-ex}}
+\label{fig:fir1n-ex}
 \end{figure}
 
 \section{A complete example}
