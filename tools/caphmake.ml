@@ -48,6 +48,11 @@ let dump_banner oc =
   Printf.fprintf oc "## %s\n" (Misc.string_of_list (function i -> i) " " (Array.to_list Sys.argv));
   Printf.fprintf oc "## ###############################################################################\n\n"
 
+let dump_self_target oc =
+  let cmd = Misc.string_of_list (fun i -> i) " " (Array.to_list Sys.argv) in
+  fprintf oc "caphmake:\n";
+  fprintf oc "\t%s\n" cmd
+  
 let dump_makef_target oc args target =
   let mfile = sprintf "./%s/Makefile" target in
   let abbrev = function "systemc" -> "SC" | s -> String.uppercase_ascii s in
@@ -98,6 +103,8 @@ let main () =
     args.prefix <- Filename.remove_extension (Filename.basename args.main_file);
     fprintf oc "include %s/lib/etc/Makefile.core\n\n" args.caph_dir;
     fprintf oc "-include %s\n\n" args.proj_file;
+    dump_self_target oc;
+    fprintf oc "\n";
     dump_dot_target oc args;
     fprintf oc ".PHONY: ./sim/Makefile ./systemc/Makefile ./vhdl/Makefile\n"; 
     fprintf oc "makefiles: %s\n\n" (Misc.string_of_list (function t -> t ^ ".makefile") " " ["sim"; "systemc"; "vhdl"]);
