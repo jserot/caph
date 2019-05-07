@@ -97,7 +97,7 @@ where each firing rule $R_i$ is defined as a set of $m$ \textbf{rule input patte
 output patterns}
 
 \begin{eqnarray*}
-  R_i & = & \{ R_{i,1}, R_{i,1}, \ldots, R_{i,m},\ R'_{i,1}, R'_{i,1}, \ldots, R'_{i,m'} \}
+  R_i & = & \{ R_{i,1}, \ldots, R_{i,m},\ R'_{i,1}, \ldots, R'_{i,m'} \}
 \end{eqnarray*}
 
 \medskip
@@ -146,7 +146,7 @@ recursively as follows, using ``\verb|:|'' as the sequence concatenation
 operator\footnote{$x_1 : [x_2,x_3,\ldots] = [x_1,x_2,x_3,\ldots]$.} : 
 \begin{eqnarray*}
     []  & \models_r & X  \qquad \forall X \\
-    p:ps & \models_r & x:xs \qquad \text{iff}\quad p \models_p x \quad \text{and}\quad ps \models xs
+    p:ps & \models_r & x:xs \qquad \text{iff}\quad p \models_p x \quad \text{and}\quad ps \models_r xs
 \end{eqnarray*}
 
 and where the \textbf{pattern matching relation} $\models_p$ is defined as follows :
@@ -210,7 +210,7 @@ channel and produced on each output channel when the rule is fired :
 where the ``length'' of the rule pattern $R_{i,j}$ is defined as 
 
 \begin{eqnarray*}
-  |R_{i,j}| & = & |\{p_{i,j,1},\ldots,p_{i,j,n}\}| \\
+  |R_{i,j}| & = & |[p_{i,j,1},\ldots,p_{i,j,n}]| \\
            & = & n
 \end{eqnarray*}
 

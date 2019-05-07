@@ -216,6 +216,7 @@ a plus ({\tt +}) indicates one or more repetitions.
 
 <net_pattern> ::= <var>
                 \alt \lit{(} <net_pattern> \lit{,} \texttt{...} \lit{,} <net_pattern> \lit{)}
+                \alt \lit{()}
 %                \alt "{" net_bundle_pattern "}" 
 
 %<net_tuple_pattern> ::= <simple_net_pattern> [ \lit{,} <net_tuple_pattern> ]
@@ -230,6 +231,7 @@ a plus ({\tt +}) indicates one or more repetitions.
 
 <simple_net_expr> ::=
     <var>                                     %\mbox{\it -- network or expr-level var}
+  \alt \lit{()} 
   \alt \lit{(} <net_expr> \lit{)}
   \alt \lit{(} <simple_net_expr> \lit{:} <type> \lit{)}
   \alt <param_value>

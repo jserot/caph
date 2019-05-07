@@ -1364,6 +1364,46 @@ rules a -> c
 ;
 \end{lstlisting}
 
+\subsubsection{IO-less actors}
+\label{sec:io-less-actors}
+
+It is possible to define actors with no input port and/or no output. Actors with no input may be
+used, for instance, as data sources and actors with no output as data sinks. Two examples are given
+in  Listings~\ref{lst:caph-ioless1} and \ref{lst:caph-ioless2} respectively.
+
+For the \verb|src| actor, defined in Listing~\ref{lst:caph-ioless1}, the type of the input \verb|i|,
+\verb|unit|, indicates that the actor actually has no input\footnote{The \texttt{unit} type can be
+  viewed as the equivalent of the \texttt{void} type in C or C++.}. The ``\verb|_|'' pattern for
+\verb|i| in the firing rule here means that no value is requested for the rule to fire. The
+\verb|src| actor therefore produces the following stream on its output~: \verb|0, 1, 2, ...|.
+
+For the \verb|snk| actor, defined
+in Listing~\ref{lst:caph-ioless2}, the type of the output \verb|i|, \verb|unit| again, indicates that the
+actor actually has no output. This actor reads a stream of integers on its input and sum the values
+in its local variable \verb|sum|\footnote{Since this variable is not visible outside the actor, the
+  \texttt{snk} actor defined here is of little utility. In practice, output-less actors will perform
+  side-effects.}.
+
+\begin{lstlisting}[caption={Example of input-less actor},label=lst:caph-ioless1]
+actor src 
+   in (i: unit)
+  out (o: int)
+var cnt: int = 0
+rules
+| i:_ -> (o:cnt, cnt:cnt+1)
+;
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Example of output-less actor},label=lst:caph-ioless2]
+actor snk
+   in (i: int)
+  out (o: unit)
+var sum: int = 0
+rules
+| i:x -> sum:sum+x
+;
+\end{lstlisting}
+
 
 \subsection{Polymorphism}
 \label{sec:polymorphism}
@@ -1952,6 +1992,7 @@ excerpt from the full concrete syntax description given in Chap.~\ref{chap:synta
 
 <simple_net_expr> ::=
     <var>       
+\alt \lit{()}
 \alt \lit{(} <net_expr> \lit{)}
 \end{grammar}
     \end{minipage} &
@@ -2387,6 +2428,36 @@ possible, when writing \caph programs\footnote{There's a noticeable exception to
   images. In this case, recursive wiring is deliberately used in order to have the delayed line
   stored in a external FIFO, because this scheme is more efficiently handled by the VHDL
   synthetisers.}. 
+
+\subsubsection{Wiring of IO-less actors}
+\label{sec:wiring-io-less}
+
+The special network expression ``\verb|()|'' (called \verb|unit|) is used to instantiate input or
+output-less actors. An example is given in Listing~\ref{lst:caph-closednet} and
+Fig.~\ref{fig:closednet}, which use the actors \verb|src|, \verb|snk| and \verb|double| previously
+defined in Listings~\ref{lst:caph-ioless1}, \ref{lst:caph-ioless2} and \ref{lst:caph-ex1}. Such
+networks, with no input nor output stream or port are said to be ``\emph{closed}''. Their main usage
+is to model applications for which input and output streams are not read from (resp. to) external
+devices\footnote{Viewed as \texttt{stream}s or \texttt{port}s at the network level.} but are
+produced and consumed by actors performing their operations by side-effect. A typical example will
+be an actor reading output data from a memory or displaying results in a graphical
+window\footnote{In practice, such actors will be provided using the \texttt{implemented} pragma.}.
+
+\begin{lstlisting}[caption={Example of network with IO-less actors},label=lst:caph-closednet]
+actor src in (i: unit) out (o: int) ...;
+actor snk in (i: int) out (o: unit) ...;
+actor double in (i: int) out (o: int) ...;
+
+net () = snk (double (src ()));
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figs/closednet.pdf}
+\caption{The network corresponding to the program of
+  Listing~\ref{lst:caph-closednet}}
+\label{fig:closednet}
+\end{figure}
 
 \subsubsection{Higher-order wiring primitives}
 \label{sec:bundles}
@@ -2996,5 +3067,5 @@ net res = smap f_thr (smap2 f_add (dx inp, dy inp));
 
 %%% Local Variables: 
 %%% mode: latex
-%%% TeX-master: "caph"
+%%% TeX-master: "caph-lrm"
 %%% End: 

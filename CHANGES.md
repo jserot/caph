@@ -1,7 +1,8 @@
 ## 2.9.1 (May XX, 2019)
 
 ####  LANGUAGE
-- support for input or output-less actors (using the `unit` type) (see for ex. `examples/misc/ioless`)
+- support for input or output-less actors (see for ex. `examples/misc/ioless` and
+  `examples/misc/ioless2` and Sec. 2.4.4, 2.4.7 of the LRM)
 
 ####  TOOLS
 - `caphmake` now (optionally) takes the name of the project file (`.proj`) as argument
@@ -16,6 +17,9 @@
 
 #### EXAMPLES
 - some directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
+
+#### DOC
+- Updated sections 2.4.4 and 2.4.7 for describing the definition and use of IO-less actors resp.
 
 
 ## 2.9.0 (Nov 12, 2018)
