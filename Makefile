@@ -56,6 +56,9 @@ txt-docs: CHANGES KNOWN-BUGS README LICENSE
 CHANGES: CHANGES.md
 	pandoc -f markdown-smart -t plain -o $@ $<
 
+CHANGES.html: CHANGES.md
+	pandoc -f markdown-smart -t html -o $@ $<
+
 KNOWN-BUGS: KNOWN-BUGS.md
 	pandoc -f markdown-smart -t plain -o $@ $<
 
