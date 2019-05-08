@@ -1,4 +1,4 @@
-## 2.9.1 (May XX, 2019)
+## 2.9.1beta (May 8, 2019)
 
 ####  LANGUAGE
 - support for input or output-less actors (see for ex. `examples/misc/ioless` and
