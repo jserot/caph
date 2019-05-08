@@ -33,10 +33,10 @@ case $? in
   echo -e "\033[32mOK\033[0m";;
 *)
   case $1 in 
-  "working/conv/mkconv2"|"working/conv/mkconv1"|"working/conv/conv33_v3"|"working/primer/invimg"|"working/apps/rle"|"working/float/fscale"|"working/float/heron"|"working/io/portio"|"working/typing/ovfl"|"working/typing/resize"|"working/ovfl"|"working/genact6"|"working/dep4"|"working/let6"|"working/cast2"|"working/cast3"|"working/misc/implemented"|"misc/foreign"|"working/misc/ioless"|"working/io/fglob1")
-    echo -e "\033[32m** $2 FAILED in $1 but it's ok\033[0m";;
+  "working/conv/mkconv2"|"working/conv/mkconv1"|"working/conv/conv33_v3"|"working/primer/invimg"|"working/apps/rle"|"working/float/fscale"|"working/float/heron"|"working/io/portio"|"working/typing/ovfl"|"working/typing/resize"|"working/misc/implemented"|"working/misc/foreign"|"working/misc/ioless"|"working/misc/ioless2"|"working/io/fglob1"|"working/dpn/ex1-4"|"working/dpn/ex3-5")
+    echo -e "\033[32m** Checking of $2 results FAILED in $1 but it's ok\033[0m";;
   *)
-    failed=true; echo -e "\033[31m** $2 FAILED in $1\033[0m";;
+    failed=true; echo -e "\033[31m** Checking of $2 results FAILED in $1\033[0m";;
   esac
 esac
 }

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# This script automatically (re)builds the directory hierarchy required for automated testing
+# within an example directory
+# Added v2.9.1, May 2019
+
+if [ ! -d ./dot ]; then mkdir dot; fi
+if [ ! -d ./sim ]; then mkdir sim; fi
+if [ ! -d ./systemc ]; then mkdir systemc; fi
+if [ ! -d ./vhdl ]; then mkdir vhdl; fi
+(cd ./vhdl; if [ ! -e systemc ]; then ln -s ../systemc .; fi)
+if [ -d ./extra ]
+then
+    (cd ./sim; for i in ../extra/*.ml; do ln -sf $i .; done)
+    (cd ./systemc; for i in ../extra/*.{h,cpp}; do ln -sf $i .; done)
+    (cd ./vhdl; for i in ../extra/*.vhd; do ln -sf $i .; done)
+fi 
