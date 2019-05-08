@@ -11,7 +11,7 @@ if [ ! -d ./vhdl ]; then mkdir vhdl; fi
 (cd ./vhdl; if [ ! -e systemc ]; then ln -s ../systemc .; fi)
 if [ -d ./extra ]
 then
-    (cd ./sim; for i in ../extra/*.ml; do ln -sf $i .; done)
-    (cd ./systemc; for i in ../extra/*.{h,cpp}; do ln -sf $i .; done)
-    (cd ./vhdl; for i in ../extra/*.vhd; do ln -sf $i .; done)
+    (cd ./sim; for i in ../extra/*.ml; do if [ -e $i ]; then ln -sf $i .; fi; done)
+    (cd ./systemc; for i in ../extra/*.{h,cpp}; do if [ -e $i ]; then ln -sf $i .; fi; done)
+    (cd ./vhdl; for i in ../extra/*.vhd; do if [ -e $i ]; then ln -sf $i .; fi; done)
 fi 
