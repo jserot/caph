@@ -98,7 +98,7 @@ macos-dist:
 	make macos-installer
 
 macos-source:
-	(cd $(TMPDIR); rm -rf $(DISTDIR); git clone $(SRCDIR))
+	(cd $(TMPDIR); rm -rf $(DISTDIR); git clone $(SRCDIR); mv caph $(DISTDIR))
 
 INSTDIR=$(TMPDIR)/caph-macos
 
