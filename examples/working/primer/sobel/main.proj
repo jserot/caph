@@ -1,5 +1,5 @@
-DOT_OPTS = -I $(CAPHLIB) -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings
-SIM_OPTS = -I $(CAPHLIB) -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -abbrev_dc_ctors -warn_channels -dump_channel_stats
-SC_OPTS = -I $(CAPHLIB) -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -sc_abbrev_dc_ctors -sc_stop_time 160000 -sc_dump_fifo_stats
-VHDL_OPTS = -I $(CAPHLIB) -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -vhdl_annot_file fifo_stats.dat
+DOT_OPTS =  -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings
+SIM_OPTS =  -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -abbrev_dc_ctors -warn_channels -dump_channel_stats
+SC_OPTS =  -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -sc_abbrev_dc_ctors -sc_stop_time 160000 -sc_dump_fifo_stats
+VHDL_OPTS =  -D ifile=pcb.pgm -D threshold=80 -suppress_cast_warnings -vhdl_annot_file fifo_stats.dat
 GHDL_RUN_OPTS = --stop-time=160000ns  
