@@ -22,6 +22,8 @@
   compilation
 
 #### EXAMPLES
+- added examples [dpn/{ex1-4,ex1-8,ex3-5}], from T. Parks PhD to illustrate the transcription of 
+  DPNs (Dataflow Process Networks) in CAPH
 - directories/files have been reorganized/rewritten to match the new directory scheme of `caphmake`
 
 #### DOC
@@ -671,7 +673,7 @@ ___
   will be simply instanciated by writing
 
     ```
-     actor foo (k:unsigned<8>) in (a:unsigned<8>) out (o:...) ...
+     net y = foo 2 x ...
 
     ```
 

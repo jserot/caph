@@ -1,0 +1,40 @@
+-- This example is a transcription of the program of Fig 3.5 in [Parks95] where 
+-- the [d,a,h] subnetworks of actors have been rewritten as a simple actor.
+-- The streams produced on [x] and [y] are 0,2,4,.. and 0,3,6,.. resp. and the [m]
+-- actor implements a monotonic merge (i.e. the stream on [z] is [0,2,3,4,6,...]
+-- As demonstrated in [Parks95], this requires unbounded buffering on channel [y]. Hence
+-- the program ultimately blocks.
+-- May 8, 2019 - JS
+
+type int8 == signed<8>;
+
+actor dah (k: int8) in (u: unit) out (v: int)
+var cnt: int8 = 0
+rules
+| u:_ -> (v:cnt, cnt:cnt+k) 
+;
+
+actor m in (u: int8, v: int8) out (w: int8)
+var st: {S0,S1,S2} = S0
+var  z: int8
+rules
+| (st:S0, u:u, v:v) when u=v -> w:u
+| (st:S0, u:u, v:v) when u<v -> (w:u, z:v, st:S1)
+| (st:S0, u:u, v:v) when v<u -> (w:v, z:u, st:S2)
+| (st:S1, u:u) when u<z -> w:u
+| (st:S1, u:u) when z<u -> (w:z, z:u, st:S2)
+| (st:S1, u:u) when u=z -> (w:u, st:S0)
+| (st:S2, v:v) when v<z -> w:v
+| (st:S2, v:v) when z<v -> (w:z, z:v, st:S1)
+| (st:S2, v:v) when v=z -> (w:v, st:S0)
+;
+
+-- stream x:int8 to "x.txt"; -- for visualizing the data circulating on channel x
+-- stream y:int8 to "y.txt"; -- for visualizing the data circulating on channel y
+
+stream z:int8 to "z.txt"; 
+
+net x = dah 2 ();
+net y = dah 3 ();
+net z = m (x,y);
+

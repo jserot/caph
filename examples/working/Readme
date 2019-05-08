@@ -4,30 +4,32 @@ To run an example :
 - add the caph bin directory to your PATH. Ex (for bash) : "PATH=<prefix>/bin:$PATH; export PATH"  (where <prefix>
   is the path passed to the configure script when installing) 
 - cd to the example directory (ex: "cd basic/scale")
-- build makefiles: "caphmake <prefix>"  (where, again, <prefix> is the path passed to the configure script when installing) 
-- "make dot.show" for viewing the graph representation (using the .dot viewer passed to the configure script)
-- "make sim.run" for running the simulator representation
-- "make systemc.run" for generating SystemC code, compiling and running it
-- "make vhdl.run" for generating VHDL code, compiling and running it
+- build makefiles: "caphmake; make makefiles"
+- "make dot; make dot.show" for viewing the graph representation (using the .dot viewer passed to the configure script)
+- "make sim.run; make sim.show" for running the simulator and viewing the results
+- "make systemc.run; make systemc.sgow" for generating SystemC code, compiling and running it and viewing the results
+- "make vhdl.run; make vhdl.show" for generating VHDL code, compiling and running it and viewing the results
 
 Following is a brief description of each subdirectory and its contents.
 
 basic : small, simple examples, showing the basic language features
-   simple : the simplest possible example : the identity actor reading and writting unstructured stream
-   scale : a simple actor multiplying each value of a structured stream by a given constant (given as a parameter)
-   scale2 : cascading two [scale] actors
-   mux : (polymorphic) multiplexor
    bitop : a simple actor showing bitwise operations
    cmp : a simple  comparator, showing the use of the [bool] type
    cmps : another comparator, operating on lists
    globals : illustrates the use of global functions and constants
    let : shows how to use the "let ... in" construct to break computations in smaller parts
    lut[1-4] : four variants of a lookup table (1D read-only, rw, 2D r-o and 3D r-o)
+   simple : the simplest possible example : the identity actor reading and writting unstructured stream
+   mux : (polymorphic) multiplexor
+   scale : a simple actor multiplying each value of a structured stream by a given constant (given as a parameter)
+   scale2 : cascading two [scale] actors
    thr1 : an thresholfing actor, for binarizing a structured stream
    thr2 : another formulation of the [thr] actor, using guarded rules
 
 fir : a few examples of finite impulse filters (FIR)
    fir12 : 1D (1x2) on structured streams 
+   fir13 : 1D (1x3) on unstructured streams (mono-actor version)
+   fir1n : 1D (1xn) on unstructured streams (generic version, with [chain] and [foldl] higher-order function)
    fir22 : 2D (2x2) on structured streams
    fir33sep : 2D (3x3) as a composition of a 1x3 and a 3x1 filter (mono and multi actor versions)
 
@@ -54,7 +56,8 @@ network : examples illustrating the network description language (NDL)
    fold{l,li,t} : examples showing the [foldl], [foldli] and [foldlt] higher-order wiring primitives
    napp{1,2} : two examples illustrating the [napp] higher-order wiring primitive
    nappi : an example illustrating the [nappi] higher-order wiring primitive
-   pipe : example showing the [pipe] higher-order wiring primitives
+   pipe : example showing the [pipe] higher-order wiring primitive
+   chain : example showing the [chain] higher-order wiring primitive
    while : the [while] HO wiring function for defining [while] constructs at the network level
    mutrec : how to use mutually recursive definition to describe cyclic graphs
 
@@ -79,7 +82,7 @@ misc : other various examples
    fact[rec] : two versions of an actor computing the factorial of integers
    foreign : how to use external functions in CAPH programs {*}
    ccond : illustrates the use conditional compilation directives
-   macros : illustrates the use of macros to pass command-line arguments to programs
+   macro : illustrates the use of macros to pass command-line arguments to programs
    mhume : computes the squares of integers by summation
    suml[rec] : computes the sum of list (recursive and non recursive versions)
    sumn : computes the sliding sum on  a unstructured stream
@@ -87,6 +90,8 @@ misc : other various examples
    thrd : illustrates the use of "dynamic" parameters
    bigfifo : illustrates the use of the [-sc_dump_fifo_stats] option to back-annotate the VHDL code
    implemented : how to use the "#pragma implemented" directive
+   ioless[2] : how to define and use input and output-less actors
+   sample : shows the definition of a 1/n subsampling actor 
 
 moc: examples illustrating the use of MoC-based features (as described in the corresponding chapter of the LRM)
    mocs: using the [-infer_mocs] option to infer the model of computation of various actors
@@ -127,3 +132,5 @@ primer: examples described in the "Caph Primer" tutorial
 
 cal: examples related to the CAL language
   suml: translation of the [misc/suml] examples 
+
+dpn: examples inspired from T.M. Parks PhD ("Bounded Scheduling of Process Networks", 1995)

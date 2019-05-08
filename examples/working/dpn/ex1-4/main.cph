@@ -1,0 +1,36 @@
+-- This example is a direct transcription of the program of Fig 1.4 in [Parks95]
+-- It runs forever, with the occupation of all FIFO channels < 2, producing
+-- the stream 0,1,0,1,... on channel x
+-- May 8, 2019 - JS
+
+type int8 == signed<8>;
+
+actor f in (u: int8, v: int) out (w: int)
+var st: {L,R} = L
+rules
+| (st:L, u:u) -> (w:u, st:R)
+| (st:R, v:v) -> (w:v, st:L)
+;
+
+actor g in (u: int8) out (v: int, w: int)
+var st: {L,R} = L
+rules
+| (st:L, u:u) -> (v:u, st:R)
+| (st:R, u:u) -> (w:u, st:L)
+;
+
+actor h (x: int8) in (u: int) out (v: int)
+var st: {I, R} = I
+rules
+| st:I -> (v:x, st:R) 
+| (st:R, u:u) -> v:u
+;
+
+net rec  x = f (y, z)
+and      y = h 0 t1
+and      z = h 1 t2
+and (t1,t2) = g x;
+
+stream xo:int8 to "x.txt"; -- for visualizing the data circulating on channel x
+net xo = x;
+
