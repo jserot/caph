@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.8.2 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt;The main feature of this release is the availability of a graphical user interface for the compiler. This GUI, named CAPHY, is available in binary format for Windows (32 bits) and in source format for Unix-like systems. &#xD;CAPHY allows&#xD;- writing and editing CAPH source files (with syntax coloring)&#xD;- grouping these files into "projects"&#xD;- generating graph representation and viewing them (by running dotty)&#xD;- running simulations (reading input files and writing output files)&#xD;- generating SystemC code &#xD;- generating VHDL code&#xD;However, CAPHY does &lt;b&gt;not &lt;/b&gt;allow compiling and running generated SystemC or VHDL code (this is too much dependent on the actual platform). The idea is that CAPHY is just a front-end used to generate code in a target directory and that these files are latter exploited by a separate tool or set of tools &#xD;To get an idea of CAPHY you can have a look at part 2 of the &lt;a href="http://caph.univ-bpclermont.fr/dist/caph-primer.pdf"&gt;tutorial&lt;/a&gt;.</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;26/04/2017&lt;/b&gt;</richText>
+  </textBox>
+</content>

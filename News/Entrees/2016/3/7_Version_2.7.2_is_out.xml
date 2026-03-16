@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.7.2 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;- size attributes: ex var z: array[n] = [ 0 | i=0 to z`size-1 ] (see Sec 2.3.7 of the LRM)&#xD;bug fix concerning negative float values and arrays of floats)&#xD; INTERPRETER&#xD;- the default channel capacity is now set to 256 (can be changed with option [-chan_cap])&#xD;option [-dump_channel_stats] now also reports the final (end of run) occupation of channels&#xD; CAPH LIB&#xD;- revised implementations for [conv11{3,4,5}] and [conv21{3,4,5}] actors in [convol.cph] (kernels are now specified "from left to right" and as bidimensionnal arrays for 2D convolutions&#xD;- neighborhood wiring functions have been moved to a separate file [neigh.cph]&#xD;- added 1D neighborhood generators and updated names accordingly [neigh1&lt;w&gt;] for 1D, [neigh2&lt;h&gt;&lt;w&gt;] for 2D&#xD; SYSTEMC &#xD;the default value for FIFO size is now 256 (can be changed with option [-sc_default_fifo_size]&#xD; VHDL &#xD;the [-vhdl_quartus] option now also generates a .xml file listing the source files and the network IO (to used in the future with the GPStudio IDE)&#xD;bug fix for declarations of arrays of size 1&#xD; TOOLS&#xD;- bug fix in quartus/mk_quartus_proj script&#xD;- [mkconv] program in [tools] for generating MxN convolution and neighborhood generation actors (see Appendix F of the reference manual and examples [conv/mkconv[12]]&#xD; DOC&#xD;- several corrections and typos (thx to M. Sizov for pointing them)&#xD;- added a section (Appendix F) in the reference manual on [mkconv] program&#xD;- the image processing example in the "CAPH Primer" has been rewritten to use the predefined convolution actors; a section has been added on FIFO dimensionning and blanking&#xD;&#xD; WEB SITE&#xD;- added convolution example to the code samples section&#xD;- added some published papers to the documentation section&#xD;</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;07/03/2016&lt;/b&gt;</richText>
+  </textBox>
+</content>

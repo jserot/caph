@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.6.1 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the ChangeLog file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;  added support for complex array expressions in rule qualifiers&#xD;  added a [foldli] higher-order primitive (see LRM p 49 and examples/working/foldli)&#xD;  global constants are now correctly interpreted when used as type size parameters.&#xD;  fixed a significant bug in the simulator and the SystemC backend which caused execution results to depend on the order in which the actions where listed in a rule RHS when an array was both read and written in this rule.&#xD; CAPH LIBRARY&#xD; added [stream_ops.cph] for operating on unstructured streams&#xD; EXAMPLES&#xD; added [fir13a] and [fir13b], mono and multi-actor implementations of 1x3 FIR on unstructured streams&#xD; examples in [working] are now sorted by categories, with a short description (examples/working/Readme)</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;29/07/2015&lt;/b&gt;</richText>
+  </textBox>
+</content>

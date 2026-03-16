@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.8.3 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt;The main feature of this release is the availability of a self installer for the Windows version and a pre-compiled version for MacOS. This should significantly ease the installation process. Testing CAPH should now be as simple as&#xD;1. Click on the installer program &#xD;2. Launch CAPH&#xD;3. Select project in the example directory&#xD;4. Click on Dot / Sim / Systemc / Vhdl button(s)  !&#xD;The &lt;i&gt;&lt;a href="http://caph.univ-bpclermont.fr/dist/caph-primer.pdf"&gt;CAPH Primer&lt;/a&gt;&lt;/i&gt; tutorial has also been completely rewritten. It now includes three distinct and complementary parts : one dedicated to the language itself, one describing the GUI and one describing the command-line interface to the toolset. The section describing the command-line interface has been rewritten to show the use of the [caphmake] utility.</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;02/06/2017&lt;/b&gt;</richText>
+  </textBox>
+</content>

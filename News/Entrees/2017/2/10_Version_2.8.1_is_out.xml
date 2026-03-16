@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.8.1 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;XDF/CAL output format for networks (option [-xdf])&#xD;the options [-sc_target_dir] and [-vhdl_target_dir] are now superceded by a general [-target_dir] option&#xD;the syntax for file globbing has been changed and extended to outputs files (see Sec 9.5.2 of the LRM and [examples/working/io/fglob[12]]&#xD; EXAMPLES&#xD;the source code of the examples  described in the "Caph Primer" tutorial are now included in the distribution (under [examples/working/primer])&#xD; TOOLS&#xD;- [caphmake] utility to automatically generate Makefiles from [.defs] and [.rules] project descriptions (see section 9.10 of the LRM)&#xD;- [pgm2bin] and [bin2pgm] utilities to directly generate [.bin] input files from [.pgm] images (and vice versa)&#xD; DOC&#xD;updated section 9.10 of the LRM concerning the use of Makefiles (now promoting the use of [caphmake])&#xD;updated section 9.5.3 and 9.5.4 of the LRM concerning the use of file format converters&#xD;updated the "Caph Primer" tutorial &#xD; DISTRIBUTION&#xD;the distribution now only comes in two flavors : a source distribution for Unix-like systems (Unix, Linux, MacOS) and a binary distribution for Windows&#xD;</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;10/02/2017&lt;/b&gt;</richText>
+  </textBox>
+</content>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<rss xmlns:iweb="http://www.apple.com/iweb" version="2.0">
+  <channel>
+    <title>News</title>
+    <link>http://dream.ispr-ip.fr/CAPH/CAPH/News</link>
+    <description></description>
+    <item>
+      <title>Version 2.9.1 is out</title>
+      <link>http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2019/5/8_Version_2.9.1_is_out.html</link>
+      <guid isPermaLink="false">a6b8a425-311d-464d-9f7a-44b5b8e45059</guid>
+      <pubDate>Wed, 8 May 2019 16:22:22 +0200</pubDate>
+      <iweb:comment enabled="0" count="0" link="http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2019/5/8_Version_2.9.1_is_out.html#comment_layer"></iweb:comment>
+    </item>
+    <item>
+      <title>Version 2.9.0 is out</title>
+      <link>http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2019/5/8_Version_2.9.0_is_out.html</link>
+      <guid isPermaLink="false">2e41031b-a24b-41ed-8f3e-44619ab61e22</guid>
+      <pubDate>Wed, 8 May 2019 16:19:33 +0200</pubDate>
+      <description>QUICK LIST of CHANGES (see the CHANGES file in the distribution for a complete and detailed list) &lt;br/&gt;NEW FEATURES&lt;br/&gt;2.9.0 (Nov 12, 2018)&lt;br/&gt;&lt;br/&gt;VHDL&lt;br/&gt;&lt;br/&gt;-   added option -vhdl_tb_inline_io and vhdl_tb_external_clock. The&lt;br/&gt;    former forces the generated testbench to use inlined data instead of&lt;br/&gt;    reading/writing .bin files. The latter generates an &amp;quot;open&amp;quot;&lt;br/&gt;    testbench, taking clock and reset signals as input.&lt;br/&gt;-   added variants cstream_in and cstream_out to lib/vhdl to support&lt;br/&gt;    inlined data in testbenches&lt;br/&gt;-   removed fifo_big.vhd from lib/vhdl because the synthesis of this&lt;br/&gt;    model as a RAM-based component was Quartus-specific. All&lt;br/&gt;    platform-specific code will be now hosted on the separate repository&lt;br/&gt;    caph-contrib. More details on this here.&lt;br/&gt;&lt;br/&gt;COMPILER&lt;br/&gt;&lt;br/&gt;-   removed option -vhdl_quartus for the reasons listed above&lt;br/&gt;&lt;br/&gt;EXAMPLES&lt;br/&gt;&lt;br/&gt;-   corrected name of the VHDL annotation file in several examples .proj&lt;br/&gt;    files&lt;br/&gt;&lt;br/&gt;DOC&lt;br/&gt;&lt;br/&gt;-   fixed several typos in the Primer document&lt;br/&gt;&lt;br/&gt;DISTRIB&lt;br/&gt;&lt;br/&gt;-   fixed a bug in man/Makefile which prevented building the man pages&lt;br/&gt;    from sources on platforms for which the sed command did not accept&lt;br/&gt;    the -E extension&lt;br/&gt;-   updated the configure to automatically detect which version of sed&lt;br/&gt;    to use&lt;br/&gt;&lt;br/&gt;</description>
+      <iweb:comment enabled="0" count="0" link="http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2019/5/8_Version_2.9.0_is_out.html#comment_layer"></iweb:comment>
+    </item>
+    <item>
+      <title>Version 2.8.5 is out</title>
+      <link>http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2018/5/5_Version_2.8.5_is_out.html</link>
+      <guid isPermaLink="false">9e12fe75-459c-491b-a916-85afd55de28b</guid>
+      <pubDate>Sat, 5 May 2018 13:52:38 +0200</pubDate>
+      <iweb:comment enabled="0" count="0" link="http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2018/5/5_Version_2.8.5_is_out.html#comment_layer"></iweb:comment>
+    </item>
+    <item>
+      <title>Version 2.8.4 is out</title>
+      <link>http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2017/11/27_Version_2.8.4_is_out.html</link>
+      <guid isPermaLink="false">c67f3baf-6ca1-47a7-ad55-149b9bc13fe6</guid>
+      <pubDate>Mon, 27 Nov 2017 14:44:45 +0100</pubDate>
+      <description>QUICK LIST of CHANGES (see the CHANGES file in the distribution for a complete and detailed list) &lt;br/&gt;NEW FEATURES&lt;br/&gt;The main feature of this release is a prototype implementation of an analyzer for MoC-based actor classification. Using static analysis of the rule set and/or abstract interpretation, this tool aims at deciding whether a given actor instance obeys to SDF (Synchronous Data Flow), CSDF ( Cyclo-Static DF) or DDF (Dynamic DF) Model of Computation. A direct application is the compile-time computation of FIFO sizes between actors for pure SDF dataflow graphs.&lt;br/&gt;Excerpt of the Changelog : &lt;br/&gt;* LANGUAGE&lt;br/&gt;- added a ranged integer type; ex : [var s : {0,..,7}]; local variables with such a type will be identified as potential state variables when dumping box FSMs&lt;br/&gt;* COMPILER&lt;br/&gt;- added option [-dump_boxes] as a restricted, less verbose alternative to [-dump_senv]&lt;br/&gt;- the [-dump_fsms] options now operates on boxes and not on actors&lt;br/&gt;- added option [-absint] (and [-ai_max_cycles]) to perform abstract interpretation of boxes&lt;br/&gt;- added option [-infer_mocs] to classify boxes according to their actual model of computation (SDF/CSDF/DDF)&lt;br/&gt;- added option [-dump_sdf_fifo_sizes] to generate an annotation file containing predicted FIFO sizes from the statically computed rule signatures. &lt;br/&gt;- added an option [-dif] to export the generated dataflow graphs using the DIF format&lt;br/&gt;* DOCUMENTATION&lt;br/&gt;- added a chapter in the LRM describing the model of computation (MoC) underpinning Caph programs&lt;br/&gt;- added a section in chapter &amp;quot;Using the compiler&amp;quot; of the LRM on FSM generation&lt;br/&gt;* EXAMPLES&lt;br/&gt;- added a subdirectory [moc] containing examples illustrating the use of MoC-based features&lt;br/&gt;- added an example in [examples/working/cal] showing how to reformulate an actor operating on [int dc] type into an actor operating on raw ints&lt;br/&gt;* DISTRIBUTION&lt;br/&gt;- fixed a bug in the Windows distributed file which incorrectely made it appear as compressed &lt;br/&gt;</description>
+      <iweb:comment enabled="0" count="0" link="http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2017/11/27_Version_2.8.4_is_out.html#comment_layer"></iweb:comment>
+    </item>
+    <item>
+      <title>Version 2.8.3 is out</title>
+      <link>http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2017/6/2_Version_2.8.3_is_out.html</link>
+      <guid isPermaLink="false">a93c0cde-5014-4558-9632-5e64cf8e63b5</guid>
+      <pubDate>Fri, 2 Jun 2017 13:51:34 +0200</pubDate>
+      <description>QUICK LIST of CHANGES (see the CHANGES file in the distribution for a complete and detailed list) &lt;br/&gt;NEW FEATURES&lt;br/&gt;The main feature of this release is the availability of a self installer for the Windows version and a pre-compiled version for MacOS. This should significantly ease the installation process. Testing CAPH should now be as simple as&lt;br/&gt;1. Click on the installer program &lt;br/&gt;2. Launch CAPH&lt;br/&gt;3. Select project in the example directory&lt;br/&gt;4. Click on Dot / Sim / Systemc / Vhdl button(s)  !&lt;br/&gt;The &lt;a href="http://caph.univ-bpclermont.fr/dist/caph-primer.pdf"&gt;CAPH Primer&lt;/a&gt; tutorial has also been completely rewritten. It now includes three distinct and complementary parts : one dedicated to the language itself, one describing the GUI and one describing the command-line interface to the toolset. The section describing the command-line interface has been rewritten to show the use of the [caphmake] utility.</description>
+      <iweb:comment enabled="0" count="0" link="http://dream.ispr-ip.fr/CAPH/CAPH/News/Entrees/2017/6/2_Version_2.8.3_is_out.html#comment_layer"></iweb:comment>
+    </item>
+    <iweb:dateFormat>dd/MM/y</iweb:dateFormat>
+    <iweb:baseURL>http://dream.ispr-ip.fr/CAPH/CAPH/News</iweb:baseURL>
+    <iweb:maximumSummaryItems>5</iweb:maximumSummaryItems>
+  </channel>
+</rss>

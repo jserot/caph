@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.6.2 is out    </richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the ChangeLog file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD; full support for n-ary type and value constructors&#xD; the type of actor local variables is no longer limited to ground types (signed, unsigned, ...) and local enums but can be any globally defined type. Pattern-matching on constructed values is extended to local variables&#xD; [foldt] and [pipe] higher-order primitives (see LRM p 50-51 and examples/working/network/{foldt,pipe})&#xD; fixed a bug in the error location mechanism in case of nested source files (#include)&#xD; protection against multiple includes&#xD; revised name mangling system for the SystemC and VHDL backends&#xD; CAPH LIBRARY&#xD; the [dc] type is no longer built-in but now explicitely defined in [lib/caph/dc.cph]. For backward  compatibility the option [abbrev_dc_ctor] still provides abbreviations to the corresponding value constructors ("'&lt;" for "SoS", "'&gt;" for "EoS" and "'v" for "Data v")&#xD; VHDL LIBRARY&#xD; optimized code for [fifo_fb] in lib/vhdl (thx to F. Berry)&#xD; EXAMPLES&#xD; updated working/apps/{rl,rle,rld} to make use of n-ary type and value constructors&#xD; added fir/fir33sep and typing/mixedarithm3 examples</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;11/09/2015&lt;/b&gt;</richText>
+  </textBox>
+</content>

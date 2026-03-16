@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.2.0 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText> clarification (and simplication) of the syntax for injecting core-level expressions at the network level. Basically, there's now no syntactical distinction between the two levels. In particular, the - awkward - "[..]" syntax for passing parameters to actors has disappeared. For example, an actor [foo] defined as&#xD;     actor foo (k:unsigned&lt;8&gt;) in (a:unsigned&lt;8&gt;) out (o:...) ...&#xD;will be simply instanciated by writing&#xD;	     net o = foo 2 i &#xD;The tuple notation is used when the actor accepts several parameters.&#xD;For example, an actor [foo] defined as&#xD;     actor bar (k1:unsigned&lt;8&gt;,k2:bool) in (a:unsigned&lt;8&gt;) out (o:...) ...&#xD;will be instanciated by writing&#xD;	     net o = bar (2,false) i &#xD;This makes instanciation of actors accepting arrays as parameters less confusing.&#xD;For example, an actor [fir] defined as&#xD;	actor fir (kern:unsigned&lt;8&gt; array[3]) in (a:unsigned&lt;8&gt;) out (o:...) ...&#xD;will now be instanciated by writing&#xD;	net o = fir [1,2,1] i &#xD;This modification is documented in Sec 2.4.5 of the reference manual.&#xD;The corresponding sections describing the concrete and abstract syntaxes and the static semantics have been updated accordingly.</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;08/05/2014&lt;/b&gt;</richText>
+  </textBox>
+</content>

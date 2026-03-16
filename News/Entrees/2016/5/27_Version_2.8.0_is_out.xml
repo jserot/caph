@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.8.0 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;- support of higher order actors (see [examples/working//ho], [lib/caph/dc.cph] and Sec 2.4.6 of the LRM&#xD;- introduced a general, C-like, macro mechanism to pass arguments to programs from the command line ([-D]&#xA0;option, see Sec. 9.7 of the LRM). &#xD;reimplementation of arrays. 2D and 3D arrays are now fully supported both at the expression and network levels&#xD; EXAMPLES&#xD;- added examples for higher order actors in [examples/working/ho]&#xD;- examples making use of command line arguments have been rewritten to use the new [-D] compiler option&#xD;- added an 3D lookup table in [examples/working/basic]&#xD; DOC&#xD;- added a section on higher order actors (Sec 2.4.6) in the LRM&#xD;- added a section describing the [-D option] (Sec 9.7)&#xD;- added a paragraph to the program example given at the end of Sec 2 illustrating how to use higher order actors.&#xD; WEB SITE&#xD;- added an example on higher actor order to the code samples section</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;27/05/2016&lt;/b&gt;</richText>
+  </textBox>
+</content>

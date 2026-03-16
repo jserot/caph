@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.7.1 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the ChangeLog file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;- new higher-order primitives [napp] and [nappi] (see [examples/working/network/{napp,nappi}] and the section on higher-order primitives in the LRM)&#xD;- revised type for the [pipe] higher-order primitive &#xD;bug fix in the typing stage (thx to C. Bourrasset and his CNN deep-learning app for pointing it)&#xD; SYSTEMC &#xD;option [-sc_stop_when_idle] to stop simulation when outputs have been inactive for a given time&#xD; EXAMPLES&#xD;- added [compose2], [foldmap]&#xD; DOC&#xD;- updated section on intermediate representation in LRM &#xD;</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;09/12/2015&lt;/b&gt;</richText>
+  </textBox>
+</content>

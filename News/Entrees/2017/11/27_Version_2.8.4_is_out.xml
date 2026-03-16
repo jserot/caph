@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.8.4 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt;The main feature of this release is a prototype implementation of an analyzer for MoC-based actor classification. Using static analysis of the rule set and/or abstract interpretation, this tool aims at deciding whether a given actor instance obeys to SDF (Synchronous Data Flow), CSDF ( Cyclo-Static DF) or DDF (Dynamic DF) Model of Computation. A direct application is the compile-time computation of FIFO sizes between actors for pure SDF dataflow graphs.&#xD;Excerpt of the Changelog : &#xD;* LANGUAGE&#xD;- added a ranged integer type; ex : [var s : {0,..,7}]; local variables with such a type will be identified as potential state variables when dumping box FSMs&#xD;* COMPILER&#xD;- added option [-dump_boxes] as a restricted, less verbose alternative to [-dump_senv]&#xD;- the [-dump_fsms] options now operates on boxes and not on actors&#xD;- added option [-absint] (and [-ai_max_cycles]) to perform abstract interpretation of boxes&#xD;- added option [-infer_mocs] to classify boxes according to their actual model of computation (SDF/CSDF/DDF)&#xD;- added option [-dump_sdf_fifo_sizes] to generate an annotation file containing predicted FIFO sizes from the statically computed rule signatures. &#xD;- added an option [-dif] to export the generated dataflow graphs using the DIF format&#xD;* DOCUMENTATION&#xD;- added a chapter in the LRM describing the model of computation (MoC) underpinning Caph programs&#xD;- added a section in chapter "Using the compiler" of the LRM on FSM generation&#xD;* EXAMPLES&#xD;- added a subdirectory [moc] containing examples illustrating the use of MoC-based features&#xD;- added an example in [examples/working/cal] showing how to reformulate an actor operating on [int dc] type into an actor operating on raw ints&#xD;* DISTRIBUTION&#xD;- fixed a bug in the Windows distributed file which incorrectely made it appear as compressed &#xD;</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;27/11/2017&lt;/b&gt;</richText>
+  </textBox>
+</content>

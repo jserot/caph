@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:29 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.9.0 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the CHANGES file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt;2.9.0 (Nov 12, 2018)&#xD;&#xD;&lt;b&gt;VHDL&#xD;&lt;/b&gt;&#xD;-   added option -vhdl_tb_inline_io and vhdl_tb_external_clock. The&#xD;    former forces the generated testbench to use inlined data instead of&#xD;    reading/writing .bin files. The latter generates an "open"&#xD;    testbench, taking clock and reset signals as input.&#xD;-   added variants cstream_in and cstream_out to lib/vhdl to support&#xD;    inlined data in testbenches&#xD;-   removed fifo_big.vhd from lib/vhdl because the synthesis of this&#xD;    model as a RAM-based component was Quartus-specific. All&#xD;    platform-specific code will be now hosted on the separate repository&#xD;    caph-contrib. More details on this here.&#xD;&#xD;&lt;b&gt;COMPILER&#xD;&lt;/b&gt;&#xD;-   removed option -vhdl_quartus for the reasons listed above&#xD;&#xD;&lt;b&gt;EXAMPLES&#xD;&lt;/b&gt;&#xD;-   corrected name of the VHDL annotation file in several examples .proj&#xD;    files&#xD;&#xD;&lt;b&gt;DOC&#xD;&lt;/b&gt;&#xD;-   fixed several typos in the Primer document&#xD;&#xD;&lt;b&gt;DISTRIB&#xD;&lt;/b&gt;&#xD;-   fixed a bug in man/Makefile which prevented building the man pages&#xD;    from sources on platforms for which the sed command did not accept&#xD;    the -E extension&#xD;-   updated the configure to automatically detect which version of sed&#xD;    to use&#xD;&#xD;</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;08/05/2019&lt;/b&gt;</richText>
+  </textBox>
+</content>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.6.0 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the ChangeLog file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD;  support for generic, signed and unsigned integers (see LRM, section 2.2.1, 2.2.3, 2.3.6, 2.4.5,tables 2.2, 2.3 and 2.5, chapter 3). It is now possible to define "sign-generic" actors, i.e. actors operating polymorphically on [signed] or [unsigned] quantities. As a result, the standard prelude does not contain any longer two versions (signed/unsigned) of each actor operating on integers. &#xD; support for size-polymorphic variants (see Sec 2.4.1)&#xD; support for (a limited form of) dependant types. See section 2.4.5. It is now possible to define actors whose type depends on the value of some of their parameters. A typical example is : actor resize (k:int) in (a:signed&lt;n&gt;) out (signed&lt;k&gt;)). The size of local variables, including arrays, may also depend on the value of some parameters. As a result, several actors in the standard prelude (dkp, dl, ...) have been rewritten so that they do not rely any longer on hardcoded constants (for storing lines in arrays for ex.). &#xD; type abbreviation now uses the symbol "==" (instead of "=")&#xD; SYSTEMC BACKEND&#xD; the option [sc_use_templates] has been deprecated. The combination of the semantically unsound template systemc of C++ and the buggy SystemC library just created too many problems. The SystemC backend nows supports polymorphism via code replication (just as the VHDL one).&#xD; VHDL LIBRARY&#xD;  the 2-bit tags in the VHDL representation of values having [t dc] type has changed :&#xD; the value [Data v] is now encoded [11xxxxxx] (instead of [00xxxxxx])&#xD; the tag [00] is now used to encode (in .bin files) the special value "no data" (for blanking)&#xD; the tags for [SoS] and [EoS] are unchanged&#xD; The related programs (txt2bin and bin2txt) and the module [source.vhd] (in lib/vhdl) have been modified accordingly.</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;17/06/2015&lt;/b&gt;</richText>
+  </textBox>
+</content>

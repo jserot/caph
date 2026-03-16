@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title></title></head><body><h2 id="may-5-2018">2.8.5 (May 5, 2018)</h2>
+<h4 id="systemc-backend">SYSTEMC backend</h4>
+<ul>
+<li>added option <code>-sc_io_monitor</code> for dumping start/stop times of IO boxes</li>
+<li>added option <code>-sc_fifo_stats_file</code> to specify the file where to dump FIFO stats when option <code>-sc_dump_fifo_stats</code> is asserted (default: &quot;fifo_stats.dat&quot;)</li>
+</ul>
+<h4 id="xdf">XDF</h4>
+<ul>
+<li>bug fix in <code>xdf.ml</code> (<code>&lt;/Connection&gt;</code> anchor missing) (Thx to Claudio R.)</li>
+<li>added option <code>-xdf_package</code> to prefix actor class declarations in the generated <code>.xdf</code> file</li>
+<li>if a file &quot;fifo_stats.dat&quot; is present, reads it and generates corresponding annotation in the <code>.xdf</code> file</li>
+<li>actor instances are now named <code>xxx_act</code> in the <code>.cal</code> and <code>.xdf</code> files</li>
+</ul>
+<h4 id="documentation">DOCUMENTATION</h4>
+<ul>
+<li>fixed some typos</li>
+<li>updated sec 10.9 to reflect changes on the <code>-sc_dump_fifo_stats</code> option</li>
+</ul>
+<h4 id="examples">EXAMPLES</h4>
+<ul>
+<li>fixed references to undefined macro MAIN in some project files</li>
+</ul>
+<h4 id="distribution">DISTRIBUTION</h4>
+<ul>
+<li>added options <code>--no-gui</code>, <code>--no-doc</code>, <code>--qmake</code> and <code>--qmake-spec</code> to <code>configure</code></li>
+<li>reorganized source tree and Makefiles</li>
+<li>now also on <a href="http://github.com/jserot/caph">Github</a> !</li>
+</ul>
+</body></html>

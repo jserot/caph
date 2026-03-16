@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:27 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.3.0 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText> support for bidimensional arrays (arrays of arrays, aka 1Dx1D arrays)&#xD; [map] and [foldl] higher-order wiring primitives for describing parallel replication and reduction graph patterns (see Sec 2.4.5 of the reference manual); a nice example of how bidimensionnal arrays and map higher-order wiring can be combined is given in examples/working/filter_bank.&#xD; reformated reference manual (cleaner presentation and a logo !)&#xD; renamed actors [d], [dp], [f] and [fp] in the standard preludeto [dl], [dkl], [fl] and [fkl] resp. to minimize the risk of name clash with user code</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;22/05/2014&lt;/b&gt;</richText>
+  </textBox>
+</content>

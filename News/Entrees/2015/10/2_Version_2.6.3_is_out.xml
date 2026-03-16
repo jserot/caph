@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<content collectionGUID="0141ABA8-0E42-411F-9EA6-6930390AFE7C">
+  <lastEdited clientType="local-build-20260227" date="2026-02-27 09:50:28 +0000"/>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>Version 2.6.3 is out</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;QUICK LIST of CHANGES (&lt;/b&gt;see the ChangeLog file in the distribution for a complete and detailed list&lt;b&gt;)&lt;/b&gt;&lt;b&gt; &#xD;NEW FEATURES&#xD;&lt;/b&gt; COMPILER&#xD; bug fix : negative values on port "init" clause are now accepted&#xD; bug fix : the option [-dump_fifo_stats] is now compatible even when IO ports are present&#xD; VHDL BACKEND&#xD; bug fix in stream_{in,out}.vhd &#xD; added option [-vhdl_ostream_period]&#xD; EXAMPLES&#xD; added missing [#include "dc.cph"] in several "main.cph" files</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>&lt;b&gt;02/10/2015&lt;/b&gt;</richText>
+  </textBox>
+</content>
