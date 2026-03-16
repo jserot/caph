@@ -25,19 +25,13 @@ rules using pattern matching.
 DOCUMENTATION
 -------------
 
-[Project web page](http://dream.ispr-ip.fr/CAPH)
+[Project web page](https://jserot.github.io/caph)
 
-[Tutorial](http://dream.ispr-ip.fr/CAPH/dist/caph-primer.pdf) and [Reference
-manual](http://dream.ispr-ip.fr/CAPH/dist/caph-lrm.pdf).
+[Tutorial](https://jserot.github.io/caph/dist/caph-primer.pdf) and [Reference
+manual](https://jserot.github.io/caph/dist/caph-lrm.pdf).
 
 INSTALLATION
 ------------
-
-##### Using pre-built binaries
-
-Installers for MacOS and Windows are available from the [Project web page](http://dream.ispr-ip.fr/CAPH/CAPH/Download.html).
-
-##### From source
 
 Pre-requisites :
 
@@ -51,8 +45,7 @@ Pre-requisites :
 
 * A `Qt5` installation if you want to build the GUI
 
-Download the source tree from the [Project web page](http://dream.ispr-ip.fr/CAPH/CAPH/Download.html) or via
-[github](http://github.com/jserot/caph) (`git clone https://github.com/jserot/caph`).
+Clone the source tree from the [github repo](http://github.com/jserot/caph) (`git clone https://github.com/jserot/caph`).
 
 From the root of the source tree :
 
