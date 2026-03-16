@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta name="description" content="CAPH : A domain specific language for implementing stream-processing applications on reconfigurable hardware J. Sérot Institut Pascal UMR 6602 Université Blaise Pascal / CNRS Clermont-Ferrand, France  DSLDI Workshop                                                 01/07/2013, Montpellier Context and motivations Multiplication of FPGAs in embedded systems  FPGA = Field Programmable Gate Arrays Alternative solution (vs CPUs) for implementing software in hardware full and complete customization of hardware to realize a specific program Programming means configuring specialize the function of Logic Elements configure the communication wires btw LEs FPGAs - Opportunities 530K equiv logic elements 430K registers 20Mb embedded memory 1024 18x18 multipliers Ex: ALTERA Stratix IV™ ➜ close-to-sensor, on-the-fly, processing  ➜ huge amount of fine grain parallelism FPGAs - Obstacles  FPGAs are programmed with hardware description languages (Verilog, VHDL) A real challenge for “software” programmers ! explicit parallelism, explicit time, explicit control signals requires knowledge on hardware design High-level synthesis tools (ex: C-based HDLs) may help but Some concepts of the sequential / imperative programming model do no map easily/efficiently into hardware  Requires complex (and hence hard to prove correct) transformations to be implemented DSLs ? Whether HLS tools may ultimately offer a fully transparent and efficient compilation path is still a open (and debated !) question ! Meanwhile, DSLs can offer a pragmatic solution :  using an specific model of computation is a way of reducing the gap between high level specifications and low-level implementations  ... esp. when the application domain is restricted ... but also leading to efficient hardware implementations  CAPH A DSL for implementing real-time, stream-processing applications Based upon the data-flow model of computation Generating efficient VHDL code for programming FPGA-based platforms Dataflow model 4 Very old idea ! An application = a network of computing units (actors) exchanging tokens through unidirectional, buffered links (FIFOs)  For each actor, a set of firing rules specifies when it consumes input tokens and produces output tokens  15 Dataflow model Very intuitive model (esp. for pgmers in the DSP field) Can be easily implemented in hardware : channels as FIFOs actors as independent synchronous/asynchronous processes  no global synchronization / control ! ☺ natural support of pipelining and on-the-fly  processing ☺ control signals can be embedded as special data tokens ☺ From model to language Need a formalism to describe / specify the topology of the actor network the behavior of individual actors what tokens contain / represent Describing networks net o = A4 (x1, y1) ➢ Consistency can be checked using type-checking ➢ Reusable graph patterns can be encapsulated as higher-order functions ➔ Textual (functional) description Describing actor behavior Behavior described a a set of transition rules Activation of rules based on pattern-matching 8 9 8 4 5 6 4 9 4 ➔ Generalized Finite State Machines actor switch  in (i1 : int,      i2 : int)  out (o : int)  var s : (Left,Right) = Left  rules   | s:Left,  i1:v → o:v, s:Right  | s:Right, i2:v → o:v, s:Left Data representation Key issue for stream-processing applications Synchronisation problems are partly solved by using FIFOs to connect actors ... ... but we still need to represent the structure of the processed data ex: detect start/end_of_frame and start/end_of_line in a stream of images Data representation Two categories of tokens  data tokens (integers, booleans, pixels, ...) control tokens (start_of_structure, end_of_structure) ➢ Can be used to represent arbitrarily structured data (the Lispish way...) ➢ No global control / synchronisation signals needed  ➢ Naturally supports pipelined execution &lt; &lt; &gt; &gt; function f_abs x =   if x &lt; 0 then 0-x else x  : signed&lt;8&gt; -&gt; signed&lt;8&gt;;constant threshold = 40;actor d1p () ...actor d1l () ... actor add () ...actor asub () ... actor thr (t:signed&lt;8&gt;) ...stream i:signed&lt;8&gt; dc from &quot;dev:cam0&quot;;stream o:signed&lt;8&gt; dc to &quot;dev:mon1&quot;;net g = add (asub(i, d1p i), asub(i, d1l i));net o = thr [threshold] g; A sample Caph program The Caph toolset Graph visualizer : .dot format Reference interpreter : based on the fully formalized semantics tracing, profiling and debugging Compiler :  elaboration of a target-independant IR specialized backends (SystemC, VHDL) Elaboration Three steps network generation RT-level description of actors SystemC/VHDL transcription Only a quick overview here (see papers &amp; LRM) I. Network generation Using abstract interpretation of the network description, viewed as a functional program Each application of a function bound to an actor inserts an instance of this actor into the graph Each functional dependency inserts a channel channels are then instanciated as FIFOs net y = f ( g x) II.  Translation of actor to RTL actor suml ()  in (a: int dc) out (c: int) var st: {S0,S1}=S0 var s : int rules   st:S0, a:‘&lt; ➔ st:S1, s:0 | st:S1, a:‘v ➔ st:S1, s:s+v | st:S1, a:‘&gt; ➔ st:S0, c:s Example :         suml : &lt; 1 2 3 &gt; = 6 Set of transition rules → FSM + operations (FSMD)  ...   begin    if (reset='0') then      st := S0; a_rd &lt;= '0'; c_wr &lt;= '0';    elsif rising_edge(clock) then      case state is        when S0 =&gt;          if a_empty='0' and is_sos(a) then            a_rd &lt;= '1';            st := S01;            s := conv_std_logic_vector(0,15);            end if;        when S01 =&gt;            a_rd &lt;= '0'; state &lt;= S1;        when S1 =&gt;          if a_empty='0' and is_data(a) then            a_rd &lt;= '1'; v := data_from(a);            s := s+v; st := S11;            end if;          if a_empty='0' and is_eos(a) then            a_rd &lt;= '1'; c := s;            c_wr &lt;= '1'; st := S12;            end if;        when S11 =&gt;            a_rd &lt;= '0'; st := S1;        when S12 =&gt;            a_rd &lt;= '0'; c_wr &lt;= '0'; st := S0;      end case;    end if;  end process;end FSM; actor suml ()  in (a: int dc) out (c: int) var st: {S0,S1}=S0 var s : int rules st,a,s-&gt; st,c,s   S0,'&lt;,_ ➔ S1,_,0 | S1,'v,s ➔ S1,_,s+v | S1,'&gt;,s ➔ S0,s,_  III. VHDL Transcription Example entity sum_act is   port (    a_empty: in std_logic;    a: in std_logic_vector(9 downto 0);    a_rd: out std_logic;    c_full: in std_logic;    c: out std_logic_vector(15 downto 0);    c_wr: out std_logic;    clock: in std_logic;    reset: in std_logic    );end sum_act;architecture FSM of sum_act is    type t_state is (S0,S01,S1,S11,S12);begin  process(clock, reset)    variable s : std_logic_vector(15 downto 0);    variable st : t_state;    variable v : std_logic_vector(7 downto 0); ... III. Synthesis (RT-level → Gate level) Using vendor-specific tool-chains  Example :  suml actor synthetized on a Stratix IV using Altera Quartus 9 Implementation ~ 15000 loc of OCaml  lexer+parser : ~ 3500 type checker : ~1800 SystemC backend : ~1800 VHDL backend : ~ 2000 Extra features Higher-order wiring functions net diamond (f, g, h, k, x) =   let x,y = f i in   k (g x, h y)   net o = diamond (A1, A2, A3, A4, i) Parametric polymorphism ☹  Parametric polymorphism actor mux  in (e1:$t,       e2: $t,       c:bool) out (s: $t)rules | e1:x, c:true -&gt; s:x | e2:x, c:false -&gt; s:x; Implementation :  - SystemC templates - VHDL replicated code User-defined algebraic data  Higher-order actors actor inc  in (e:signed&lt;8&gt;)  out (s: signed&lt;8&gt;)rules | x -&gt; x+1 ;  net o = inc i ☹  actor double  in (e:signed&lt;8&gt;)  out (s: signed&lt;8&gt;)rules | x -&gt; x*2 ;  net o = double i Higher-order actors ☺ Dependant types Current state of the project Prototype compiler based upon formal semantics + language reference manual available athttp://dream.univ-bpclermont.fr/index.php/softmenu/caph Has been used to implement several substantial image processing applications on real hardware (ex: a smart camera platform equiped with a Stratix EP1S60 FPGA) showed substantial increase in abstraction level (and development time !) compared to VHDL/Verilog without significant performance penalty"/>
+    <title></title>
+    <script type="text/javascript" language="javascript">
+//      <![CDATA[
+            var images = new Array (99);
+            images[0] = "dsldi13.html_files/dsldi13.001-001.jpg";
+            images[1] = "dsldi13.html_files/dsldi13.002-001.jpg";
+            images[2] = "dsldi13.html_files/dsldi13.003-001.jpg";
+            images[3] = "dsldi13.html_files/dsldi13.003-002.jpg";
+            images[4] = "dsldi13.html_files/dsldi13.004-001.jpg";
+            images[5] = "dsldi13.html_files/dsldi13.005-001.jpg";
+            images[6] = "dsldi13.html_files/dsldi13.006-001.jpg";
+            images[7] = "dsldi13.html_files/dsldi13.007-001.jpg";
+            images[8] = "dsldi13.html_files/dsldi13.007-002.jpg";
+            images[9] = "dsldi13.html_files/dsldi13.007-003.jpg";
+            images[10] = "dsldi13.html_files/dsldi13.007-004.jpg";
+            images[11] = "dsldi13.html_files/dsldi13.007-005.jpg";
+            images[12] = "dsldi13.html_files/dsldi13.007-006.jpg";
+            images[13] = "dsldi13.html_files/dsldi13.007-007.jpg";
+            images[14] = "dsldi13.html_files/dsldi13.007-008.jpg";
+            images[15] = "dsldi13.html_files/dsldi13.007-009.jpg";
+            images[16] = "dsldi13.html_files/dsldi13.008-001.jpg";
+            images[17] = "dsldi13.html_files/dsldi13.009-001.jpg";
+            images[18] = "dsldi13.html_files/dsldi13.010-001.jpg";
+            images[19] = "dsldi13.html_files/dsldi13.010-002.jpg";
+            images[20] = "dsldi13.html_files/dsldi13.010-003.jpg";
+            images[21] = "dsldi13.html_files/dsldi13.010-004.jpg";
+            images[22] = "dsldi13.html_files/dsldi13.010-005.jpg";
+            images[23] = "dsldi13.html_files/dsldi13.010-006.jpg";
+            images[24] = "dsldi13.html_files/dsldi13.010-007.jpg";
+            images[25] = "dsldi13.html_files/dsldi13.010-008.jpg";
+            images[26] = "dsldi13.html_files/dsldi13.010-009.jpg";
+            images[27] = "dsldi13.html_files/dsldi13.011-001.jpg";
+            images[28] = "dsldi13.html_files/dsldi13.011-002.jpg";
+            images[29] = "dsldi13.html_files/dsldi13.011-003.jpg";
+            images[30] = "dsldi13.html_files/dsldi13.011-004.jpg";
+            images[31] = "dsldi13.html_files/dsldi13.011-005.jpg";
+            images[32] = "dsldi13.html_files/dsldi13.011-006.jpg";
+            images[33] = "dsldi13.html_files/dsldi13.011-007.jpg";
+            images[34] = "dsldi13.html_files/dsldi13.011-008.jpg";
+            images[35] = "dsldi13.html_files/dsldi13.011-009.jpg";
+            images[36] = "dsldi13.html_files/dsldi13.011-010.jpg";
+            images[37] = "dsldi13.html_files/dsldi13.011-011.jpg";
+            images[38] = "dsldi13.html_files/dsldi13.012-001.jpg";
+            images[39] = "dsldi13.html_files/dsldi13.013-001.jpg";
+            images[40] = "dsldi13.html_files/dsldi13.013-002.jpg";
+            images[41] = "dsldi13.html_files/dsldi13.013-003.jpg";
+            images[42] = "dsldi13.html_files/dsldi13.013-004.jpg";
+            images[43] = "dsldi13.html_files/dsldi13.013-005.jpg";
+            images[44] = "dsldi13.html_files/dsldi13.013-006.jpg";
+            images[45] = "dsldi13.html_files/dsldi13.013-007.jpg";
+            images[46] = "dsldi13.html_files/dsldi13.013-008.jpg";
+            images[47] = "dsldi13.html_files/dsldi13.013-009.jpg";
+            images[48] = "dsldi13.html_files/dsldi13.013-010.jpg";
+            images[49] = "dsldi13.html_files/dsldi13.013-011.jpg";
+            images[50] = "dsldi13.html_files/dsldi13.013-012.jpg";
+            images[51] = "dsldi13.html_files/dsldi13.013-013.jpg";
+            images[52] = "dsldi13.html_files/dsldi13.013-014.jpg";
+            images[53] = "dsldi13.html_files/dsldi13.013-015.jpg";
+            images[54] = "dsldi13.html_files/dsldi13.013-016.jpg";
+            images[55] = "dsldi13.html_files/dsldi13.014-001.jpg";
+            images[56] = "dsldi13.html_files/dsldi13.014-002.jpg";
+            images[57] = "dsldi13.html_files/dsldi13.014-003.jpg";
+            images[58] = "dsldi13.html_files/dsldi13.014-004.jpg";
+            images[59] = "dsldi13.html_files/dsldi13.014-005.jpg";
+            images[60] = "dsldi13.html_files/dsldi13.014-006.jpg";
+            images[61] = "dsldi13.html_files/dsldi13.014-007.jpg";
+            images[62] = "dsldi13.html_files/dsldi13.014-008.jpg";
+            images[63] = "dsldi13.html_files/dsldi13.014-009.jpg";
+            images[64] = "dsldi13.html_files/dsldi13.014-010.jpg";
+            images[65] = "dsldi13.html_files/dsldi13.014-011.jpg";
+            images[66] = "dsldi13.html_files/dsldi13.015-001.jpg";
+            images[67] = "dsldi13.html_files/dsldi13.016-001.jpg";
+            images[68] = "dsldi13.html_files/dsldi13.017-001.jpg";
+            images[69] = "dsldi13.html_files/dsldi13.017-002.jpg";
+            images[70] = "dsldi13.html_files/dsldi13.017-003.jpg";
+            images[71] = "dsldi13.html_files/dsldi13.017-004.jpg";
+            images[72] = "dsldi13.html_files/dsldi13.018-001.jpg";
+            images[73] = "dsldi13.html_files/dsldi13.018-002.jpg";
+            images[74] = "dsldi13.html_files/dsldi13.018-003.jpg";
+            images[75] = "dsldi13.html_files/dsldi13.019-001.jpg";
+            images[76] = "dsldi13.html_files/dsldi13.019-002.jpg";
+            images[77] = "dsldi13.html_files/dsldi13.019-003.jpg";
+            images[78] = "dsldi13.html_files/dsldi13.020-001.jpg";
+            images[79] = "dsldi13.html_files/dsldi13.021-001.jpg";
+            images[80] = "dsldi13.html_files/dsldi13.022-001.jpg";
+            images[81] = "dsldi13.html_files/dsldi13.023-001.jpg";
+            images[82] = "dsldi13.html_files/dsldi13.023-002.jpg";
+            images[83] = "dsldi13.html_files/dsldi13.023-003.jpg";
+            images[84] = "dsldi13.html_files/dsldi13.024-001.jpg";
+            images[85] = "dsldi13.html_files/dsldi13.024-002.jpg";
+            images[86] = "dsldi13.html_files/dsldi13.024-003.jpg";
+            images[87] = "dsldi13.html_files/dsldi13.024-004.jpg";
+            images[88] = "dsldi13.html_files/dsldi13.024-005.jpg";
+            images[89] = "dsldi13.html_files/dsldi13.025-001.jpg";
+            images[90] = "dsldi13.html_files/dsldi13.025-002.jpg";
+            images[91] = "dsldi13.html_files/dsldi13.026-001.jpg";
+            images[92] = "dsldi13.html_files/dsldi13.026-002.jpg";
+            images[93] = "dsldi13.html_files/dsldi13.026-003.jpg";
+            images[94] = "dsldi13.html_files/dsldi13.027-001.jpg";
+            images[95] = "dsldi13.html_files/dsldi13.028-001.jpg";
+            images[96] = "dsldi13.html_files/dsldi13.029-001.jpg";
+            images[97] = "dsldi13.html_files/dsldi13.029-002.jpg";
+            images[98] = "dsldi13.html_files/dsldi13.030-001.jpg";
+            var index = 0;
+            function WindowLoaded(evt)
+            {
+                document.body.onselectstart = function () { return false; };
+            }
+            function Step(i)
+            {
+                GoTo(index + i)
+            }
+            function GoTo(newIndex)
+            {
+                if(newIndex >= 0 && newIndex < images.length)
+                {
+                    index = newIndex;
+                    document.Slideshow.src = images[index];
+                }
+            }
+//      ]]>
+    </script>
+</head>
+<body bgcolor="black" onload='WindowLoaded(event);'>
+    <p align="center">
+        <br/>
+        <br/>
+        <img name="Slideshow" alt="" src="dsldi13.html_files/dsldi13.001-001.jpg" onclick="Step(1)"/>
+    </p>
+</body>
+</html>

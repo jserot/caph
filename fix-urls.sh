@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ANCIEN="dream.ispr-ip.fr/CAPH"
-NOUVEAU="jserot.github.io/caph"
+NOUVEAU="jserot.github.io/caph/docs"
 
 # Corriger les liens dans les fichiers HTML
 find . -name "*.html" | xargs sed -i '' "s|$ANCIEN|$NOUVEAU|g"
