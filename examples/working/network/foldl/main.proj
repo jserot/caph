@@ -1,4 +1,4 @@
-DOT_OPTS = 
+DOT_OPTS = -dot_unlabeled_edges -dot_unboxed_ios
 SIM_OPTS =  
 SC_OPTS =  -sc_stop_time 100 -sc_abbrev_dc_ctors 
 VHDL_OPTS =

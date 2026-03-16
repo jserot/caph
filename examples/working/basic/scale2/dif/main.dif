@@ -1,0 +1,72 @@
+dif main {
+
+  topology {
+    nodes = n2, n1, n4, n3;
+    edges = e2(n3,n4), e1(n1,n3), e3(n4,n2);
+    }
+
+  actor type o {
+    input i;
+    param ofile;
+    }
+
+  actor type i {
+    output o;
+    param ifile;
+    }
+
+  actortype scale {
+    input a;
+    output c;
+    param k;
+    }
+
+  actortype ssfold {
+    input i;
+    output o;
+    param f, z;
+    }
+
+  actortype sfold {
+    input i;
+    output o;
+    param f, z;
+    }
+
+  actortype smap2 {
+    input i1, i2;
+    output o;
+    param f;
+    }
+
+  actortype smap {
+    input i;
+    output o;
+    param f;
+    }
+
+  actor n2 {
+    type: o;
+    param ofile = "result.txt";
+    interface e3->i;
+    }
+
+  actor n1 {
+    type: i;
+    param ifile = "sample.txt";
+    interface o->e1;
+    }
+
+  actor n4 {
+    type: scale;
+    param k=3;
+    interface e2->a, c->e3;
+    }
+
+  actor n3 {
+    type: scale;
+    param k=2;
+    interface e1->a, c->e2;
+    }
+
+}

@@ -1,0 +1,40 @@
+dif main {
+
+  topology {
+    nodes = n2, n1, n3;
+    edges = e1(n1,n3), e2(n3,n2);
+    }
+
+  actor type o {
+    input i;
+    param ofile;
+    }
+
+  actor type i {
+    output o;
+    param ifile;
+    }
+
+  actortype id {
+    input a;
+    output c;
+    }
+
+  actor n2 {
+    type: o;
+    param ofile = "result.txt";
+    interface e2->i;
+    }
+
+  actor n1 {
+    type: i;
+    param ifile = "sample.txt";
+    interface o->e1;
+    }
+
+  actor n3 {
+    type: id;
+    interface e1->a, c->e2;
+    }
+
+}
