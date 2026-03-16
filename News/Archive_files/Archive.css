@@ -4,14 +4,14 @@
 }
 .Header {
     color: rgb(167, 167, 167);
-    font-family: '.SFNSDisplay-Bold', '.SF NS Display';
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
     font-size: 36px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 43px;
+    line-height: 42px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -27,7 +27,7 @@
 .Normal {
     padding: 4px;
 }
-.Normal_External_630_51 {
+.Normal_External_630_50 {
     position: relative;
 }
 .graphic_generic_title_textbox_style_default_SkipStroke {
@@ -40,14 +40,14 @@
 }
 #widget1 .Summary_Comment {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-top: 0px;
     opacity: 1.00;
@@ -61,14 +61,14 @@
 }
 #widget1 .Summary_Date {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText-Bold', '.SF NS Text';
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
     font-size: 13px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 16px;
+    line-height: 15px;
     margin-bottom: 6px;
     margin-top: 0px;
     opacity: 1.00;
@@ -90,7 +90,7 @@
 }
 #widget1 .Summary_Title {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSDisplay', '.SF NS Display';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 20px;
     font-stretch: normal;
     font-style: normal;
@@ -107,14 +107,14 @@
 }
 #widget1 .Summary_Read_More {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 16px;
     margin-top: 0px;
     opacity: 1.00;
@@ -140,14 +140,14 @@
 }
 #widget1 .Summary_Separator {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-top: 0px;
     opacity: 1.00;
@@ -157,14 +157,14 @@
 }
 #widget1 .Summary_Body {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-top: 0px;
     opacity: 1.00;

@@ -111,14 +111,14 @@
 }
 .Body {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -133,14 +133,14 @@
 }
 .Date {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText-Bold', '.SF NS Text';
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
     font-size: 14px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 17px;
+    line-height: 16px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -155,14 +155,14 @@
 }
 .Next {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -189,14 +189,14 @@
 }
 .Previous {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -211,7 +211,7 @@
 }
 .Title {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSDisplay', '.SF NS Display';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 20px;
     font-stretch: normal;
     font-style: normal;

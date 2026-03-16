@@ -452,14 +452,14 @@
 }
 .paragraph_style_15 {
     color: rgb(66, 66, 66);
-    font-family: '.SFNSDisplay', '.SF NS Display';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 24px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 34px;
+    line-height: 33px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -476,14 +476,14 @@
 }
 .Body {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -498,14 +498,14 @@
 }
 .Free_Form {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -555,29 +555,6 @@
 .graphic_textbox_style_default_SkipStroke {
     background: transparent;
     opacity: 1.00;
-}
-a {
-    color: rgb(88, 77, 77);
-    text-decoration: underline;
-}
-a:visited {
-    color: rgb(121, 121, 121);
-    text-decoration: underline;
-}
-a.class1 {
-    color: rgb(0, 105, 217);
-}
-a.class1:visited {
-    color: rgb(121, 121, 121);
-    text-decoration: underline;
-}
-a.class1:hover {
-    color: rgb(0, 0, 0);
-    text-decoration: underline;
-}
-a:hover {
-    color: rgb(0, 0, 0);
-    text-decoration: underline;
 }
 ol  { 
       padding:0;

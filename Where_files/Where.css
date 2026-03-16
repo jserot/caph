@@ -5,23 +5,23 @@
     background: transparent;
     opacity: 1.00;
 }
+.style_External_630_50 {
+    position: relative;
+}
 .style_SkipStroke_1 {
     background: transparent;
     opacity: 1.00;
 }
-.style_External_630_51 {
-    position: relative;
-}
 .Header {
     color: rgb(167, 167, 167);
-    font-family: '.SFNSDisplay-Bold', '.SF NS Display';
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
     font-size: 36px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 43px;
+    line-height: 42px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -34,11 +34,11 @@
     text-indent: 0px;
     text-transform: none;
 }
+.Normal_External_630_50 {
+    position: relative;
+}
 .Normal {
     padding: 4px;
-}
-.Normal_External_630_51 {
-    position: relative;
 }
 .graphic_generic_header_textbox_style_default_SkipStroke {
     background: transparent;

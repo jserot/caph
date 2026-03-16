@@ -74,14 +74,14 @@
 }
 .Body {
     color: rgb(88, 77, 77);
-    font-family: '.SFNSText', '.SF NS Text';
+    font-family: 'ArialMT', 'Arial', sans-serif;
     font-size: 15px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 22px;
+    line-height: 20px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -96,14 +96,14 @@
 }
 .Header {
     color: rgb(167, 167, 167);
-    font-family: '.SFNSDisplay-Bold', '.SF NS Display';
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
     font-size: 36px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 43px;
+    line-height: 42px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
