@@ -1,3 +1,141 @@
+.style {
+    padding: 4px;
+}
+.paragraph_style {
+    color: rgb(167, 167, 167);
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
+    font-size: 19px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 22px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    opacity: 1.00;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    text-align: center;
+    text-decoration: none;
+    text-indent: 0px;
+    text-transform: none;
+}
+.paragraph_style_1 {
+    color: rgb(167, 167, 167);
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
+    font-size: 14px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 16px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    opacity: 1.00;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    text-align: center;
+    text-decoration: none;
+    text-indent: 0px;
+    text-transform: none;
+}
+.style_SkipStroke_1 {
+    background: transparent;
+    opacity: 1.00;
+}
+.style_External_178_34 {
+    position: relative;
+}
+.style_SkipStroke {
+    background: transparent;
+    opacity: 1.00;
+}
+.style_External_143_35 {
+    position: relative;
+}
+.style_External_176_34 {
+    position: relative;
+}
+.style_External_179_35 {
+    position: relative;
+}
+.style_External_178_32 {
+    position: relative;
+}
+.style_External_178_81 {
+    position: relative;
+}
+.style_External_143_33 {
+    position: relative;
+}
+.Header {
+    color: rgb(167, 167, 167);
+    font-family: 'Arial-BoldMT', 'Arial', sans-serif;
+    font-size: 36px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 42px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    opacity: 1.00;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    text-align: center;
+    text-decoration: none;
+    text-indent: 0px;
+    text-transform: none;
+}
+.Normal {
+    padding: 4px;
+}
+.Normal_External_176_34 {
+    position: relative;
+}
+.Normal_External_178_32 {
+    position: relative;
+}
+.Normal_External_179_35 {
+    position: relative;
+}
+.Normal_External_143_35 {
+    position: relative;
+}
+.Normal_External_178_81 {
+    position: relative;
+}
+.Normal_External_178_34 {
+    position: relative;
+}
+.Normal_External_143_33 {
+    position: relative;
+}
+.graphic_generic_header_textbox_style_default_SkipStroke {
+    background: transparent;
+    opacity: 1.00;
+}
+a {
+    color: rgb(88, 77, 77);
+    text-decoration: underline;
+}
+a:visited {
+    color: rgb(121, 121, 121);
+    text-decoration: underline;
+}
+a:hover {
+    color: rgb(0, 0, 0);
+    text-decoration: underline;
+}
 .bumper {
     font-size: 1px;
     line-height: 1px;

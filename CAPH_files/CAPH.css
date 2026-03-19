@@ -472,6 +472,29 @@
     text-indent: 0px;
     text-transform: none;
 }
+.paragraph_style_16 {
+    background: transparent url(C0080805C.png) repeat scroll center center;
+    color: rgb(66, 66, 66);
+    font-family: 'ArialMT', 'Arial', sans-serif;
+    font-size: 15px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 20px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    opacity: 1.00;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    text-align: center;
+    text-decoration: none;
+    text-indent: 0px;
+    text-transform: none;
+}
 .Aucun {
 }
 .Body {
@@ -546,6 +569,9 @@
 .graphic_textbox_layout_style_default_External_946_394 {
     position: relative;
 }
+.graphic_textbox_layout_style_default_External_228_48 {
+    position: relative;
+}
 .graphic_textbox_layout_style_default_External_239_39 {
     position: relative;
 }
@@ -555,6 +581,18 @@
 .graphic_textbox_style_default_SkipStroke {
     background: transparent;
     opacity: 1.00;
+}
+a {
+    color: rgb(88, 77, 77);
+    text-decoration: underline;
+}
+a:visited {
+    color: rgb(121, 121, 121);
+    text-decoration: underline;
+}
+a:hover {
+    color: rgb(0, 0, 0);
+    text-decoration: underline;
 }
 ol  { 
       padding:0;
