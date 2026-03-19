@@ -27,8 +27,8 @@ DOCUMENTATION
 
 [Project web page](https://jserot.github.io/caph)
 
-[Tutorial](https://jserot.github.io/caph/dist/caph-primer.pdf) and [Reference
-manual](https://jserot.github.io/caph/dist/caph-lrm.pdf).
+[Tutorial](https://jserot.github.io/caph/docs/dist/caph-primer.pdf) and [Reference
+manual](https://jserot.github.io/caph/docs/dist/caph-lrm.pdf).
 
 INSTALLATION
 ------------
